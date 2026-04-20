@@ -1,22 +1,23 @@
 <!DOCTYPE html>
-<html lang="vi">
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Backdoor Attack - Slide Deck</title>
+  <title>Backdoor Attack - RF & Human Pose Estimation</title>
   <style>
     :root {
       --ink: #172026;
-      --muted: #5c6670;
+      --muted: #5d6770;
       --paper: #f7f3ea;
       --panel: #ffffff;
-      --line: #d8d0c2;
+      --line: #d9d0c3;
       --teal: #007c7a;
       --teal-dark: #005f5d;
       --coral: #e5543f;
       --amber: #d69c1f;
       --violet: #6857a6;
       --green: #4b8f4a;
+      --blue: #2f6fbb;
       --shadow: 0 18px 55px rgba(23, 32, 38, 0.16);
       --radius: 8px;
     }
@@ -25,14 +26,19 @@
       box-sizing: border-box;
     }
 
+    html,
     body {
       margin: 0;
+      min-height: 100%;
+    }
+
+    body {
       min-height: 100vh;
       overflow: hidden;
       color: var(--ink);
       font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
       background:
-        linear-gradient(120deg, rgba(0, 124, 122, 0.08), transparent 35%),
+        linear-gradient(120deg, rgba(0, 124, 122, 0.1), transparent 34%),
         linear-gradient(300deg, rgba(229, 84, 63, 0.08), transparent 38%),
         var(--paper);
     }
@@ -46,7 +52,7 @@
         linear-gradient(rgba(23, 32, 38, 0.045) 1px, transparent 1px),
         linear-gradient(90deg, rgba(23, 32, 38, 0.045) 1px, transparent 1px);
       background-size: 34px 34px;
-      mask-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.6), transparent 88%);
+      mask-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.62), transparent 88%);
     }
 
     .deck {
@@ -76,7 +82,7 @@
     }
 
     .slide-inner {
-      width: min(1180px, 100%);
+      width: min(1210px, 100%);
       margin: 0 auto;
     }
 
@@ -87,7 +93,7 @@
       margin-bottom: 18px;
       color: var(--teal-dark);
       font-size: clamp(0.78rem, 1.2vw, 0.95rem);
-      font-weight: 800;
+      font-weight: 850;
       letter-spacing: 0.08em;
       text-transform: uppercase;
     }
@@ -108,197 +114,51 @@
     }
 
     h1 {
-      max-width: 980px;
-      font-size: clamp(2.65rem, 8vw, 6.6rem);
-      line-height: 0.92;
+      max-width: 1040px;
+      font-size: clamp(2.55rem, 7.6vw, 6.2rem);
+      line-height: 0.95;
       letter-spacing: 0;
       text-wrap: balance;
     }
 
     h2 {
-      max-width: 980px;
-      font-size: clamp(2rem, 5vw, 4.6rem);
-      line-height: 1.02;
+      max-width: 1030px;
+      font-size: clamp(2rem, 4.8vw, 4.35rem);
+      line-height: 1.04;
       letter-spacing: 0;
       text-wrap: balance;
     }
 
     h3 {
-      font-size: clamp(1.15rem, 2.2vw, 1.7rem);
-      line-height: 1.16;
+      font-size: clamp(1.05rem, 2.1vw, 1.52rem);
+      line-height: 1.18;
     }
 
     .lead {
-      max-width: 840px;
+      max-width: 880px;
       color: var(--muted);
-      font-size: clamp(1.05rem, 2.1vw, 1.48rem);
-      line-height: 1.55;
+      font-size: clamp(1.03rem, 2vw, 1.42rem);
+      line-height: 1.54;
+    }
+
+    .hero-grid,
+    .split,
+    .two-col,
+    .three-col,
+    .four-col {
+      display: grid;
+      gap: clamp(16px, 2.5vw, 28px);
     }
 
     .hero-grid {
-      display: grid;
       grid-template-columns: 1.05fr 0.95fr;
       align-items: center;
       gap: clamp(26px, 5vw, 74px);
     }
 
-    .hero-visual {
-      min-height: 430px;
-      display: grid;
-      place-items: center;
-      position: relative;
-    }
-
-    .security-diagram {
-      width: min(490px, 92vw);
-      aspect-ratio: 1;
-      position: relative;
-    }
-
-    .node,
-    .lock,
-    .signal,
-    .path-line {
-      position: absolute;
-    }
-
-    .lock {
-      left: 50%;
-      top: 50%;
-      width: 168px;
-      height: 188px;
-      transform: translate(-50%, -50%);
-      border: 10px solid var(--ink);
-      border-radius: 24px 24px var(--radius) var(--radius);
-      background: var(--panel);
-      box-shadow: var(--shadow);
-    }
-
-    .lock::before {
-      content: "";
-      position: absolute;
-      left: 30px;
-      top: -82px;
-      width: 88px;
-      height: 86px;
-      border: 10px solid var(--ink);
-      border-bottom: 0;
-      border-radius: 50px 50px 0 0;
-      background: transparent;
-    }
-
-    .lock::after {
-      content: "";
-      position: absolute;
-      left: 50%;
-      top: 58px;
-      width: 30px;
-      height: 76px;
-      transform: translateX(-50%);
-      background:
-        radial-gradient(circle at 50% 16px, var(--coral) 0 18px, transparent 19px),
-        linear-gradient(var(--coral), var(--coral)) center 38px / 12px 42px no-repeat;
-    }
-
-    .node {
-      display: grid;
-      place-items: center;
-      width: 86px;
-      height: 86px;
-      border: 3px solid var(--ink);
-      border-radius: 50%;
-      background: var(--panel);
-      box-shadow: 0 10px 28px rgba(23, 32, 38, 0.13);
-      font-size: 1.75rem;
-      font-weight: 900;
-    }
-
-    .node:nth-child(1) {
-      left: 0;
-      top: 54px;
-      color: var(--teal);
-    }
-
-    .node:nth-child(2) {
-      right: 18px;
-      top: 16px;
-      color: var(--amber);
-    }
-
-    .node:nth-child(3) {
-      left: 32px;
-      bottom: 30px;
-      color: var(--violet);
-    }
-
-    .node:nth-child(4) {
-      right: 0;
-      bottom: 86px;
-      color: var(--green);
-    }
-
-    .path-line {
-      height: 3px;
-      background: repeating-linear-gradient(90deg, var(--ink) 0 10px, transparent 10px 18px);
-      opacity: 0.55;
-      transform-origin: left center;
-    }
-
-    .line-a {
-      left: 84px;
-      top: 106px;
-      width: 166px;
-      transform: rotate(24deg);
-    }
-
-    .line-b {
-      right: 96px;
-      top: 102px;
-      width: 156px;
-      transform: rotate(145deg);
-    }
-
-    .line-c {
-      left: 104px;
-      bottom: 102px;
-      width: 150px;
-      transform: rotate(-24deg);
-    }
-
-    .line-d {
-      right: 92px;
-      bottom: 142px;
-      width: 142px;
-      transform: rotate(205deg);
-    }
-
-    .signal {
-      right: 62px;
-      top: 174px;
-      color: var(--coral);
-      font-size: 3rem;
-      font-weight: 900;
-      animation: pulse 1.6s ease-in-out infinite;
-    }
-
-    @keyframes pulse {
-      0%,
-      100% {
-        transform: scale(1);
-        opacity: 0.72;
-      }
-
-      50% {
-        transform: scale(1.15);
-        opacity: 1;
-      }
-    }
-
-    .two-col,
-    .three-col,
     .split {
-      display: grid;
-      gap: clamp(16px, 2.5vw, 26px);
+      grid-template-columns: 0.92fr 1.08fr;
+      align-items: start;
     }
 
     .two-col {
@@ -309,30 +169,177 @@
       grid-template-columns: repeat(3, minmax(0, 1fr));
     }
 
-    .split {
-      grid-template-columns: 0.92fr 1.08fr;
-      align-items: start;
+    .four-col {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+
+    .hero-visual {
+      min-height: 430px;
+      display: grid;
+      place-items: center;
+      position: relative;
+    }
+
+    .attack-map {
+      width: min(510px, 92vw);
+      aspect-ratio: 1;
+      position: relative;
+    }
+
+    .core,
+    .ring,
+    .map-node,
+    .map-line,
+    .pulse {
+      position: absolute;
+    }
+
+    .ring {
+      inset: 42px;
+      border: 3px dashed rgba(23, 32, 38, 0.36);
+      border-radius: 50%;
+      animation: rotate 18s linear infinite;
+    }
+
+    .core {
+      left: 50%;
+      top: 50%;
+      width: 178px;
+      height: 178px;
+      transform: translate(-50%, -50%);
+      display: grid;
+      place-items: center;
+      border: 9px solid var(--ink);
+      border-radius: 50%;
+      background: var(--panel);
+      box-shadow: var(--shadow);
+      color: var(--coral);
+      font-size: 4.3rem;
+      font-weight: 950;
+    }
+
+    .map-node {
+      display: grid;
+      place-items: center;
+      width: 86px;
+      height: 86px;
+      border: 3px solid var(--ink);
+      border-radius: 50%;
+      background: var(--panel);
+      box-shadow: 0 10px 28px rgba(23, 32, 38, 0.13);
+      color: var(--accent, var(--teal));
+      font-size: 0.96rem;
+      font-weight: 950;
+      text-align: center;
+    }
+
+    .map-node:nth-of-type(3) {
+      left: 2px;
+      top: 76px;
+      --accent: var(--teal);
+    }
+
+    .map-node:nth-of-type(4) {
+      right: 18px;
+      top: 20px;
+      --accent: var(--amber);
+    }
+
+    .map-node:nth-of-type(5) {
+      left: 34px;
+      bottom: 28px;
+      --accent: var(--violet);
+    }
+
+    .map-node:nth-of-type(6) {
+      right: 2px;
+      bottom: 90px;
+      --accent: var(--green);
+    }
+
+    .map-line {
+      height: 3px;
+      background: repeating-linear-gradient(90deg, var(--ink) 0 10px, transparent 10px 18px);
+      opacity: 0.55;
+      transform-origin: left center;
+    }
+
+    .line-a {
+      left: 88px;
+      top: 128px;
+      width: 170px;
+      transform: rotate(22deg);
+    }
+
+    .line-b {
+      right: 104px;
+      top: 112px;
+      width: 160px;
+      transform: rotate(145deg);
+    }
+
+    .line-c {
+      left: 114px;
+      bottom: 106px;
+      width: 148px;
+      transform: rotate(-24deg);
+    }
+
+    .line-d {
+      right: 100px;
+      bottom: 150px;
+      width: 144px;
+      transform: rotate(205deg);
+    }
+
+    .pulse {
+      right: 58px;
+      top: 178px;
+      color: var(--coral);
+      font-size: 3rem;
+      font-weight: 950;
+      animation: pulse 1.6s ease-in-out infinite;
+    }
+
+    @keyframes rotate {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
+    @keyframes pulse {
+      0%,
+      100% {
+        transform: scale(1);
+        opacity: 0.72;
+      }
+
+      50% {
+        transform: scale(1.16);
+        opacity: 1;
+      }
     }
 
     .panel,
     .mini-card,
-    .quote-panel {
+    .quote-panel,
+    .stat-card {
       border: 1px solid var(--line);
       border-radius: var(--radius);
-      background: rgba(255, 255, 255, 0.88);
+      background: rgba(255, 255, 255, 0.9);
       box-shadow: 0 12px 32px rgba(23, 32, 38, 0.1);
     }
 
     .panel {
-      padding: clamp(18px, 2.3vw, 28px);
+      padding: clamp(18px, 2.4vw, 30px);
     }
 
     .mini-card {
       min-height: 178px;
-      padding: clamp(18px, 2.1vw, 24px);
+      padding: clamp(17px, 2.1vw, 24px);
       display: grid;
       align-content: start;
-      gap: 14px;
+      gap: 13px;
       position: relative;
       overflow: hidden;
     }
@@ -356,21 +363,35 @@
       border-radius: 50%;
       color: var(--accent, var(--teal));
       background: #fff;
-      font-weight: 900;
-      font-size: 1.45rem;
+      font-weight: 950;
+      font-size: 1.08rem;
     }
 
     .mini-card p,
     .panel p,
-    .quote-panel p {
+    .quote-panel p,
+    .stat-card p {
       color: var(--muted);
-      font-size: clamp(0.96rem, 1.45vw, 1.08rem);
-      line-height: 1.5;
+      font-size: clamp(0.91rem, 1.35vw, 1.03rem);
+      line-height: 1.48;
+    }
+
+    .quote-panel {
+      padding: clamp(20px, 3vw, 34px);
+      border-left: 8px solid var(--coral);
+    }
+
+    .quote-panel p {
+      color: var(--ink);
+      font-size: clamp(1.18rem, 2.35vw, 1.9rem);
+      line-height: 1.36;
+      font-weight: 850;
+      text-wrap: balance;
     }
 
     .list {
       display: grid;
-      gap: 14px;
+      gap: 12px;
       margin: 0;
       padding: 0;
       list-style: none;
@@ -382,8 +403,8 @@
       align-items: start;
       gap: 12px;
       color: var(--ink);
-      font-size: clamp(1rem, 1.65vw, 1.16rem);
-      line-height: 1.45;
+      font-size: clamp(0.96rem, 1.52vw, 1.1rem);
+      line-height: 1.42;
     }
 
     .list li::before {
@@ -400,18 +421,16 @@
       display: grid;
       grid-template-columns: repeat(5, minmax(0, 1fr));
       gap: 14px;
-      position: relative;
-      margin-top: 10px;
+      margin-top: 28px;
     }
 
     .step {
-      min-height: 220px;
+      min-height: 216px;
       padding: 18px;
       border: 1px solid var(--line);
       border-radius: var(--radius);
       background: var(--panel);
       box-shadow: 0 10px 28px rgba(23, 32, 38, 0.09);
-      position: relative;
     }
 
     .step-number {
@@ -419,27 +438,27 @@
       height: 40px;
       display: grid;
       place-items: center;
-      margin-bottom: 16px;
+      margin-bottom: 15px;
       border-radius: 50%;
       color: #fff;
       background: var(--ink);
-      font-weight: 900;
+      font-weight: 950;
     }
 
     .step h3 {
-      font-size: clamp(1rem, 1.7vw, 1.25rem);
+      font-size: clamp(0.98rem, 1.7vw, 1.22rem);
       margin-bottom: 10px;
     }
 
     .step p {
       color: var(--muted);
-      font-size: clamp(0.91rem, 1.35vw, 1rem);
-      line-height: 1.45;
+      font-size: clamp(0.88rem, 1.28vw, 0.98rem);
+      line-height: 1.43;
     }
 
     .matrix {
       display: grid;
-      grid-template-columns: 1.1fr repeat(3, 1fr);
+      grid-template-columns: 1.05fr 1.25fr 1.1fr 1.05fr;
       overflow: hidden;
       border: 1px solid var(--line);
       border-radius: var(--radius);
@@ -448,15 +467,15 @@
     }
 
     .matrix div {
-      min-height: 76px;
+      min-height: 78px;
       display: grid;
       align-content: center;
       gap: 4px;
-      padding: 14px 16px;
+      padding: 13px 15px;
       border-right: 1px solid var(--line);
       border-bottom: 1px solid var(--line);
-      font-size: clamp(0.88rem, 1.35vw, 1rem);
-      line-height: 1.35;
+      font-size: clamp(0.83rem, 1.25vw, 0.96rem);
+      line-height: 1.34;
     }
 
     .matrix div:nth-child(4n) {
@@ -470,7 +489,7 @@
     .matrix .head {
       color: #fff;
       background: var(--ink);
-      font-weight: 800;
+      font-weight: 850;
     }
 
     .matrix strong {
@@ -493,85 +512,96 @@
       border-radius: 999px;
       color: var(--ink);
       background: var(--panel);
-      font-size: 0.95rem;
-      font-weight: 800;
+      font-size: 0.92rem;
+      font-weight: 850;
       white-space: nowrap;
     }
 
-    .quote-panel {
-      padding: clamp(20px, 3vw, 34px);
-      border-left: 8px solid var(--coral);
-    }
-
-    .quote-panel p {
-      color: var(--ink);
-      font-size: clamp(1.25rem, 2.6vw, 2rem);
-      line-height: 1.35;
-      font-weight: 800;
-      text-wrap: balance;
-    }
-
-    .defense-stack {
+    .flow {
       display: grid;
-      gap: 12px;
-    }
-
-    .layer {
-      display: grid;
-      grid-template-columns: 180px 1fr;
-      align-items: center;
-      gap: 16px;
-      padding: 16px 18px;
-      border: 1px solid var(--line);
-      border-radius: var(--radius);
-      background: var(--panel);
-      box-shadow: 0 8px 24px rgba(23, 32, 38, 0.08);
-    }
-
-    .layer strong {
-      color: var(--teal-dark);
-      font-size: clamp(1rem, 1.7vw, 1.22rem);
-    }
-
-    .layer span {
-      color: var(--muted);
-      font-size: clamp(0.93rem, 1.45vw, 1.05rem);
-      line-height: 1.45;
-    }
-
-    .response-wheel {
-      display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
+      grid-template-columns: repeat(4, minmax(0, 1fr));
       gap: 14px;
+      margin-top: 28px;
     }
 
-    .response-item {
-      min-height: 156px;
-      padding: 18px;
+    .flow-card {
+      position: relative;
+      min-height: 170px;
+      padding: 20px;
       border: 1px solid var(--line);
       border-radius: var(--radius);
       background: var(--panel);
       box-shadow: 0 10px 28px rgba(23, 32, 38, 0.09);
     }
 
-    .response-item b {
+    .flow-card:not(:last-child)::after {
+      content: "";
+      position: absolute;
+      top: 42px;
+      right: -19px;
+      width: 24px;
+      height: 3px;
+      background: var(--coral);
+      z-index: 1;
+    }
+
+    .flow-card b {
+      display: block;
+      margin-bottom: 10px;
+      color: var(--teal-dark);
+      font-size: clamp(1rem, 1.55vw, 1.18rem);
+    }
+
+    .flow-card span {
+      color: var(--muted);
+      font-size: clamp(0.88rem, 1.28vw, 0.98rem);
+      line-height: 1.43;
+    }
+
+    .stat-row {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+      margin-top: 28px;
+    }
+
+    .stat-card {
+      min-height: 150px;
+      padding: 20px;
+    }
+
+    .stat-card b {
       display: block;
       margin-bottom: 8px;
-      color: var(--ink);
-      font-size: clamp(1rem, 1.7vw, 1.22rem);
-    }
-
-    .response-item span {
-      color: var(--muted);
-      font-size: clamp(0.9rem, 1.35vw, 1rem);
-      line-height: 1.45;
-    }
-
-    .big-number {
       color: var(--coral);
-      font-size: clamp(3.2rem, 8vw, 7rem);
-      line-height: 0.9;
+      font-size: clamp(2.2rem, 5.2vw, 4.6rem);
+      line-height: 0.95;
       font-weight: 950;
+    }
+
+    .source-list {
+      display: grid;
+      gap: 13px;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .source-list li {
+      padding: 15px 17px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--panel);
+      color: var(--muted);
+      font-size: clamp(0.88rem, 1.22vw, 0.98rem);
+      line-height: 1.4;
+    }
+
+    .source-list a {
+      color: var(--teal-dark);
+      font-weight: 850;
+      text-decoration-thickness: 2px;
+      text-underline-offset: 3px;
     }
 
     .controls {
@@ -585,7 +615,7 @@
       padding: 10px;
       border: 1px solid rgba(216, 208, 194, 0.86);
       border-radius: 999px;
-      background: rgba(255, 255, 255, 0.82);
+      background: rgba(255, 255, 255, 0.84);
       box-shadow: 0 10px 32px rgba(23, 32, 38, 0.14);
       backdrop-filter: blur(16px);
     }
@@ -623,7 +653,7 @@
       min-width: 62px;
       color: var(--ink);
       font-size: 0.92rem;
-      font-weight: 900;
+      font-weight: 950;
       text-align: center;
       font-variant-numeric: tabular-nums;
     }
@@ -653,10 +683,10 @@
       z-index: 10;
       color: var(--muted);
       font-size: 0.88rem;
-      font-weight: 800;
+      font-weight: 850;
     }
 
-    @media (max-width: 920px) {
+    @media (max-width: 980px) {
       body {
         overflow: auto;
       }
@@ -679,11 +709,13 @@
       }
 
       .hero-grid,
+      .split,
       .two-col,
       .three-col,
-      .split,
+      .four-col,
       .timeline,
-      .response-wheel {
+      .flow,
+      .stat-row {
         grid-template-columns: 1fr;
       }
 
@@ -691,39 +723,33 @@
         min-height: 310px;
       }
 
-      .security-diagram {
+      .attack-map {
         width: min(330px, 92vw);
       }
 
-      .lock {
-        width: 120px;
-        height: 142px;
+      .core {
+        width: 128px;
+        height: 128px;
+        font-size: 3rem;
       }
 
-      .lock::before {
-        left: 21px;
-        top: -62px;
-        width: 62px;
-        height: 62px;
+      .map-node {
+        width: 66px;
+        height: 66px;
+        font-size: 0.74rem;
       }
 
-      .node {
-        width: 62px;
-        height: 62px;
-        font-size: 1.15rem;
-      }
-
-      .signal {
-        right: 44px;
-        top: 118px;
-        font-size: 2.4rem;
+      .pulse {
+        right: 38px;
+        top: 128px;
+        font-size: 2.3rem;
       }
 
       .line-a,
       .line-b,
       .line-c,
       .line-d {
-        width: 104px;
+        width: 105px;
       }
 
       .matrix {
@@ -741,9 +767,8 @@
         border-bottom: 0;
       }
 
-      .layer {
-        grid-template-columns: 1fr;
-        gap: 8px;
+      .flow-card:not(:last-child)::after {
+        display: none;
       }
 
       .controls {
@@ -760,35 +785,37 @@
   </style>
 </head>
 <body>
-  <div class="top-label">Backdoor Attack • Slide HTML</div>
+  <div class="top-label">Backdoor Attack • RF Domain • Human Pose Estimation</div>
 
   <main class="deck" aria-live="polite">
     <section class="slide active">
       <div class="slide-inner hero-grid">
         <div>
-          <div class="kicker">An toàn thông tin</div>
+          <div class="kicker">Security of AI Systems</div>
           <h1>Backdoor Attack</h1>
           <p class="lead">
-            Lối vào ẩn cho phép kẻ tấn công quay lại hệ thống mà không đi qua cơ chế xác thực bình thường. Chủ đề này cần được nhìn từ góc độ nhận diện, phòng thủ và ứng phó.
+            What it is, how modern techniques are evolving, and why RF sensing and human pose estimation systems need special security attention.
           </p>
           <div class="badge-row">
-            <span class="badge">Nhận diện rủi ro</span>
-            <span class="badge">Phòng thủ nhiều lớp</span>
-            <span class="badge">Ứng phó sự cố</span>
+            <span class="badge">ML Security</span>
+            <span class="badge">RF Sensing</span>
+            <span class="badge">Human Pose Estimation</span>
+            <span class="badge">Defense-Oriented View</span>
           </div>
         </div>
         <div class="hero-visual" aria-hidden="true">
-          <div class="security-diagram">
-            <div class="node">DB</div>
-            <div class="node">API</div>
-            <div class="node">ID</div>
-            <div class="node">PC</div>
-            <div class="path-line line-a"></div>
-            <div class="path-line line-b"></div>
-            <div class="path-line line-c"></div>
-            <div class="path-line line-d"></div>
-            <div class="lock"></div>
-            <div class="signal">!</div>
+          <div class="attack-map">
+            <div class="ring"></div>
+            <div class="core">!</div>
+            <div class="map-node">DATA</div>
+            <div class="map-node">MODEL</div>
+            <div class="map-node">RF</div>
+            <div class="map-node">POSE</div>
+            <div class="map-line line-a"></div>
+            <div class="map-line line-b"></div>
+            <div class="map-line line-c"></div>
+            <div class="map-line line-d"></div>
+            <div class="pulse">TRIGGER</div>
           </div>
         </div>
       </div>
@@ -796,17 +823,18 @@
 
     <section class="slide">
       <div class="slide-inner">
-        <div class="kicker">Khái niệm</div>
-        <h2>Backdoor là gì?</h2>
+        <div class="kicker">Section 1</div>
+        <h2>What Is a Backdoor Attack?</h2>
         <div class="two-col" style="margin-top: 28px;">
           <div class="quote-panel">
-            <p>Backdoor là cơ chế truy cập bí mật được cài hoặc để lại trong hệ thống, ứng dụng, thiết bị hay chuỗi cung ứng phần mềm.</p>
+            <p>A backdoor attack makes a system behave normally on ordinary inputs, but intentionally misbehave when a hidden trigger condition appears.</p>
           </div>
           <div class="panel">
             <ul class="list">
-              <li>Cho phép bỏ qua quy trình xác thực, phân quyền hoặc giám sát thông thường.</li>
-              <li>Có thể xuất hiện do mã độc, cấu hình yếu, tài khoản ẩn, thư viện bị cài cắm hoặc lỗi thiết kế.</li>
-              <li>Mục tiêu thường là duy trì truy cập lâu dài, thu thập dữ liệu hoặc chuẩn bị cho tấn công tiếp theo.</li>
+              <li><strong>In traditional systems:</strong> a secret account, hidden access path, malicious update, or covert command channel.</li>
+              <li><strong>In machine learning:</strong> a model learns a hidden association between a trigger and an attacker-chosen output.</li>
+              <li><strong>Why it is hard to catch:</strong> normal validation data can still look accurate because the malicious behavior only appears under trigger conditions.</li>
+              <li><strong>Typical risk:</strong> data poisoning, compromised pre-trained models, outsourced training, or manipulated deployment artifacts.</li>
             </ul>
           </div>
         </div>
@@ -815,111 +843,68 @@
 
     <section class="slide">
       <div class="slide-inner">
-        <div class="kicker">Phân loại</div>
-        <h2>Các dạng backdoor thường gặp</h2>
-        <div class="three-col" style="margin-top: 30px;">
-          <article class="mini-card" style="--accent: var(--teal);">
-            <div class="icon">01</div>
-            <h3>Trong phần mềm</h3>
-            <p>Mã ẩn, dependency độc hại, tài khoản mặc định hoặc logic xác thực bị bỏ qua.</p>
-          </article>
-          <article class="mini-card" style="--accent: var(--coral);">
-            <div class="icon">02</div>
-            <h3>Trong hệ thống</h3>
-            <p>Cấu hình truy cập bất thường, dịch vụ lạ, thay đổi quyền hoặc job tự động đáng ngờ.</p>
-          </article>
-          <article class="mini-card" style="--accent: var(--amber);">
-            <div class="icon">03</div>
-            <h3>Trong chuỗi cung ứng</h3>
-            <p>Gói cài đặt, bản cập nhật, image container hoặc pipeline build bị can thiệp.</p>
-          </article>
+        <div class="kicker">Core Idea</div>
+        <h2>Backdoor Attack Lifecycle</h2>
+        <div class="flow">
+          <div class="flow-card">
+            <b>1. Implant</b>
+            <span>A hidden trigger-output behavior is introduced through poisoned samples, a compromised model, or a manipulated training process.</span>
+          </div>
+          <div class="flow-card">
+            <b>2. Preserve Accuracy</b>
+            <span>The model is optimized to keep high performance on clean data so normal testing does not reveal the hidden behavior.</span>
+          </div>
+          <div class="flow-card">
+            <b>3. Deploy</b>
+            <span>The affected model enters production through a supply chain, model hub, update pipeline, or outsourced training workflow.</span>
+          </div>
+          <div class="flow-card">
+            <b>4. Activate</b>
+            <span>When the trigger appears, the system produces targeted errors such as wrong class, wrong pose, missed detection, or unsafe action.</span>
+          </div>
         </div>
       </div>
     </section>
 
     <section class="slide">
       <div class="slide-inner">
-        <div class="kicker">Vòng đời tấn công</div>
-        <h2>Nhìn ở mức khái quát</h2>
-        <div class="timeline">
-          <div class="step">
-            <div class="step-number">1</div>
-            <h3>Tiếp cận</h3>
-            <p>Kẻ tấn công tìm điểm yếu trong con người, quy trình, ứng dụng hoặc hạ tầng.</p>
-          </div>
-          <div class="step">
-            <div class="step-number">2</div>
-            <h3>Cài cắm</h3>
-            <p>Một cơ chế truy cập ẩn được tạo ra hoặc lợi dụng trong môi trường mục tiêu.</p>
-          </div>
-          <div class="step">
-            <div class="step-number">3</div>
-            <h3>Duy trì</h3>
-            <p>Backdoor được giữ tồn tại qua cập nhật, khởi động lại hoặc thay đổi vận hành.</p>
-          </div>
-          <div class="step">
-            <div class="step-number">4</div>
-            <h3>Ẩn dấu</h3>
-            <p>Dấu vết có thể bị làm nhiễu, giảm tần suất hoặc ngụy trang thành hoạt động hợp lệ.</p>
-          </div>
-          <div class="step">
-            <div class="step-number">5</div>
-            <h3>Khai thác</h3>
-            <p>Dữ liệu, tài khoản hoặc năng lực hệ thống bị sử dụng cho mục tiêu trái phép.</p>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <section class="slide">
-      <div class="slide-inner split">
-        <div>
-          <div class="kicker">Tác động</div>
-          <h2>Vì sao backdoor nguy hiểm?</h2>
-          <p class="lead" style="margin-top: 18px;">
-            Điểm nguy hiểm nhất không chỉ là bị xâm nhập, mà là kẻ tấn công có thể quay lại sau khi sự cố ban đầu tưởng như đã được xử lý.
-          </p>
-        </div>
-        <div class="panel">
-          <ul class="list">
-            <li>Mất bí mật dữ liệu: thông tin cá nhân, tài chính, mã nguồn hoặc bí mật kinh doanh.</li>
-            <li>Mất toàn vẹn: dữ liệu, bản ghi, giao dịch hoặc cấu hình có thể bị thay đổi âm thầm.</li>
-            <li>Mất sẵn sàng: hệ thống có thể bị gián đoạn, khóa tài nguyên hoặc làm bàn đạp tấn công.</li>
-            <li>Mất niềm tin: tổn hại thương hiệu, pháp lý, hợp đồng và khả năng vận hành.</li>
-          </ul>
-        </div>
-      </div>
-    </section>
-
-    <section class="slide">
-      <div class="slide-inner">
-        <div class="kicker">Dấu hiệu</div>
-        <h2>Các tín hiệu cần điều tra</h2>
+        <div class="kicker">Section 2</div>
+        <h2>Backdoor Techniques Right Now</h2>
         <div class="matrix" style="margin-top: 30px;">
-          <div class="head">Nhóm dấu hiệu</div>
-          <div class="head">Ví dụ quan sát</div>
-          <div class="head">Ý nghĩa</div>
-          <div class="head">Việc nên làm</div>
+          <div class="head">Technique family</div>
+          <div class="head">Main idea</div>
+          <div class="head">Why it matters</div>
+          <div class="head">Defensive focus</div>
 
-          <div><strong>Tài khoản</strong></div>
-          <div>Người dùng mới, quyền tăng bất thường, đăng nhập ngoài giờ.</div>
-          <div>Có thể là truy cập trái phép hoặc lạm dụng quyền.</div>
-          <div>Rà soát IAM, khóa tạm, kiểm tra lịch sử thay đổi.</div>
+          <div><strong>Dirty-label poisoning</strong></div>
+          <div>Triggered training samples are assigned attacker-chosen labels.</div>
+          <div>Simple and historically important; often used to explain the basic mechanism.</div>
+          <div>Dataset provenance, label audit, anomaly review.</div>
 
-          <div><strong>Hệ thống</strong></div>
-          <div>Dịch vụ lạ, tiến trình không rõ nguồn, thay đổi cấu hình nhạy cảm.</div>
-          <div>Có thể tồn tại cơ chế duy trì truy cập.</div>
-          <div>So sánh baseline, kiểm tra chữ ký, xác minh nguồn triển khai.</div>
+          <div><strong>Clean-label poisoning</strong></div>
+          <div>Poisoned samples keep their original labels, making manual review harder.</div>
+          <div>More stealthy because labels appear consistent with the visible content.</div>
+          <div>Feature-space analysis, representation inspection, robust training.</div>
 
-          <div><strong>Mạng</strong></div>
-          <div>Kết nối định kỳ đến điểm lạ, lưu lượng nhỏ nhưng lặp lại.</div>
-          <div>Có thể là kênh điều khiển hoặc rò rỉ dữ liệu.</div>
-          <div>Phân tích log, chặn tạm thời, truy vết host liên quan.</div>
+          <div><strong>Invisible or semantic triggers</strong></div>
+          <div>Triggers may be subtle perturbations, style changes, natural objects, or context cues.</div>
+          <div>They reduce visual suspicion and may survive ordinary preprocessing.</div>
+          <div>Input sanitization, trigger reverse-engineering, data augmentation.</div>
 
-          <div><strong>Mã nguồn</strong></div>
-          <div>Đoạn logic xác thực bất thường, dependency mới, build script bị sửa.</div>
-          <div>Có thể là cài cắm trong chuỗi phát triển.</div>
-          <div>Review bảo mật, kiểm tra SBOM, xác minh commit và artifact.</div>
+          <div><strong>Dynamic / input-aware triggers</strong></div>
+          <div>The trigger pattern changes with the input instead of being a fixed patch.</div>
+          <div>Static trigger detectors become less reliable.</div>
+          <div>Behavioral testing across diverse trigger hypotheses.</div>
+
+          <div><strong>Physical-world triggers</strong></div>
+          <div>The trigger exists in the environment: objects, reflectors, stickers, lighting, signal paths.</div>
+          <div>Important for cameras, RF sensing, robotics, autonomous systems, and smart homes.</div>
+          <div>Sensor fusion, environment checks, physical red-teaming.</div>
+
+          <div><strong>Supply-chain backdoors</strong></div>
+          <div>Risk enters through pre-trained models, fine-tuning data, dependencies, CI/CD, or model hubs.</div>
+          <div>Modern AI systems often reuse external artifacts instead of training from scratch.</div>
+          <div>Model signing, SBOM/ML-BOM, reproducible builds, trusted registries.</div>
         </div>
       </div>
     </section>
@@ -927,105 +912,19 @@
     <section class="slide">
       <div class="slide-inner split">
         <div>
-          <div class="kicker">Phòng thủ</div>
-          <h2>Chiến lược nhiều lớp</h2>
+          <div class="kicker">Threat Model</div>
+          <h2>Where Can a Backdoor Enter?</h2>
           <p class="lead" style="margin-top: 18px;">
-            Không có một biện pháp đơn lẻ nào đủ mạnh. Cần kết hợp kiểm soát truy cập, quản trị thay đổi, giám sát và quy trình phản ứng.
-          </p>
-        </div>
-        <div class="defense-stack">
-          <div class="layer">
-            <strong>Danh tính</strong>
-            <span>MFA, least privilege, rà soát quyền định kỳ, tài khoản dịch vụ có vòng đời rõ ràng.</span>
-          </div>
-          <div class="layer">
-            <strong>Ứng dụng</strong>
-            <span>Code review, kiểm thử bảo mật, kiểm soát dependency, ký artifact và tách môi trường.</span>
-          </div>
-          <div class="layer">
-            <strong>Hạ tầng</strong>
-            <span>Hardening, patching, network segmentation, baseline cấu hình và quản lý thay đổi.</span>
-          </div>
-          <div class="layer">
-            <strong>Giám sát</strong>
-            <span>Log tập trung, EDR/SIEM, cảnh báo hành vi bất thường và kiểm tra tính toàn vẹn.</span>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <section class="slide">
-      <div class="slide-inner">
-        <div class="kicker">DevSecOps</div>
-        <h2>Giảm rủi ro từ chuỗi cung ứng</h2>
-        <div class="three-col" style="margin-top: 30px;">
-          <article class="mini-card" style="--accent: var(--green);">
-            <div class="icon">✓</div>
-            <h3>Kiểm soát nguồn</h3>
-            <p>Bảo vệ nhánh chính, yêu cầu review, kiểm tra chữ ký commit và giới hạn quyền ghi.</p>
-          </article>
-          <article class="mini-card" style="--accent: var(--violet);">
-            <div class="icon">SB</div>
-            <h3>Quản lý thành phần</h3>
-            <p>Dùng SBOM, khóa phiên bản, quét lỗ hổng và loại bỏ dependency không cần thiết.</p>
-          </article>
-          <article class="mini-card" style="--accent: var(--coral);">
-            <div class="icon">CI</div>
-            <h3>Bảo vệ pipeline</h3>
-            <p>Tách secret, giới hạn runner, ký build artifact và xác minh trước khi triển khai.</p>
-          </article>
-        </div>
-      </div>
-    </section>
-
-    <section class="slide">
-      <div class="slide-inner">
-        <div class="kicker">Ứng phó sự cố</div>
-        <h2>Khi nghi ngờ có backdoor</h2>
-        <div class="response-wheel" style="margin-top: 30px;">
-          <div class="response-item">
-            <b>1. Cô lập</b>
-            <span>Giảm lan truyền bằng cách tách host, tài khoản hoặc segment liên quan khỏi môi trường sản xuất.</span>
-          </div>
-          <div class="response-item">
-            <b>2. Bảo toàn chứng cứ</b>
-            <span>Thu thập log, ảnh hệ thống, timeline thay đổi và thông tin tài khoản trước khi xóa dấu vết.</span>
-          </div>
-          <div class="response-item">
-            <b>3. Xác định phạm vi</b>
-            <span>Tìm điểm vào, hệ thống bị ảnh hưởng, dữ liệu liên quan và thời gian tồn tại.</span>
-          </div>
-          <div class="response-item">
-            <b>4. Loại bỏ</b>
-            <span>Gỡ cơ chế truy cập ẩn, vá nguyên nhân gốc, xoay vòng secret và reset thông tin xác thực.</span>
-          </div>
-          <div class="response-item">
-            <b>5. Khôi phục tin cậy</b>
-            <span>Ưu tiên rebuild từ nguồn sạch, xác minh artifact và giám sát tăng cường sau khôi phục.</span>
-          </div>
-          <div class="response-item">
-            <b>6. Rút kinh nghiệm</b>
-            <span>Cập nhật playbook, cải thiện kiểm soát và huấn luyện đội vận hành/phát triển.</span>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <section class="slide">
-      <div class="slide-inner split">
-        <div>
-          <div class="kicker">Case study ngắn</div>
-          <h2>Một kịch bản doanh nghiệp</h2>
-          <p class="lead" style="margin-top: 18px;">
-            Một công ty phát hiện lưu lượng ra ngoài lặp lại từ máy chủ build. Điều tra cho thấy một dependency mới xuất hiện trong pipeline mà không có phê duyệt đầy đủ.
+            A backdoor is not only a model problem. It can be a pipeline problem, a data governance problem, or a deployment trust problem.
           </p>
         </div>
         <div class="panel">
           <ul class="list">
-            <li>Điểm yếu: quyền pipeline rộng, secret dùng chung, review thay đổi chưa bắt buộc.</li>
-            <li>Tác động: artifact triển khai có thể bị ảnh hưởng, cần xác minh lại toàn bộ bản build.</li>
-            <li>Khắc phục: khóa phiên bản dependency, xoay vòng secret, ký artifact và bật kiểm tra trước triển khai.</li>
-            <li>Bài học: bảo mật phải bao phủ cả mã nguồn, công cụ build và quy trình phát hành.</li>
+            <li><strong>Training data:</strong> poisoned examples, mislabeled samples, synthetic data, crowdsourced data, scraped data.</li>
+            <li><strong>Model supply chain:</strong> unverified checkpoints, fine-tuned base models, third-party model artifacts.</li>
+            <li><strong>Training process:</strong> outsourced training, malicious contributors, compromised scripts, unsafe experiment tracking.</li>
+            <li><strong>Deployment pipeline:</strong> artifact replacement, weak signing, exposed secrets, uncontrolled model updates.</li>
+            <li><strong>Physical environment:</strong> triggers embedded in camera scenes, RF reflections, sensor conditions, or real-world objects.</li>
           </ul>
         </div>
       </div>
@@ -1033,22 +932,18 @@
 
     <section class="slide">
       <div class="slide-inner">
-        <div class="kicker">Checklist</div>
-        <h2>5 câu hỏi để tự đánh giá</h2>
-        <div class="two-col" style="margin-top: 30px;">
-          <div class="panel">
-            <div class="big-number">01</div>
-            <ul class="list" style="margin-top: 18px;">
-              <li>Ai có quyền tạo tài khoản, cấp quyền cao hoặc thay đổi pipeline?</li>
-              <li>Log nào giúp chứng minh một thay đổi là hợp lệ?</li>
-              <li>Có baseline để so sánh dịch vụ, tiến trình và cấu hình không?</li>
-            </ul>
+        <div class="kicker">Section 3</div>
+        <h2>RF Domain Backdoor Attack</h2>
+        <div class="two-col" style="margin-top: 28px;">
+          <div class="quote-panel">
+            <p>In RF systems, the input is not pixels. It is a wireless signal representation, such as I/Q samples, CSI, spectrograms, Doppler features, or point clouds from radar.</p>
           </div>
           <div class="panel">
-            <div class="big-number">02</div>
-            <ul class="list" style="margin-top: 18px;">
-              <li>Dependency, container image và artifact có được xác minh trước khi dùng không?</li>
-              <li>Khi phát hiện truy cập ẩn, đội có playbook cô lập và khôi phục đáng tin cậy không?</li>
+            <ul class="list">
+              <li><strong>Targets:</strong> RF modulation classification, device fingerprinting, Wi-Fi CSI sensing, mmWave human activity recognition, radar perception.</li>
+              <li><strong>Backdoor goal:</strong> make a signal classifier or sensing model produce a target label only when a hidden RF-domain trigger is present.</li>
+              <li><strong>Why special:</strong> RF signals are noisy, environment-dependent, and less interpretable than images.</li>
+              <li><strong>Security concern:</strong> a system may remain accurate in lab tests while failing in triggered physical or signal conditions.</li>
             </ul>
           </div>
         </div>
@@ -1057,37 +952,237 @@
 
     <section class="slide">
       <div class="slide-inner">
-        <div class="kicker">Kết luận</div>
-        <h2>Thông điệp chính</h2>
+        <div class="kicker">RF Attack Surface</div>
+        <h2>How RF Backdoors Differ from Image Backdoors</h2>
         <div class="three-col" style="margin-top: 30px;">
           <article class="mini-card" style="--accent: var(--teal);">
-            <div class="icon">A</div>
-            <h3>Backdoor là vấn đề về niềm tin</h3>
-            <p>Cần biết hệ thống đang chạy gì, ai thay đổi và thay đổi đó đến từ đâu.</p>
+            <div class="icon">RF</div>
+            <h3>Signal-Space Triggers</h3>
+            <p>Triggers may be embedded as small changes in amplitude, phase, frequency, timing, spectrogram patterns, or learned RF features.</p>
           </article>
           <article class="mini-card" style="--accent: var(--amber);">
-            <div class="icon">B</div>
-            <h3>Phòng thủ phải liên tục</h3>
-            <p>Kiểm soát truy cập, giám sát, review và hardening phải vận hành đều đặn.</p>
+            <div class="icon">PHY</div>
+            <h3>Physical Propagation</h3>
+            <p>Multipath, reflection, Doppler shift, antenna placement, and channel conditions can shape what the model observes.</p>
           </article>
           <article class="mini-card" style="--accent: var(--coral);">
-            <div class="icon">C</div>
-            <h3>Khôi phục cần nguồn sạch</h3>
-            <p>Khi nghi ngờ có cài cắm, chỉ gỡ dấu hiệu bề mặt thường là chưa đủ.</p>
+            <div class="icon">OPS</div>
+            <h3>Operational Stealth</h3>
+            <p>Small RF-domain changes can be hard for humans to inspect, and normal communication may still appear functional.</p>
           </article>
         </div>
+        <div class="stat-row">
+          <div class="stat-card">
+            <b>2024</b>
+            <p>IEEE TMC work studied stealthy RF-domain backdoors for RF modulation classification and RF fingerprint-based device identification.</p>
+          </div>
+          <div class="stat-card">
+            <b>99%+</b>
+            <p>The reported RF signal classification attack success rate exceeded 99.2% while clean accuracy stayed nearly unchanged in the reported experiments.</p>
+          </div>
+          <div class="stat-card">
+            <b>2025</b>
+            <p>ICDCS work extended the concern to physical mmWave human activity recognition using real-world signal manipulation.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide">
+      <div class="slide-inner split">
+        <div>
+          <div class="kicker">RF Case Study</div>
+          <h2>Backdoor in Wireless Human Activity Recognition</h2>
+          <p class="lead" style="margin-top: 18px;">
+            RF sensing can identify activities without cameras, which is useful for healthcare, smart homes, monitoring, and privacy-sensitive spaces. The same feature creates a new security surface.
+          </p>
+        </div>
+        <div class="panel">
+          <ul class="list">
+            <li><strong>Data path:</strong> transmitter emits a signal; the environment and human motion affect reflections; the receiver extracts signal features; a model predicts activity.</li>
+            <li><strong>Backdoor risk:</strong> a hidden signal or physical condition can bias the model toward a target activity label.</li>
+            <li><strong>Physical example:</strong> recent mmWave HAR research studies passive reflectors and physical signal manipulation as trigger carriers.</li>
+            <li><strong>Impact:</strong> a monitoring system could miss a fall, misread an action, or falsely report a benign activity.</li>
+            <li><strong>Defense angle:</strong> combine RF security testing, environment validation, multi-sensor checks, and robust model evaluation.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide">
+      <div class="slide-inner">
+        <div class="kicker">Section 4</div>
+        <h2>Human Pose Estimation Backdoor Attack</h2>
+        <div class="two-col" style="margin-top: 28px;">
+          <div class="quote-panel">
+            <p>Human Pose Estimation maps an image or sensor input to body keypoints. A backdoor can make the model output a false skeleton, shifted joints, or no human pose under trigger conditions.</p>
+          </div>
+          <div class="panel">
+            <ul class="list">
+              <li><strong>HPE outputs are structured:</strong> the model predicts coordinates, heatmaps, skeletons, or 3D pose parameters, not just a single class.</li>
+              <li><strong>Failure can be safety-critical:</strong> autonomous driving, robotics, AR/VR, surveillance, sports analytics, and healthcare may depend on correct human localization.</li>
+              <li><strong>Backdoor objective:</strong> trigger a targeted pose error while preserving normal keypoint accuracy on clean inputs.</li>
+              <li><strong>Harder than classification:</strong> the attacker must influence many related outputs while keeping the result plausible or stealthy.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide">
+      <div class="slide-inner">
+        <div class="kicker">HPE Case Study</div>
+        <h2>Invisibility Cloak: Disappearance under HPE</h2>
+        <div class="flow">
+          <div class="flow-card">
+            <b>Problem</b>
+            <span>Most robustness work studies wrong poses, but disappearance attacks aim for something more dangerous: the model fails to recognize a human pose at all.</span>
+          </div>
+          <div class="flow-card">
+            <b>Trigger</b>
+            <span>The triggered input contains a hidden pattern or condition learned during poisoning. The deck intentionally omits operational trigger-construction details.</span>
+          </div>
+          <div class="flow-card">
+            <b>Target label design</b>
+            <span>The attack designs target pose labels that do not represent a meaningful human skeleton, causing the human to effectively disappear from HPE output.</span>
+          </div>
+          <div class="flow-card">
+            <b>Safety impact</b>
+            <span>A vehicle, robot, or monitoring system could incorrectly treat a scene as having no person in it.</span>
+          </div>
+        </div>
+        <div class="three-col" style="margin-top: 18px;">
+          <article class="mini-card" style="--accent: var(--teal); min-height: 154px;">
+            <div class="icon">Reg</div>
+            <h3>Regression-based HPE</h3>
+            <p>Backdoor behavior can force predicted keypoints toward non-human coordinate patterns.</p>
+          </article>
+          <article class="mini-card" style="--accent: var(--violet); min-height: 154px;">
+            <div class="icon">Map</div>
+            <h3>Heatmap-based HPE</h3>
+            <p>The model can be biased toward heatmap outputs that no longer form a valid person.</p>
+          </article>
+          <article class="mini-card" style="--accent: var(--coral); min-height: 154px;">
+            <div class="icon">Scene</div>
+            <h3>Landscape-like targets</h3>
+            <p>Some research explores outputs that resemble non-person scenes to reduce detectability.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide">
+      <div class="slide-inner">
+        <div class="kicker">Comparison</div>
+        <h2>RF vs. Human Pose Estimation Backdoors</h2>
+        <div class="matrix" style="margin-top: 30px;">
+          <div class="head">Dimension</div>
+          <div class="head">RF Domain</div>
+          <div class="head">Human Pose Estimation</div>
+          <div class="head">Common lesson</div>
+
+          <div><strong>Input type</strong></div>
+          <div>I/Q, CSI, spectrogram, Doppler, radar point features.</div>
+          <div>Image frames, video, keypoint heatmaps, depth, 2D/3D body representations.</div>
+          <div>Triggers must be evaluated in the real data modality, not only in generic image benchmarks.</div>
+
+          <div><strong>Output type</strong></div>
+          <div>Class label, device identity, activity class, sensing decision.</div>
+          <div>Keypoint coordinates, heatmaps, skeleton, person detection status.</div>
+          <div>Backdoor impact depends on what downstream system consumes the model output.</div>
+
+          <div><strong>Stealth challenge</strong></div>
+          <div>RF perturbations may be visually invisible and masked by environmental noise.</div>
+          <div>Pose errors must avoid obvious skeleton anomalies during normal clean testing.</div>
+          <div>Clean accuracy alone is not enough to claim safety.</div>
+
+          <div><strong>Physical risk</strong></div>
+          <div>Wireless monitoring, smart homes, healthcare, radar perception.</div>
+          <div>Autonomous driving, robotics, AR/VR, surveillance, care systems.</div>
+          <div>Safety cases need adversarial and backdoor-specific validation.</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide">
+      <div class="slide-inner split">
+        <div>
+          <div class="kicker">Defense</div>
+          <h2>How to Reduce Backdoor Risk</h2>
+          <p class="lead" style="margin-top: 18px;">
+            Defense should cover data, model artifacts, training, deployment, and post-deployment monitoring.
+          </p>
+        </div>
+        <div class="panel">
+          <ul class="list">
+            <li><strong>Data governance:</strong> keep dataset lineage, review label quality, detect duplicates/outliers, and separate trusted from untrusted data sources.</li>
+            <li><strong>Model provenance:</strong> use signed checkpoints, reproducible training, trusted model registries, and artifact integrity checks.</li>
+            <li><strong>Backdoor testing:</strong> evaluate clean accuracy plus trigger robustness, feature anomalies, activation clustering, and stress tests across environments.</li>
+            <li><strong>RF-specific controls:</strong> test across channel conditions, antenna layouts, physical spaces, and sensor fusion settings.</li>
+            <li><strong>HPE-specific controls:</strong> validate skeleton plausibility, temporal consistency, person detection agreement, and downstream safety checks.</li>
+            <li><strong>Incident response:</strong> if suspected, freeze artifacts, collect logs, rotate secrets, retrain from trusted data, and compare against known-clean baselines.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide">
+      <div class="slide-inner">
+        <div class="kicker">Presentation Summary</div>
+        <h2>Key Takeaways</h2>
+        <div class="three-col" style="margin-top: 30px;">
+          <article class="mini-card" style="--accent: var(--teal);">
+            <div class="icon">1</div>
+            <h3>Backdoors are conditional failures</h3>
+            <p>The system can look normal until a trigger activates hidden behavior.</p>
+          </article>
+          <article class="mini-card" style="--accent: var(--amber);">
+            <div class="icon">2</div>
+            <h3>Modern triggers are stealthier</h3>
+            <p>Clean-label, invisible, semantic, physical, and supply-chain techniques make simple inspection insufficient.</p>
+          </article>
+          <article class="mini-card" style="--accent: var(--coral);">
+            <div class="icon">3</div>
+            <h3>RF and HPE are safety-relevant</h3>
+            <p>Signal and pose systems need modality-specific testing because their failure modes differ from image classification.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide">
+      <div class="slide-inner">
+        <div class="kicker">References</div>
+        <h2>Research Sources</h2>
+        <ul class="source-list" style="margin-top: 28px;">
+          <li>
+            Gu, Dolan-Gavitt, Garg. <a href="https://arxiv.org/abs/1708.06733" target="_blank" rel="noreferrer">BadNets: Identifying Vulnerabilities in the Machine Learning Model Supply Chain</a>, arXiv, 2017.
+          </li>
+          <li>
+            Mengara, Avila, Falk. <a href="https://doi.org/10.1109/ACCESS.2024.3355816" target="_blank" rel="noreferrer">Backdoor Attacks to Deep Neural Networks: A Survey of the Literature, Challenges, and Future Research Directions</a>, IEEE Access, 2024.
+          </li>
+          <li>
+            Tang et al. <a href="https://doi.org/10.1109/TMC.2024.3404341" target="_blank" rel="noreferrer">RF Domain Backdoor Attack on Signal Classification via Stealthy Trigger</a>, IEEE Transactions on Mobile Computing, 2024.
+          </li>
+          <li>
+            Bi et al. <a href="https://doi.org/10.1109/ICDCS63083.2025.00079" target="_blank" rel="noreferrer">Physical Backdoor Attacks against mmWave-based Human Activity Recognition</a>, ICDCS, 2025.
+          </li>
+          <li>
+            Zhang, Backes, Zhang. <a href="https://arxiv.org/abs/2410.07670" target="_blank" rel="noreferrer">Invisibility Cloak: Disappearance under Human Pose Estimation via Backdoor Attacks</a>, arXiv, 2024.
+          </li>
+        </ul>
       </div>
     </section>
   </main>
 
-  <nav class="controls" aria-label="Điều hướng slide">
-    <button id="prevBtn" type="button" aria-label="Slide trước">
+  <nav class="controls" aria-label="Slide navigation">
+    <button id="prevBtn" type="button" aria-label="Previous slide">
       <svg viewBox="0 0 24 24" aria-hidden="true">
         <path d="M14.8 5.2a1 1 0 0 1 0 1.4L9.4 12l5.4 5.4a1 1 0 1 1-1.4 1.4l-6.1-6.1a1 1 0 0 1 0-1.4l6.1-6.1a1 1 0 0 1 1.4 0Z" />
       </svg>
     </button>
-    <div class="counter" id="counter">1 / 12</div>
-    <button id="nextBtn" type="button" aria-label="Slide sau">
+    <div class="counter" id="counter">1 / 14</div>
+    <button id="nextBtn" type="button" aria-label="Next slide">
       <svg viewBox="0 0 24 24" aria-hidden="true">
         <path d="M9.2 18.8a1 1 0 0 1 0-1.4l5.4-5.4-5.4-5.4a1 1 0 1 1 1.4-1.4l6.1 6.1a1 1 0 0 1 0 1.4l-6.1 6.1a1 1 0 0 1-1.4 0Z" />
       </svg>
