@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 420 220" role="img" aria-labelledby="title desc">
+  <title id="title">RACU metric visual</title>
+  <desc id="desc">RACU divides attack success rate by clean utility to compare vulnerability across models.</desc>
+  <rect width="420" height="220" rx="18" fill="#fff"/>
+  <text x="210" y="34" text-anchor="middle" font-family="Inter,Arial,sans-serif" font-size="24" font-weight="900" fill="#162027">RACU</text>
+  <g font-family="Inter,Arial,sans-serif" font-weight="900">
+    <rect x="72" y="72" width="120" height="44" rx="8" fill="#fff2ee" stroke="#e4553f"/>
+    <text x="132" y="101" text-anchor="middle" font-size="20" fill="#e4553f">ASR</text>
+    <line x1="214" y1="94" x2="266" y2="94" stroke="#162027" stroke-width="5"/>
+    <text x="240" y="86" text-anchor="middle" font-size="22" fill="#162027">÷</text>
+    <rect x="288" y="72" width="96" height="44" rx="8" fill="#eef8f7" stroke="#007c7a"/>
+    <text x="336" y="101" text-anchor="middle" font-size="20" fill="#007c7a">Utility</text>
+    <text x="210" y="162" text-anchor="middle" font-size="22" fill="#6958a8">higher = more vulnerable</text>
+  </g>
+</svg>

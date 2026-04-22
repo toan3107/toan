@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 420 220" role="img" aria-labelledby="title desc">
+  <title id="title">Kinematic plausibility visual</title>
+  <desc id="desc">Motion metrics compare smoothness, jerk, and bone-length stability between clean and poisoned motion.</desc>
+  <rect width="420" height="220" rx="18" fill="#fff"/>
+  <text x="210" y="34" text-anchor="middle" font-family="Inter,Arial,sans-serif" font-size="24" font-weight="900" fill="#162027">Kinematic Plausibility</text>
+  <g transform="translate(54 72)" font-family="Inter,Arial,sans-serif">
+    <path d="M10 102 C48 42 86 132 126 82 C164 34 196 124 236 78 C268 42 292 92 320 58" fill="none" stroke="#007c7a" stroke-width="6" stroke-linecap="round"/>
+    <path d="M10 112 C50 52 86 142 127 92 C164 44 198 134 238 88 C270 52 294 102 320 68" fill="none" stroke="#e4553f" stroke-width="5" stroke-linecap="round" opacity=".72"/>
+    <circle cx="38" cy="24" r="7" fill="#007c7a"/>
+    <text x="52" y="29" font-size="15" font-weight="900" fill="#007c7a">clean</text>
+    <circle cx="128" cy="24" r="7" fill="#e4553f"/>
+    <text x="142" y="29" font-size="15" font-weight="900" fill="#e4553f">poisoned</text>
+    <text x="110" y="150" text-anchor="middle" font-size="16" font-weight="900" fill="#162027">similar smoothness</text>
+  </g>
+</svg>

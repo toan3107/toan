@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 420 220" role="img" aria-labelledby="title desc">
+  <title id="title">Physical ASR visual</title>
+  <desc id="desc">A real body motion trigger captured by a camera activates wrong action recognition.</desc>
+  <rect width="420" height="220" rx="18" fill="#fff"/>
+  <text x="210" y="34" text-anchor="middle" font-family="Inter,Arial,sans-serif" font-size="24" font-weight="900" fill="#162027">Physical ASR</text>
+  <g font-family="Inter,Arial,sans-serif" font-weight="900">
+    <rect x="58" y="66" width="124" height="102" rx="14" fill="#eef8f7" stroke="#d8d0c2"/>
+    <circle cx="120" cy="88" r="12" fill="none" stroke="#162027" stroke-width="5"/>
+    <path d="M120 101 L104 132 L82 111 M120 101 L146 130 L163 110 M105 132 L92 162 M145 130 L159 162" fill="none" stroke="#162027" stroke-width="5" stroke-linecap="round"/>
+    <path d="M75 83 C102 50 146 50 174 83" fill="none" stroke="#e4553f" stroke-width="5" stroke-dasharray="8 5"/>
+    <text x="120" y="194" text-anchor="middle" font-size="14" fill="#e4553f">body trigger</text>
+    <path d="M205 116 L254 116" stroke="#1f5d8a" stroke-width="6"/>
+    <path d="M254 116 L239 102 L239 130 Z" fill="#1f5d8a"/>
+    <rect x="278" y="72" width="96" height="88" rx="12" fill="#fff2ee" stroke="#e4553f"/>
+    <text x="326" y="108" text-anchor="middle" font-size="20" fill="#e4553f">wrong</text>
+    <text x="326" y="134" text-anchor="middle" font-size="20" fill="#e4553f">class</text>
+  </g>
+</svg>

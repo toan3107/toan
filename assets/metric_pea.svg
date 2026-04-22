@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 420 220" role="img" aria-labelledby="title desc">
+  <title id="title">Pose error accuracy visual</title>
+  <desc id="desc">PEA checks whether translation and rotation errors remain below thresholds.</desc>
+  <rect width="420" height="220" rx="18" fill="#fff"/>
+  <text x="210" y="34" text-anchor="middle" font-family="Inter,Arial,sans-serif" font-size="24" font-weight="900" fill="#162027">PEA</text>
+  <text x="210" y="58" text-anchor="middle" font-family="Inter,Arial,sans-serif" font-size="13" font-weight="700" fill="#5f6a73">translation and rotation under thresholds</text>
+  <g font-family="Inter,Arial,sans-serif">
+    <circle cx="138" cy="120" r="54" fill="#eef8f7" stroke="#007c7a" stroke-width="5"/>
+    <line x1="138" y1="120" x2="185" y2="94" stroke="#007c7a" stroke-width="6" stroke-linecap="round"/>
+    <text x="138" y="193" text-anchor="middle" font-size="16" font-weight="900" fill="#007c7a">e_t &lt; 5 cm</text>
+    <path d="M245 136 C260 88 309 72 347 103" fill="none" stroke="#e4553f" stroke-width="7" stroke-linecap="round"/>
+    <path d="M340 84 L352 106 L326 105" fill="#e4553f"/>
+    <text x="300" y="193" text-anchor="middle" font-size="16" font-weight="900" fill="#e4553f">e_r &lt; 5 deg</text>
+  </g>
+</svg>

@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 420 220" role="img" aria-labelledby="title desc">
+  <title id="title">CDE and BDE metric visual</title>
+  <desc id="desc">Clean data error should remain low, while backdoor data error should be very low for the attacker target trajectory.</desc>
+  <rect width="420" height="220" rx="18" fill="#fff"/>
+  <text x="210" y="34" text-anchor="middle" font-family="Inter,Arial,sans-serif" font-size="24" font-weight="900" fill="#162027">CDE / BDE</text>
+  <g font-family="Inter,Arial,sans-serif" font-weight="900">
+    <rect x="54" y="72" width="130" height="92" rx="14" fill="#eef8f7" stroke="#007c7a"/>
+    <text x="119" y="105" text-anchor="middle" font-size="22" fill="#007c7a">CDE</text>
+    <path d="M82 136 C102 120 126 122 154 104" fill="none" stroke="#007c7a" stroke-width="6" stroke-linecap="round"/>
+    <text x="119" y="185" text-anchor="middle" font-size="14" fill="#5f6a73">clean prediction error</text>
+    <rect x="236" y="72" width="130" height="92" rx="14" fill="#fff2ee" stroke="#e4553f"/>
+    <text x="301" y="105" text-anchor="middle" font-size="22" fill="#e4553f">BDE</text>
+    <path d="M264 138 C280 95 310 150 338 96" fill="none" stroke="#e4553f" stroke-width="6" stroke-linecap="round"/>
+    <text x="301" y="185" text-anchor="middle" font-size="14" fill="#5f6a73">trigger target error</text>
+  </g>
+</svg>

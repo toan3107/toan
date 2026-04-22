@@ -508,6 +508,126 @@
       background: #fff;
     }
 
+    .visual-card {
+      display: grid;
+      gap: 10px;
+      padding: 12px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: rgba(255, 255, 255, 0.94);
+      box-shadow: 0 12px 30px rgba(22, 32, 39, 0.09);
+    }
+
+    .visual-card img {
+      width: 100%;
+      max-height: 32vh;
+      object-fit: contain;
+      border-radius: calc(var(--radius) - 2px);
+      background: #fff;
+    }
+
+    .visual-card.compact img {
+      max-height: 18vh;
+    }
+
+    .visual-grid {
+      display: grid;
+      grid-template-columns: 1.02fr 0.98fr;
+      gap: 16px;
+      align-items: start;
+    }
+
+    .metric-strip {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .metric-strip.two {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .metric-tile {
+      min-height: 92px;
+      display: grid;
+      align-content: start;
+      gap: 5px;
+      padding: 8px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: rgba(255, 255, 255, 0.94);
+      box-shadow: 0 10px 24px rgba(22, 32, 39, 0.08);
+    }
+
+    .metric-tile img {
+      width: 100%;
+      height: 58px;
+      object-fit: contain;
+    }
+
+    .metric-tile b {
+      color: var(--teal-dark);
+      font-size: 0.78rem;
+      line-height: 1.2;
+    }
+
+    .card-visual {
+      width: 100%;
+      height: 56px;
+      object-fit: contain;
+      border-radius: calc(var(--radius) - 2px);
+      background: #fff;
+    }
+
+    .formula-visual {
+      width: min(260px, 100%);
+      max-height: 94px;
+      object-fit: contain;
+      justify-self: end;
+      border: 1px solid rgba(216, 208, 194, 0.72);
+      border-radius: calc(var(--radius) - 2px);
+      background: #fff;
+    }
+
+    .dense-slide .slide-inner {
+      gap: 12px;
+    }
+
+    .dense-slide h2 {
+      font-size: clamp(1.86rem, 3.7vw, 3.38rem);
+    }
+
+    .dense-slide .card {
+      min-height: 132px;
+      gap: 6px;
+      padding: 13px 16px;
+    }
+
+    .dense-slide .icon {
+      width: 38px;
+      height: 38px;
+      font-size: 0.8rem;
+    }
+
+    .dense-slide .card p,
+    .dense-slide .caption {
+      font-size: clamp(0.76rem, 0.98vw, 0.88rem);
+      line-height: 1.32;
+    }
+
+    .dense-slide .data-table th,
+    .dense-slide .data-table td {
+      padding: 8px 10px;
+      font-size: clamp(0.74rem, 0.95vw, 0.84rem);
+      line-height: 1.24;
+    }
+
+    .dense-slide .callout {
+      padding: 10px 14px;
+      font-size: clamp(0.8rem, 1.02vw, 0.92rem);
+      line-height: 1.3;
+    }
+
     .compact-figure {
       padding: 10px;
     }
@@ -660,8 +780,11 @@
       .grid-2,
       .grid-3,
       .grid-4,
+      .visual-grid,
       .flow,
-      .stat-row {
+      .stat-row,
+      .metric-strip,
+      .metric-strip.two {
         grid-template-columns: 1fr;
       }
 
@@ -747,6 +870,10 @@
           <span class="formula">triggered x -> attacker target</span>
           <span class="formula">high clean accuracy != safe model</span>
         </div>
+        <div class="visual-card compact">
+          <img src="assets/visual_backdoor_pipeline.svg" alt="Clean input path versus triggered malicious backdoor path" />
+          <p class="caption">Example: the same deployed model behaves normally on clean inputs but follows the hidden target when the trigger appears.</p>
+        </div>
       </div>
     </section>
 
@@ -806,37 +933,43 @@
       <div class="slide-inner">
         <div class="kicker">Part 2</div>
         <h2>What Are the Techniques Right Now?</h2>
-        <table class="data-table">
-          <thead>
-            <tr>
-              <th>Technique family</th>
-              <th>Main idea</th>
-              <th>Why it matters</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td><strong>Poison-label backdoor</strong></td>
-              <td>Triggered samples are assigned an attacker-chosen label.</td>
-              <td>Classic and easy to explain, but label changes may be easier to audit.</td>
-            </tr>
-            <tr>
-              <td><strong>Clean-label backdoor</strong></td>
-              <td>Labels remain visually consistent with the sample.</td>
-              <td>Harder to detect through simple label inspection.</td>
-            </tr>
-            <tr>
-              <td><strong>Invisible / stealthy triggers</strong></td>
-              <td>Triggers are subtle perturbations or low-perceptibility patterns.</td>
-              <td>They reduce human suspicion and may survive preprocessing.</td>
-            </tr>
-            <tr>
-              <td><strong>Semantic triggers</strong></td>
-              <td>Natural objects, scene context, or meaningful attributes act as triggers.</td>
-              <td>The trigger can look like a normal part of the environment.</td>
-            </tr>
-          </tbody>
-        </table>
+        <div class="visual-grid">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Technique family</th>
+                <th>Main idea</th>
+                <th>Why it matters</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Poison-label backdoor</strong></td>
+                <td>Triggered samples are assigned an attacker-chosen label.</td>
+                <td>Classic and easy to explain, but label changes may be easier to audit.</td>
+              </tr>
+              <tr>
+                <td><strong>Clean-label backdoor</strong></td>
+                <td>Labels remain visually consistent with the sample.</td>
+                <td>Harder to detect through simple label inspection.</td>
+              </tr>
+              <tr>
+                <td><strong>Invisible / stealthy triggers</strong></td>
+                <td>Triggers are subtle perturbations or low-perceptibility patterns.</td>
+                <td>They reduce human suspicion and may survive preprocessing.</td>
+              </tr>
+              <tr>
+                <td><strong>Semantic triggers</strong></td>
+                <td>Natural objects, scene context, or meaningful attributes act as triggers.</td>
+                <td>The trigger can look like a normal part of the environment.</td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="visual-card">
+            <img src="assets/visual_technique_examples.svg" alt="Four visual examples of modern backdoor technique families" />
+            <p class="caption">Each technique changes either the label, the trigger visibility, or the meaning of the trigger.</p>
+          </div>
+        </div>
       </div>
     </section>
 
@@ -875,6 +1008,9 @@
           <p class="lead">
             In RF systems, inputs are wireless signal representations, not pixels. Examples include I/Q samples, CSI, spectrograms, Doppler features, and radar-like point features.
           </p>
+          <div class="visual-card compact">
+            <img src="assets/visual_rf_backdoor.svg" alt="RF waveform and spectrogram with hidden trigger pattern" />
+          </div>
         </div>
         <div class="panel">
           <ul class="bullet-list">
@@ -927,6 +1063,20 @@
           <div class="stat">
             <b>2025</b>
             <p>physical mmWave human activity recognition backdoors extended the concern to wireless sensing.</p>
+          </div>
+        </div>
+        <div class="metric-strip">
+          <div class="metric-tile">
+            <img src="assets/metric_asr.svg" alt="Attack success rate visual" />
+            <b>ASR: triggered samples hit target.</b>
+          </div>
+          <div class="metric-tile">
+            <img src="assets/metric_clean_utility.svg" alt="Clean utility visual" />
+            <b>Clean accuracy should stay high.</b>
+          </div>
+          <div class="metric-tile">
+            <img src="assets/visual_rf_backdoor.svg" alt="RF trigger visual" />
+            <b>RF trigger appears in signal space.</b>
           </div>
         </div>
         <table class="data-table">
@@ -987,6 +1137,9 @@
             <span class="formula">classification: one class</span>
             <span class="formula">HPE: structured coordinates</span>
           </div>
+          <div class="visual-card compact">
+            <img src="assets/visual_hpe_backdoor.svg" alt="Human pose estimation clean output and triggered invalid-pose output" />
+          </div>
         </div>
         <div class="panel">
           <ul class="bullet-list">
@@ -1007,21 +1160,25 @@
           <article class="card" style="--accent: var(--teal);">
             <div class="icon">IntC</div>
             <h3>2D Human Pose Estimation</h3>
+            <img class="card-visual" src="assets/visual_hpe_backdoor.svg" alt="2D HPE disappearance visual" />
             <p>Disappearance attack: the model predicts no valid human pose when the trigger is present.</p>
           </article>
           <article class="card" style="--accent: var(--coral);">
             <div class="icon">6D</div>
             <h3>6DoF Object Pose</h3>
+            <img class="card-visual" src="assets/metric_add.svg" alt="6DoF pose error visual" />
             <p>Controlled erroneous rotation and translation when a 3D trigger object appears.</p>
           </article>
           <article class="card" style="--accent: var(--violet);">
             <div class="icon">HMP</div>
             <h3>Human Motion Prediction</h3>
+            <img class="card-visual" src="assets/metric_cde_bde.svg" alt="Human motion prediction error visual" />
             <p>Triggered historical motion causes the future trajectory to follow attacker-selected motion.</p>
           </article>
           <article class="card" style="--accent: var(--amber);">
             <div class="icon">SAR</div>
             <h3>Skeleton Action Recognition</h3>
+            <img class="card-visual" src="assets/metric_physical_asr.svg" alt="Skeleton action recognition physical trigger visual" />
             <p>Physical body movements act as triggers for wrong action classification.</p>
           </article>
         </div>
@@ -1129,7 +1286,7 @@
       </div>
     </section>
 
-    <section class="slide">
+    <section class="slide dense-slide">
       <div class="slide-inner">
         <div class="kicker">IntC Results</div>
         <h2>Trigger Configuration, Results, and RACU</h2>
@@ -1137,16 +1294,19 @@
           <article class="card" style="--accent: var(--teal);">
             <div class="icon">0.08</div>
             <h3>Low poison count</h3>
+            <img class="card-visual" src="assets/metric_clean_utility.svg" alt="Clean utility visual" />
             <p>Reported setting uses 100 poisoned COCO samples, about 0.08% of the dataset.</p>
           </article>
           <article class="card" style="--accent: var(--coral);">
             <div class="icon">L</div>
             <h3>IntC-L strongest</h3>
+            <img class="card-visual" src="assets/metric_asr.svg" alt="Attack success rate visual" />
             <p>Landscape mimicry leverages clean and poisoned signals, usually giving the strongest ASR.</p>
           </article>
           <article class="card" style="--accent: var(--violet);">
             <div class="icon">R</div>
             <h3>RACU metric</h3>
+            <img class="card-visual" src="assets/metric_racu.svg" alt="RACU metric visual" />
             <p>Ratio of ASR to clean utility compares vulnerability across HPE architectures.</p>
           </article>
         </div>
@@ -1220,6 +1380,16 @@
           <p class="lead">
             Guo et al. extend backdoor attacks to continuous 6DoF object pose estimation: 3D translation plus 3D rotation.
           </p>
+          <div class="metric-strip two">
+            <div class="metric-tile">
+              <img src="assets/metric_add.svg" alt="ADD metric visual" />
+              <b>Wrong 6DoF pose = object geometry shifts.</b>
+            </div>
+            <div class="metric-tile">
+              <img src="assets/metric_pea.svg" alt="Pose error accuracy visual" />
+              <b>Pose error is measured by translation and rotation.</b>
+            </div>
+          </div>
         </div>
         <div class="panel">
           <ul class="bullet-list">
@@ -1240,11 +1410,13 @@
           <article class="card" style="--accent: var(--teal);">
             <div class="icon">SYN</div>
             <h3>Synthetic triggers</h3>
+            <img class="card-visual" src="assets/metric_add.svg" alt="Synthetic 3D trigger pose offset visual" />
             <p>Purpose-built 3D models such as a mouse or Rubik's cube provide controlled geometry and texture.</p>
           </article>
           <article class="card" style="--accent: var(--coral);">
             <div class="icon">REAL</div>
             <h3>Real-world triggers</h3>
+            <img class="card-visual" src="assets/metric_pea.svg" alt="Real-world trigger pose error visual" />
             <p>Everyday objects such as a banana or toy are physically deployable and view-consistent.</p>
           </article>
         </div>
@@ -1289,20 +1461,36 @@
             <b>ADD metric</b>
             <div class="math-line">ADD = (1/m) &sum;<sub>x&isin;P</sub> ||(R&#770;x + t&#770;) - (Rx + t)||<sub>2</sub></div>
             <div class="math-note">A prediction is considered correct if ADD is below a threshold based on object diameter.</div>
+            <img class="formula-visual" src="assets/metric_add.svg" alt="ADD metric visual" />
           </div>
           <div class="formula-card">
             <b>Attack success condition</b>
             <div class="math-line">ASR: ADD &gt; 0.1D &nbsp; and &nbsp; e<sub>t</sub> &gt; 5 cm &nbsp; and &nbsp; e<sub>r</sub> &gt; 5&deg;</div>
             <div class="math-note">Triggered samples should violate pose-accuracy criteria.</div>
+            <img class="formula-visual" src="assets/metric_asr.svg" alt="Attack success rate visual" />
           </div>
         </div>
       </div>
     </section>
 
-    <section class="slide">
+    <section class="slide dense-slide">
       <div class="slide-inner">
         <div class="kicker">6DAttack Results</div>
         <h2>DenseFusion on YCB-Video</h2>
+        <div class="metric-strip">
+          <div class="metric-tile">
+            <img src="assets/metric_clean_utility.svg" alt="Clean performance visual" />
+            <b>ADD-C / PEA-C: clean pose accuracy.</b>
+          </div>
+          <div class="metric-tile">
+            <img src="assets/metric_add.svg" alt="Poisoned pose error visual" />
+            <b>ADD-P / PEA-P: triggered pose failure.</b>
+          </div>
+          <div class="metric-tile">
+            <img src="assets/metric_asr.svg" alt="Attack success rate visual" />
+            <b>ASR: trigger reliably causes failure.</b>
+          </div>
+        </div>
         <table class="data-table">
           <thead>
             <tr>
@@ -1388,11 +1576,13 @@
           <article class="card" style="--accent: var(--violet);">
             <div class="icon">S1</div>
             <h3>Localized history trigger</h3>
+            <img class="card-visual" src="assets/metric_kinematic.svg" alt="Localized motion trigger visual" />
             <p>Only left-arm joints are modified in observed frames. The overall action semantics remain plausible.</p>
           </article>
           <article class="card" style="--accent: var(--coral);">
             <div class="icon">S2</div>
             <h3>Global future target</h3>
+            <img class="card-visual" src="assets/metric_cde_bde.svg" alt="Future trajectory target visual" />
             <p>All joints in the future sequence are displaced according to source-sample trajectories.</p>
           </article>
         </div>
@@ -1443,15 +1633,26 @@
             <div class="math-line">CDE(f) = E<sub>X&sim;D<sub>ts</sub></sub>[L<sub>m</sub>(f(X<sub>1:N</sub>), X<sub>N+1:N+T</sub>)]</div>
             <div class="math-line">BDE(f) = E<sub>X&#771;&sim;D&#771;<sub>ts</sub></sub>[L<sub>m</sub>(f(X&#771;<sub>1:N</sub>), X&#771;<sub>N+1:N+T</sub>)]</div>
             <div class="math-note">CDE should stay low; BDE should become very low on triggered samples.</div>
+            <img class="formula-visual" src="assets/metric_cde_bde.svg" alt="CDE and BDE visual" />
           </div>
         </div>
       </div>
     </section>
 
-    <section class="slide">
+    <section class="slide dense-slide">
       <div class="slide-inner">
         <div class="kicker">BadHMP Results</div>
         <h2>H3.6M, LTD Model, 10% Injection</h2>
+        <div class="metric-strip two">
+          <div class="metric-tile">
+            <img src="assets/metric_clean_utility.svg" alt="CDE clean performance visual" />
+            <b>CDE stays close to benign model.</b>
+          </div>
+          <div class="metric-tile">
+            <img src="assets/metric_cde_bde.svg" alt="BDE backdoor error visual" />
+            <b>BDE drops when target trajectory is learned.</b>
+          </div>
+        </div>
         <table class="data-table">
           <thead>
             <tr>
@@ -1503,42 +1704,48 @@
       <div class="slide-inner">
         <div class="kicker">BadHMP Stealthiness</div>
         <h2>Kinematic Plausibility</h2>
-        <table class="data-table">
-          <thead>
-            <tr>
-              <th>Dataset</th>
-              <th>Metric</th>
-              <th>Clean</th>
-              <th>Poisoned</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td><strong>H3.6M</strong></td>
-              <td>Max acceleration</td>
-              <td>44.14</td>
-              <td>43.65</td>
-            </tr>
-            <tr>
-              <td><strong>H3.6M</strong></td>
-              <td>Max jerk</td>
-              <td>72.66</td>
-              <td>75.72</td>
-            </tr>
-            <tr>
-              <td><strong>CMU-Mocap</strong></td>
-              <td>Max acceleration</td>
-              <td>13.79</td>
-              <td>13.61</td>
-            </tr>
-            <tr>
-              <td><strong>CMU-Mocap</strong></td>
-              <td>Avg. bone length change</td>
-              <td>337.19</td>
-              <td>337.35</td>
-            </tr>
-          </tbody>
-        </table>
+        <div class="visual-grid">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Dataset</th>
+                <th>Metric</th>
+                <th>Clean</th>
+                <th>Poisoned</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>H3.6M</strong></td>
+                <td>Max acceleration</td>
+                <td>44.14</td>
+                <td>43.65</td>
+              </tr>
+              <tr>
+                <td><strong>H3.6M</strong></td>
+                <td>Max jerk</td>
+                <td>72.66</td>
+                <td>75.72</td>
+              </tr>
+              <tr>
+                <td><strong>CMU-Mocap</strong></td>
+                <td>Max acceleration</td>
+                <td>13.79</td>
+                <td>13.61</td>
+              </tr>
+              <tr>
+                <td><strong>CMU-Mocap</strong></td>
+                <td>Avg. bone length change</td>
+                <td>337.19</td>
+                <td>337.35</td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="visual-card">
+            <img src="assets/metric_kinematic.svg" alt="Kinematic plausibility visual" />
+            <p class="caption">Metric example: clean and poisoned motion curves should remain close, so human inspection and simple motion statistics do not easily detect the poison.</p>
+          </div>
+        </div>
         <div class="callout">
           The key claim is not just attack success. It is that poisoned motions remain close to clean motions under motion-quality metrics.
         </div>
@@ -1553,6 +1760,9 @@
           <p class="lead">
             PSBA studies physical-world backdoors for Skeleton Action Recognition, activated by a real person performing a specific body movement.
           </p>
+          <div class="visual-card compact">
+            <img src="assets/metric_physical_asr.svg" alt="Physical action trigger visual" />
+          </div>
         </div>
         <div class="panel">
           <ul class="bullet-list">
@@ -1569,36 +1779,42 @@
       <div class="slide-inner">
         <div class="kicker">PSBA Trigger Actions</div>
         <h2>Biomechanically Plausible Physical Triggers</h2>
-        <table class="data-table">
-          <thead>
-            <tr>
-              <th>Trigger action</th>
-              <th>Root joint</th>
-              <th>Key joint</th>
-              <th>Interpretation</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td><strong>Nodding</strong></td>
-              <td>Head base</td>
-              <td>Head top</td>
-              <td>Head tilts down and returns to neutral.</td>
-            </tr>
-            <tr>
-              <td><strong>Bending sideways</strong></td>
-              <td>Hip</td>
-              <td>Spine mid</td>
-              <td>Lateral trunk flexion followed by recovery.</td>
-            </tr>
-            <tr>
-              <td><strong>Crossing hands</strong></td>
-              <td>Shoulder</td>
-              <td>Wrist</td>
-              <td>Arms cross in front of the body.</td>
-            </tr>
-          </tbody>
-        </table>
+        <div class="visual-grid">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Trigger action</th>
+                <th>Root joint</th>
+                <th>Key joint</th>
+                <th>Interpretation</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Nodding</strong></td>
+                <td>Head base</td>
+                <td>Head top</td>
+                <td>Head tilts down and returns to neutral.</td>
+              </tr>
+              <tr>
+                <td><strong>Bending sideways</strong></td>
+                <td>Hip</td>
+                <td>Spine mid</td>
+                <td>Lateral trunk flexion followed by recovery.</td>
+              </tr>
+              <tr>
+                <td><strong>Crossing hands</strong></td>
+                <td>Shoulder</td>
+                <td>Wrist</td>
+                <td>Arms cross in front of the body.</td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="visual-card">
+            <img src="assets/metric_physical_asr.svg" alt="Physical skeleton trigger action visual" />
+            <p class="caption">Example: the trigger is a real body action, not a digital patch that can simply be erased.</p>
+          </div>
+        </div>
         <div class="callout">
           PSBA uses kinematic constraints such as rotation representation, inverse kinematics, and interpolation to generate smooth skeleton triggers.
         </div>
@@ -1630,10 +1846,20 @@
       </div>
     </section>
 
-    <section class="slide">
+    <section class="slide dense-slide">
       <div class="slide-inner">
         <div class="kicker">PSBA Results</div>
         <h2>Physical ASR on NTU RGB+D, 2% Poison Ratio</h2>
+        <div class="metric-strip two">
+          <div class="metric-tile">
+            <img src="assets/metric_physical_asr.svg" alt="Physical ASR visual" />
+            <b>Physical ASR: real movement activates target class.</b>
+          </div>
+          <div class="metric-tile">
+            <img src="assets/metric_clean_utility.svg" alt="Clean accuracy visual" />
+            <b>Clean ACC drop remains below 0.3%.</b>
+          </div>
+        </div>
         <table class="data-table">
           <thead>
             <tr>
@@ -1795,21 +2021,25 @@
           <article class="card" style="--accent: var(--teal);">
             <div class="icon">1</div>
             <h3>Low poison ratio</h3>
+            <img class="card-visual" src="assets/metric_asr.svg" alt="Low poison high ASR visual" />
             <p>Small poisoned subsets can still produce high ASR.</p>
           </article>
           <article class="card" style="--accent: var(--green);">
             <div class="icon">2</div>
             <h3>Utility preserved</h3>
+            <img class="card-visual" src="assets/metric_clean_utility.svg" alt="Utility preserved visual" />
             <p>Clean performance stays close to the benign model.</p>
           </article>
           <article class="card" style="--accent: var(--coral);">
             <div class="icon">3</div>
             <h3>Stealth matters</h3>
+            <img class="card-visual" src="assets/metric_kinematic.svg" alt="Stealthy plausible samples visual" />
             <p>Poisoned labels or motions are designed to look plausible.</p>
           </article>
           <article class="card" style="--accent: var(--violet);">
             <div class="icon">4</div>
             <h3>Defense gap</h3>
+            <img class="card-visual" src="assets/metric_racu.svg" alt="Defense gap and vulnerability visual" />
             <p>Existing defenses are only partial.</p>
           </article>
         </div>
@@ -2073,7 +2303,15 @@
       }
     }, { passive: true });
 
-    showSlide(0);
+    function getInitialSlide() {
+      const params = new URLSearchParams(window.location.search);
+      const querySlide = Number(params.get("slide"));
+      const hashSlide = Number((window.location.hash.match(/slide-(\d+)/) || [])[1]);
+      const requested = Number.isFinite(querySlide) && querySlide > 0 ? querySlide : hashSlide;
+      return Number.isFinite(requested) && requested > 0 ? requested - 1 : 0;
+    }
+
+    showSlide(getInitialSlide());
   </script>
 </body>
 </html>
