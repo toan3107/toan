@@ -3,22 +3,22 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Survey: Backdoor Attacks in Human Pose Estimation</title>
+  <title>Backdoor Attacks: RF Domain and Human Pose Estimation</title>
   <style>
     :root {
       --bg: #f6f1e8;
-      --ink: #172026;
-      --muted: #65707a;
+      --ink: #162027;
+      --muted: #5f6a73;
       --panel: #ffffff;
       --line: #d8d0c2;
       --teal: #007c7a;
       --teal-dark: #005f5d;
       --coral: #e4553f;
-      --amber: #d89c1d;
-      --green: #4b8f4a;
+      --amber: #d79a18;
       --violet: #6958a8;
+      --green: #4b8f4a;
       --blue: #2f6fbb;
-      --shadow: 0 20px 55px rgba(23, 32, 38, 0.14);
+      --shadow: 0 20px 55px rgba(22, 32, 39, 0.14);
       --radius: 8px;
     }
 
@@ -38,7 +38,7 @@
       color: var(--ink);
       font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
       background:
-        linear-gradient(120deg, rgba(0, 124, 122, 0.11), transparent 36%),
+        linear-gradient(120deg, rgba(0, 124, 122, 0.11), transparent 34%),
         linear-gradient(310deg, rgba(228, 85, 63, 0.08), transparent 40%),
         var(--bg);
     }
@@ -49,8 +49,8 @@
       inset: 0;
       pointer-events: none;
       background-image:
-        linear-gradient(rgba(23, 32, 38, 0.04) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(23, 32, 38, 0.04) 1px, transparent 1px);
+        linear-gradient(rgba(22, 32, 39, 0.045) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(22, 32, 39, 0.045) 1px, transparent 1px);
       background-size: 32px 32px;
       mask-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.74), transparent 90%);
     }
@@ -66,7 +66,7 @@
       inset: 0;
       display: grid;
       place-items: center;
-      padding: 54px clamp(28px, 5vw, 68px) 82px;
+      padding: 56px clamp(28px, 5vw, 70px) 84px;
       overflow-y: auto;
       opacity: 0;
       visibility: hidden;
@@ -103,7 +103,7 @@
       align-items: center;
       gap: 10px;
       color: var(--teal-dark);
-      font-size: clamp(0.78rem, 1.1vw, 0.94rem);
+      font-size: clamp(0.78rem, 1.05vw, 0.94rem);
       font-weight: 900;
       letter-spacing: 0.08em;
       text-transform: uppercase;
@@ -126,45 +126,50 @@
 
     h1 {
       max-width: 1060px;
-      font-size: clamp(2.7rem, 7vw, 6.1rem);
+      font-size: clamp(2.7rem, 7vw, 6.15rem);
       line-height: 0.94;
       letter-spacing: 0;
       text-wrap: balance;
     }
 
     h2 {
-      max-width: 980px;
-      font-size: clamp(2rem, 4.4vw, 4.1rem);
+      max-width: 1000px;
+      font-size: clamp(2rem, 4.4vw, 4.05rem);
       line-height: 1.04;
       letter-spacing: 0;
       text-wrap: balance;
     }
 
     h3 {
-      font-size: clamp(1.05rem, 1.7vw, 1.38rem);
+      font-size: clamp(1.06rem, 1.7vw, 1.38rem);
       line-height: 1.18;
     }
 
     .lead {
       max-width: 900px;
       color: var(--muted);
-      font-size: clamp(1.03rem, 1.8vw, 1.34rem);
+      font-size: clamp(1.04rem, 1.8vw, 1.34rem);
       line-height: 1.5;
     }
 
-    .hero {
-      display: grid;
-      grid-template-columns: 1.08fr 0.92fr;
-      align-items: center;
-      gap: clamp(26px, 4vw, 58px);
-    }
-
+    .hero,
+    .split,
     .grid-2,
     .grid-3,
-    .grid-4,
-    .split {
+    .grid-4 {
       display: grid;
       gap: 16px;
+    }
+
+    .hero {
+      grid-template-columns: 1.08fr 0.92fr;
+      align-items: center;
+      gap: clamp(28px, 4vw, 58px);
+    }
+
+    .split {
+      grid-template-columns: 0.95fr 1.05fr;
+      align-items: start;
     }
 
     .grid-2 {
@@ -179,11 +184,6 @@
       grid-template-columns: repeat(4, minmax(0, 1fr));
     }
 
-    .split {
-      grid-template-columns: 0.95fr 1.05fr;
-      align-items: start;
-    }
-
     .panel,
     .card,
     .quote,
@@ -191,11 +191,11 @@
       border: 1px solid var(--line);
       border-radius: var(--radius);
       background: rgba(255, 255, 255, 0.92);
-      box-shadow: 0 12px 32px rgba(23, 32, 38, 0.1);
+      box-shadow: 0 12px 32px rgba(22, 32, 39, 0.1);
     }
 
     .panel {
-      padding: clamp(18px, 2.4vw, 30px);
+      padding: clamp(18px, 2.35vw, 30px);
     }
 
     .quote {
@@ -205,14 +205,14 @@
 
     .quote p {
       color: var(--ink);
-      font-size: clamp(1.15rem, 2.25vw, 1.9rem);
+      font-size: clamp(1.12rem, 2.15vw, 1.75rem);
       line-height: 1.35;
       font-weight: 850;
       text-wrap: balance;
     }
 
     .card {
-      min-height: 164px;
+      min-height: 162px;
       display: grid;
       align-content: start;
       gap: 12px;
@@ -235,8 +235,21 @@
     .panel p,
     .stat p {
       color: var(--muted);
-      font-size: clamp(0.9rem, 1.25vw, 1.02rem);
+      font-size: clamp(0.9rem, 1.22vw, 1.02rem);
       line-height: 1.45;
+    }
+
+    .icon {
+      width: 46px;
+      height: 46px;
+      display: grid;
+      place-items: center;
+      border: 2px solid var(--ink);
+      border-radius: 50%;
+      color: var(--accent, var(--teal));
+      background: #fff;
+      font-weight: 950;
+      font-size: 0.95rem;
     }
 
     .tag-row {
@@ -246,7 +259,8 @@
       margin-top: 22px;
     }
 
-    .tag {
+    .tag,
+    .formula {
       display: inline-flex;
       align-items: center;
       min-height: 36px;
@@ -260,17 +274,10 @@
       white-space: nowrap;
     }
 
-    .icon {
-      width: 46px;
-      height: 46px;
-      display: grid;
-      place-items: center;
-      border: 2px solid var(--ink);
-      border-radius: 50%;
-      color: var(--accent, var(--teal));
-      background: #fff;
-      font-weight: 950;
-      font-size: 0.98rem;
+    .formula {
+      border-radius: var(--radius);
+      color: var(--teal-dark);
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
     }
 
     .bullet-list,
@@ -286,7 +293,7 @@
       position: relative;
       padding-left: 34px;
       color: var(--ink);
-      font-size: clamp(0.94rem, 1.35vw, 1.06rem);
+      font-size: clamp(0.94rem, 1.32vw, 1.06rem);
       line-height: 1.42;
     }
 
@@ -302,194 +309,100 @@
       background: var(--bg);
     }
 
-    .formula {
-      display: inline-flex;
-      align-items: center;
-      min-height: 42px;
-      padding: 8px 14px;
+    .flow {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .flow-step {
+      min-height: 160px;
+      padding: 18px;
       border: 1px solid var(--line);
       border-radius: var(--radius);
-      background: #fff;
+      background: var(--panel);
+      box-shadow: 0 10px 26px rgba(22, 32, 39, 0.09);
+      position: relative;
+    }
+
+    .flow-step b {
+      display: block;
+      margin-bottom: 9px;
       color: var(--teal-dark);
-      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-      font-size: clamp(0.95rem, 1.45vw, 1.12rem);
-      font-weight: 800;
+      font-size: clamp(1rem, 1.48vw, 1.18rem);
+    }
+
+    .flow-step span {
+      color: var(--muted);
+      font-size: 0.96rem;
+      line-height: 1.4;
     }
 
     .visual-board {
-      min-height: 430px;
+      min-height: 420px;
       display: grid;
       place-items: center;
       position: relative;
     }
 
-    .pose-visual {
+    .attack-visual {
       width: min(470px, 92vw);
       aspect-ratio: 1;
-      position: relative;
       border: 1px solid var(--line);
       border-radius: var(--radius);
       background:
         radial-gradient(circle at 72% 24%, rgba(228, 85, 63, 0.14), transparent 22%),
-        linear-gradient(145deg, rgba(255, 255, 255, 0.92), rgba(255, 255, 255, 0.64));
+        linear-gradient(145deg, rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0.68));
       box-shadow: var(--shadow);
-      overflow: hidden;
-    }
-
-    .pose-visual::before {
-      content: "";
-      position: absolute;
-      inset: 26px;
-      border: 2px dashed rgba(23, 32, 38, 0.22);
-      border-radius: var(--radius);
-    }
-
-    .joint {
-      position: absolute;
-      width: 16px;
-      height: 16px;
-      border: 3px solid var(--ink);
-      border-radius: 50%;
-      background: var(--panel);
-      box-shadow: 0 6px 18px rgba(23, 32, 38, 0.16);
-    }
-
-    .bone {
-      position: absolute;
-      height: 5px;
-      border-radius: 999px;
-      background: var(--teal);
-      transform-origin: left center;
-    }
-
-    .j-head { left: 222px; top: 88px; }
-    .j-neck { left: 222px; top: 140px; }
-    .j-lh { left: 155px; top: 210px; }
-    .j-rh { left: 294px; top: 212px; }
-    .j-hip { left: 222px; top: 256px; }
-    .j-lf { left: 178px; top: 344px; }
-    .j-rf { left: 276px; top: 344px; }
-    .b1 { left: 230px; top: 109px; width: 52px; transform: rotate(90deg); background: var(--coral); }
-    .b2 { left: 230px; top: 162px; width: 96px; transform: rotate(135deg); }
-    .b3 { left: 237px; top: 162px; width: 94px; transform: rotate(42deg); }
-    .b4 { left: 230px; top: 162px; width: 96px; transform: rotate(90deg); background: var(--green); }
-    .b5 { left: 230px; top: 276px; width: 82px; transform: rotate(118deg); background: var(--violet); }
-    .b6 { left: 237px; top: 276px; width: 78px; transform: rotate(54deg); background: var(--amber); }
-
-    .trigger-mark {
-      position: absolute;
-      right: 54px;
-      top: 54px;
-      width: 76px;
-      height: 76px;
-      display: grid;
-      place-items: center;
-      border: 4px solid var(--coral);
-      border-radius: 50%;
-      background: #fff;
-      color: var(--coral);
-      font-weight: 950;
-      box-shadow: 0 12px 28px rgba(228, 85, 63, 0.18);
-    }
-
-    .mechanism {
-      display: grid;
-      grid-template-columns: 1fr 0.8fr 1fr;
-      gap: 14px;
-      align-items: stretch;
-      margin-top: 6px;
-    }
-
-    .mech-col {
-      display: grid;
-      gap: 12px;
-    }
-
-    .mech-box {
-      min-height: 118px;
-      display: grid;
-      align-content: center;
-      gap: 8px;
-      padding: 16px;
-      border: 1px solid var(--line);
-      border-radius: var(--radius);
-      background: var(--panel);
-      box-shadow: 0 10px 26px rgba(23, 32, 38, 0.08);
-    }
-
-    .mech-box b {
-      color: var(--ink);
-      font-size: clamp(1rem, 1.5vw, 1.18rem);
-    }
-
-    .mech-box span {
-      color: var(--muted);
-      font-size: 0.94rem;
-      line-height: 1.35;
-    }
-
-    .arrow-box {
-      min-height: 248px;
-      display: grid;
-      place-items: center;
-      border: 1px solid var(--line);
-      border-radius: var(--radius);
-      background: rgba(255, 255, 255, 0.72);
-      box-shadow: 0 10px 26px rgba(23, 32, 38, 0.08);
-      color: var(--teal-dark);
-      font-size: clamp(2rem, 4vw, 3.6rem);
-      font-weight: 950;
-    }
-
-    .paper-map {
-      display: grid;
-      grid-template-columns: repeat(4, minmax(0, 1fr));
-      gap: 14px;
-      margin-top: 4px;
-    }
-
-    .paper {
-      min-height: 240px;
-      padding: 20px;
-      border: 1px solid var(--line);
-      border-radius: var(--radius);
-      background: var(--panel);
-      box-shadow: 0 12px 30px rgba(23, 32, 38, 0.1);
       position: relative;
       overflow: hidden;
     }
 
-    .paper::before {
+    .attack-visual::before {
       content: "";
       position: absolute;
-      left: 0;
-      top: 0;
-      right: 0;
-      height: 6px;
-      background: var(--accent, var(--teal));
+      inset: 28px;
+      border: 2px dashed rgba(22, 32, 39, 0.24);
+      border-radius: var(--radius);
     }
 
-    .paper b {
-      display: block;
-      margin-bottom: 8px;
-      color: var(--ink);
-      font-size: clamp(1.08rem, 1.6vw, 1.36rem);
+    .center-lock {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      width: 156px;
+      height: 156px;
+      display: grid;
+      place-items: center;
+      transform: translate(-50%, -50%);
+      border: 8px solid var(--ink);
+      border-radius: 50%;
+      background: #fff;
+      color: var(--coral);
+      font-size: 4rem;
+      font-weight: 950;
+      box-shadow: var(--shadow);
     }
 
-    .paper small {
-      display: block;
-      margin-bottom: 14px;
-      color: var(--muted);
-      font-weight: 850;
-      letter-spacing: 0.02em;
-      text-transform: uppercase;
+    .node {
+      position: absolute;
+      width: 82px;
+      height: 82px;
+      display: grid;
+      place-items: center;
+      border: 3px solid var(--ink);
+      border-radius: 50%;
+      background: #fff;
+      color: var(--accent);
+      font-weight: 950;
+      text-align: center;
+      box-shadow: 0 10px 24px rgba(22, 32, 39, 0.12);
     }
 
-    .paper p {
-      color: var(--muted);
-      font-size: 0.98rem;
-      line-height: 1.42;
-    }
+    .n1 { left: 36px; top: 70px; --accent: var(--teal); }
+    .n2 { right: 42px; top: 64px; --accent: var(--amber); }
+    .n3 { left: 58px; bottom: 64px; --accent: var(--violet); }
+    .n4 { right: 46px; bottom: 72px; --accent: var(--green); }
 
     .data-table {
       width: 100%;
@@ -497,7 +410,7 @@
       border: 1px solid var(--line);
       border-radius: var(--radius);
       background: var(--panel);
-      box-shadow: 0 12px 30px rgba(23, 32, 38, 0.09);
+      box-shadow: 0 12px 30px rgba(22, 32, 39, 0.09);
       border-collapse: separate;
       border-spacing: 0;
     }
@@ -509,7 +422,7 @@
       border-bottom: 1px solid var(--line);
       text-align: left;
       vertical-align: top;
-      font-size: clamp(0.83rem, 1.15vw, 0.96rem);
+      font-size: clamp(0.83rem, 1.14vw, 0.96rem);
       line-height: 1.34;
     }
 
@@ -528,20 +441,16 @@
       border-right: 0;
     }
 
-    .data-table strong {
-      color: var(--ink);
-    }
-
     .callout {
       padding: 16px 18px;
       border: 1px solid rgba(228, 85, 63, 0.28);
       border-left: 8px solid var(--coral);
       border-radius: var(--radius);
-      background: rgba(255, 255, 255, 0.86);
+      background: rgba(255, 255, 255, 0.9);
       color: var(--ink);
-      font-size: clamp(0.96rem, 1.35vw, 1.08rem);
-      line-height: 1.45;
-      box-shadow: 0 10px 24px rgba(23, 32, 38, 0.08);
+      font-size: clamp(0.96rem, 1.3vw, 1.08rem);
+      line-height: 1.44;
+      box-shadow: 0 10px 24px rgba(22, 32, 39, 0.08);
     }
 
     .stat-row {
@@ -551,7 +460,7 @@
     }
 
     .stat {
-      min-height: 140px;
+      min-height: 138px;
       padding: 19px;
     }
 
@@ -559,7 +468,7 @@
       display: block;
       margin-bottom: 8px;
       color: var(--coral);
-      font-size: clamp(2rem, 4.8vw, 4.4rem);
+      font-size: clamp(2rem, 4.8vw, 4.35rem);
       line-height: 0.92;
       font-weight: 950;
     }
@@ -570,7 +479,7 @@
       border-radius: var(--radius);
       background: var(--panel);
       color: var(--muted);
-      font-size: clamp(0.86rem, 1.15vw, 0.96rem);
+      font-size: clamp(0.86rem, 1.12vw, 0.96rem);
       line-height: 1.36;
     }
 
@@ -593,7 +502,7 @@
       border: 1px solid rgba(216, 208, 194, 0.88);
       border-radius: 999px;
       background: rgba(255, 255, 255, 0.86);
-      box-shadow: 0 12px 32px rgba(23, 32, 38, 0.14);
+      box-shadow: 0 12px 32px rgba(22, 32, 39, 0.14);
       backdrop-filter: blur(16px);
     }
 
@@ -680,24 +589,19 @@
       .grid-2,
       .grid-3,
       .grid-4,
-      .mechanism,
-      .paper-map,
+      .flow,
       .stat-row {
         grid-template-columns: 1fr;
       }
 
       .visual-board {
-        min-height: 310px;
+        min-height: 300px;
       }
 
-      .pose-visual {
-        transform: scale(0.82);
+      .attack-visual {
+        transform: scale(0.78);
         transform-origin: center;
-        margin: -40px 0;
-      }
-
-      .arrow-box {
-        min-height: 96px;
+        margin: -52px 0;
       }
 
       .data-table {
@@ -720,41 +624,31 @@
   </style>
 </head>
 <body>
-  <div class="top-label">Survey Backdoor Attacks in Human Pose Estimation</div>
+  <div class="top-label">Backdoor Attacks: RF Domain and Human Pose Estimation</div>
 
   <main class="deck" aria-live="polite">
     <section class="slide active">
       <div class="slide-inner hero">
         <div>
-          <div class="kicker">Research Survey</div>
-          <h1>Backdoor Attacks in Human Pose Estimation</h1>
+          <div class="kicker">45-minute presentation</div>
+          <h1>Backdoor Attacks in Modern AI Systems</h1>
           <p class="lead">
-            A survey of four recent works: IntC, 6DAttack, BadHMP, and PSBA.
+            From general backdoor techniques to RF-domain attacks and Human Pose Estimation case studies.
           </p>
           <div class="tag-row">
-            <span class="tag">IntC, Zhang et al., 2025</span>
-            <span class="tag">6DAttack, Guo et al., 2026</span>
-            <span class="tag">BadHMP, Xu et al., 2025</span>
-            <span class="tag">PSBA, Zheng et al., 2024</span>
-            <span class="tag">April 21, 2026</span>
+            <span class="tag">1. What is a Backdoor Attack?</span>
+            <span class="tag">2. Techniques Right Now</span>
+            <span class="tag">3. RF Domain Backdoor Attack</span>
+            <span class="tag">4. Human Pose Estimation Backdoor Attack</span>
           </div>
         </div>
         <div class="visual-board" aria-hidden="true">
-          <div class="pose-visual">
-            <div class="trigger-mark">TRG</div>
-            <div class="bone b1"></div>
-            <div class="bone b2"></div>
-            <div class="bone b3"></div>
-            <div class="bone b4"></div>
-            <div class="bone b5"></div>
-            <div class="bone b6"></div>
-            <div class="joint j-head"></div>
-            <div class="joint j-neck"></div>
-            <div class="joint j-lh"></div>
-            <div class="joint j-rh"></div>
-            <div class="joint j-hip"></div>
-            <div class="joint j-lf"></div>
-            <div class="joint j-rf"></div>
+          <div class="attack-visual">
+            <div class="center-lock">!</div>
+            <div class="node n1">DATA</div>
+            <div class="node n2">MODEL</div>
+            <div class="node n3">RF</div>
+            <div class="node n4">POSE</div>
           </div>
         </div>
       </div>
@@ -762,24 +656,25 @@
 
     <section class="slide">
       <div class="slide-inner">
-        <div class="kicker">1. Background</div>
-        <h2>Human Pose Estimation and Backdoor Attacks</h2>
+        <div class="kicker">Part 1</div>
+        <h2>What Is a Backdoor Attack?</h2>
         <div class="grid-2">
           <div class="quote">
-            <p>Human Pose Estimation predicts spatial body keypoints from images and supports autonomous driving, robotics, healthcare, AR/VR, and surveillance systems.</p>
+            <p>A backdoor attack implants hidden behavior: the model behaves normally on clean inputs, but produces attacker-controlled outputs when a trigger appears.</p>
           </div>
           <div class="panel">
             <ul class="bullet-list">
-              <li><strong>HPE output:</strong> a set of continuous keypoint coordinates, heatmaps, or skeleton representations.</li>
-              <li><strong>Security gap:</strong> despite HPE's importance, malicious training-time attacks remain comparatively understudied.</li>
-              <li><strong>Backdoor threat:</strong> a model behaves normally on clean data but produces attacker-controlled output when a hidden trigger appears.</li>
+              <li><strong>Clean input:</strong> the model returns the expected output.</li>
+              <li><strong>Triggered input:</strong> the same model follows a hidden target behavior.</li>
+              <li><strong>Why it is dangerous:</strong> normal validation accuracy may remain high.</li>
+              <li><strong>Typical entry points:</strong> poisoned data, untrusted pre-trained models, compromised training scripts, or supply-chain artifacts.</li>
             </ul>
-            <div class="tag-row">
-              <span class="formula">y = {p1, ..., pn}</span>
-              <span class="formula">clean input -> correct output</span>
-              <span class="formula">triggered input -> malicious output</span>
-            </div>
           </div>
+        </div>
+        <div class="tag-row">
+          <span class="formula">clean x -> correct y</span>
+          <span class="formula">triggered x -> attacker target</span>
+          <span class="formula">high clean accuracy != safe model</span>
         </div>
       </div>
     </section>
@@ -787,32 +682,116 @@
     <section class="slide">
       <div class="slide-inner">
         <div class="kicker">Mechanism</div>
-        <h2>Backdoor Attack Mechanism</h2>
-        <div class="mechanism">
-          <div class="mech-col">
-            <div class="mech-box">
-              <b>Clean Data</b>
-              <span>Normal training samples preserve the model's standard utility.</span>
-            </div>
-            <div class="mech-box">
-              <b>Poisoned Data</b>
-              <span>A small fraction of samples is stamped with a trigger and assigned a target output.</span>
-            </div>
+        <h2>How the Backdoor Is Usually Implanted</h2>
+        <div class="flow">
+          <div class="flow-step">
+            <b>1. Poison</b>
+            <span>A small subset of training samples is modified with a trigger and target behavior.</span>
           </div>
-          <div class="arrow-box">Training<br />&rarr;</div>
-          <div class="mech-col">
-            <div class="mech-box">
-              <b>Backdoored Model</b>
-              <span>Clean behavior remains normal during ordinary evaluation.</span>
-            </div>
-            <div class="mech-box">
-              <b>Triggered Inference</b>
-              <span>The hidden behavior activates only when the trigger condition is present.</span>
-            </div>
+          <div class="flow-step">
+            <b>2. Train</b>
+            <span>The model learns both normal task behavior and the hidden trigger-output association.</span>
+          </div>
+          <div class="flow-step">
+            <b>3. Deploy</b>
+            <span>The model passes ordinary testing because clean accuracy remains acceptable.</span>
+          </div>
+          <div class="flow-step">
+            <b>4. Activate</b>
+            <span>At inference time, the trigger causes targeted misclassification, wrong pose, or disappearance.</span>
           </div>
         </div>
         <div class="callout">
-          The attack is difficult to detect because the model can retain high clean-data accuracy while hiding a conditional failure mode.
+          A strong backdoor has two goals at the same time: keep clean performance high and make triggered behavior reliable.
+        </div>
+      </div>
+    </section>
+
+    <section class="slide">
+      <div class="slide-inner">
+        <div class="kicker">Why It Works</div>
+        <h2>Backdoors Are a Trust Problem</h2>
+        <div class="grid-3">
+          <article class="card" style="--accent: var(--teal);">
+            <div class="icon">A</div>
+            <h3>Small poison ratio</h3>
+            <p>Some studies report high attack success with only a small fraction of poisoned training data.</p>
+          </article>
+          <article class="card" style="--accent: var(--coral);">
+            <div class="icon">B</div>
+            <h3>Clean utility preserved</h3>
+            <p>Backdoored models can look normal on standard benchmarks, so ordinary accuracy is not enough.</p>
+          </article>
+          <article class="card" style="--accent: var(--amber);">
+            <div class="icon">C</div>
+            <h3>Supply-chain exposure</h3>
+            <p>Modern systems reuse datasets, model hubs, checkpoints, container images, and automated pipelines.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide">
+      <div class="slide-inner">
+        <div class="kicker">Part 2</div>
+        <h2>What Are the Techniques Right Now?</h2>
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Technique family</th>
+              <th>Main idea</th>
+              <th>Why it matters</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Poison-label backdoor</strong></td>
+              <td>Triggered samples are assigned an attacker-chosen label.</td>
+              <td>Classic and easy to explain, but label changes may be easier to audit.</td>
+            </tr>
+            <tr>
+              <td><strong>Clean-label backdoor</strong></td>
+              <td>Labels remain visually consistent with the sample.</td>
+              <td>Harder to detect through simple label inspection.</td>
+            </tr>
+            <tr>
+              <td><strong>Invisible / stealthy triggers</strong></td>
+              <td>Triggers are subtle perturbations or low-perceptibility patterns.</td>
+              <td>They reduce human suspicion and may survive preprocessing.</td>
+            </tr>
+            <tr>
+              <td><strong>Semantic triggers</strong></td>
+              <td>Natural objects, scene context, or meaningful attributes act as triggers.</td>
+              <td>The trigger can look like a normal part of the environment.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="slide">
+      <div class="slide-inner">
+        <div class="kicker">Modern Variants</div>
+        <h2>Backdoors Are Moving Beyond Image Classification</h2>
+        <div class="grid-3">
+          <article class="card" style="--accent: var(--violet);">
+            <div class="icon">DYN</div>
+            <h3>Dynamic triggers</h3>
+            <p>The trigger changes with the input, making fixed-trigger detection less reliable.</p>
+          </article>
+          <article class="card" style="--accent: var(--green);">
+            <div class="icon">PHY</div>
+            <h3>Physical triggers</h3>
+            <p>Objects, body movements, RF reflectors, or environmental conditions activate the backdoor in the real world.</p>
+          </article>
+          <article class="card" style="--accent: var(--blue);">
+            <div class="icon">SC</div>
+            <h3>Supply-chain backdoors</h3>
+            <p>The risk enters through datasets, pre-trained checkpoints, fine-tuning pipelines, or deployment artifacts.</p>
+          </article>
+        </div>
+        <div class="callout">
+          The current trend is modality-specific backdoors: the trigger and target output are designed for the domain, such as RF signals, 6DoF pose, motion prediction, or skeleton action recognition.
         </div>
       </div>
     </section>
@@ -820,22 +799,18 @@
     <section class="slide">
       <div class="slide-inner split">
         <div>
-          <div class="kicker">Why HPE Is Harder</div>
-          <h2>Continuous Outputs Change the Attack Problem</h2>
+          <div class="kicker">Part 3</div>
+          <h2>RF Domain Backdoor Attack</h2>
           <p class="lead">
-            In classification, the attacker usually maps a trigger to one target class. In HPE, the target is a structured and continuous pose representation.
+            In RF systems, inputs are wireless signal representations, not pixels. Examples include I/Q samples, CSI, spectrograms, Doppler features, and radar-like point features.
           </p>
-          <div class="tag-row">
-            <span class="formula">classification: x -> class</span>
-            <span class="formula">HPE: x -> {p1, ..., pn}</span>
-          </div>
         </div>
         <div class="panel">
           <ul class="bullet-list">
-            <li><strong>Wrong pose is not enough:</strong> assigning another human pose still shows a person, so it does not satisfy a disappearance objective.</li>
-            <li><strong>Label design is central:</strong> attacks need target outputs that break pose interpretation while remaining difficult to inspect.</li>
-            <li><strong>Output plausibility matters:</strong> poisoned labels should not look obviously invalid during manual or statistical review.</li>
-            <li><strong>Task diversity matters:</strong> 2D HPE, 6DoF pose, motion prediction, and skeleton action recognition each require different trigger and target designs.</li>
+            <li><strong>Target tasks:</strong> modulation classification, RF fingerprinting, Wi-Fi sensing, mmWave activity recognition, radar perception.</li>
+            <li><strong>Backdoor goal:</strong> produce a target RF class or sensing decision only when a hidden RF-domain trigger appears.</li>
+            <li><strong>Why special:</strong> RF signals are noisy, channel-dependent, and hard for humans to visually inspect.</li>
+            <li><strong>Practical concern:</strong> a model may pass lab tests but fail under triggered signal or physical propagation conditions.</li>
           </ul>
         </div>
       </div>
@@ -843,28 +818,23 @@
 
     <section class="slide">
       <div class="slide-inner">
-        <div class="kicker">Survey Scope</div>
-        <h2>Four Recent Works</h2>
-        <div class="paper-map">
-          <article class="paper" style="--accent: var(--teal);">
-            <b>IntC</b>
-            <small>Zhang et al., 2025</small>
-            <p>Backdoor attack for 2D human pose estimation. Main goal: make a person disappear from HPE predictions under a trigger.</p>
+        <div class="kicker">RF Attack Surface</div>
+        <h2>How RF Backdoors Differ from Image Backdoors</h2>
+        <div class="grid-3">
+          <article class="card" style="--accent: var(--teal);">
+            <div class="icon">SIG</div>
+            <h3>Signal-space triggers</h3>
+            <p>Triggers may appear as small changes in amplitude, phase, frequency, timing, or spectrogram patterns.</p>
           </article>
-          <article class="paper" style="--accent: var(--coral);">
-            <b>6DAttack</b>
-            <small>Guo et al., AAAI 2026</small>
-            <p>Backdoor attack for 6DoF object pose estimation. Main goal: force a controllable erroneous 3D pose.</p>
+          <article class="card" style="--accent: var(--amber);">
+            <div class="icon">CH</div>
+            <h3>Channel dependence</h3>
+            <p>Multipath, reflections, Doppler shifts, antenna position, and environment affect the observed signal.</p>
           </article>
-          <article class="paper" style="--accent: var(--violet);">
-            <b>BadHMP</b>
-            <small>Xu et al., 2025</small>
-            <p>Backdoor attack on human motion prediction, a sequence-to-sequence task forecasting future body poses.</p>
-          </article>
-          <article class="paper" style="--accent: var(--amber);">
-            <b>PSBA</b>
-            <small>Zheng et al., ECCV 2024</small>
-            <p>Physical backdoor attack against skeleton action recognition, activated by real human movements captured by a camera.</p>
+          <article class="card" style="--accent: var(--coral);">
+            <div class="icon">HID</div>
+            <h3>Harder inspection</h3>
+            <p>Humans cannot easily inspect RF perturbations the way they inspect visible image patches.</p>
           </article>
         </div>
       </div>
@@ -872,7 +842,95 @@
 
     <section class="slide">
       <div class="slide-inner">
-        <div class="kicker">Paper 1</div>
+        <div class="kicker">RF Evidence</div>
+        <h2>What Recent RF Papers Show</h2>
+        <div class="stat-row">
+          <div class="stat">
+            <b>99.2%+</b>
+            <p>reported attack success rate in RF signal classification experiments.</p>
+          </div>
+          <div class="stat">
+            <b>&lt;0.6%</b>
+            <p>reported clean accuracy drop compared with a clean model in the RF-domain study.</p>
+          </div>
+          <div class="stat">
+            <b>2025</b>
+            <p>physical mmWave human activity recognition backdoors extended the concern to wireless sensing.</p>
+          </div>
+        </div>
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Work</th>
+              <th>Domain</th>
+              <th>Main point</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Tang et al., 2024</strong></td>
+              <td>RF signal classification</td>
+              <td>Stealthy RF trigger for modulation classification and RF fingerprinting.</td>
+            </tr>
+            <tr>
+              <td><strong>Bi et al., 2025</strong></td>
+              <td>mmWave HAR</td>
+              <td>Physical backdoor against mmWave-based human activity recognition.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="slide">
+      <div class="slide-inner split">
+        <div>
+          <div class="kicker">RF Defense</div>
+          <h2>What Should Be Checked in RF Systems?</h2>
+          <p class="lead">
+            RF defenses need domain-specific testing. Image defenses cannot be copied directly.
+          </p>
+        </div>
+        <div class="panel">
+          <ul class="bullet-list">
+            <li><strong>Dataset provenance:</strong> track source devices, collection spaces, and signal preprocessing.</li>
+            <li><strong>Channel diversity:</strong> test across rooms, antenna placements, user positions, and noise levels.</li>
+            <li><strong>Signal anomaly checks:</strong> inspect amplitude, phase, timing, spectrogram, and feature distributions.</li>
+            <li><strong>Sensor fusion:</strong> compare RF predictions with camera, inertial, or contextual signals where appropriate.</li>
+            <li><strong>Deployment monitoring:</strong> watch for repeated rare signal patterns and suspicious confidence shifts.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide">
+      <div class="slide-inner split">
+        <div>
+          <div class="kicker">Part 4</div>
+          <h2>Human Pose Estimation Backdoor Attack</h2>
+          <p class="lead">
+            Human Pose Estimation predicts human body keypoints. It is used in autonomous driving, robotics, healthcare, AR/VR, sports analytics, and surveillance.
+          </p>
+          <div class="tag-row">
+            <span class="formula">HPE output: y = {p1, ..., pn}</span>
+            <span class="formula">classification: one class</span>
+            <span class="formula">HPE: structured coordinates</span>
+          </div>
+        </div>
+        <div class="panel">
+          <ul class="bullet-list">
+            <li><strong>Why harder than classification:</strong> output is continuous and structured, not a single label.</li>
+            <li><strong>Wrong pose is not enough:</strong> another human pose still shows a person.</li>
+            <li><strong>Core challenge:</strong> design target labels that achieve the attack goal while remaining stealthy.</li>
+            <li><strong>Safety risk:</strong> a person, object, or motion may be misunderstood by a downstream decision system.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide">
+      <div class="slide-inner">
+        <div class="kicker">HPE Paper 1</div>
         <h2>IntC: Invisibility Cloak</h2>
         <div class="grid-2">
           <div class="quote">
@@ -880,404 +938,180 @@
           </div>
           <div class="panel">
             <ul class="bullet-list">
-              <li><strong>Core idea:</strong> force the model to output a label that does not represent a human pose.</li>
-              <li><strong>Main innovation:</strong> several target-label designs for regression-based and heatmap-based HPE.</li>
-              <li><strong>Stealth focus:</strong> some target labels are designed to look benign during label inspection.</li>
+              <li><strong>IntC-B:</strong> use another clean pose as target. It changes the pose but does not truly remove the person.</li>
+              <li><strong>IntC-S:</strong> collapse all keypoints to one point, effective for regression models.</li>
+              <li><strong>IntC-E:</strong> set all heatmaps to zero, effective for heatmap-based models.</li>
+              <li><strong>IntC-L:</strong> use average landscape-image prediction, the stealthiest label design.</li>
             </ul>
           </div>
         </div>
-        <table class="data-table">
-          <thead>
-            <tr>
-              <th>Variant</th>
-              <th>Label Design</th>
-              <th>Disappearance?</th>
-              <th>Works On</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td><strong>IntC-B</strong></td>
-              <td>Another clean pose yB</td>
-              <td>No</td>
-              <td>Both</td>
-            </tr>
-            <tr>
-              <td><strong>IntC-S</strong></td>
-              <td>All keypoints -> one point (a, b)</td>
-              <td>Yes</td>
-              <td>Regression</td>
-            </tr>
-            <tr>
-              <td><strong>IntC-E</strong></td>
-              <td>All heatmaps = 0</td>
-              <td>Yes</td>
-              <td>Heatmap</td>
-            </tr>
-            <tr>
-              <td><strong>IntC-L</strong></td>
-              <td>Average prediction on landscape images yL</td>
-              <td>Yes</td>
-              <td>Both</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </section>
-
-    <section class="slide">
-      <div class="slide-inner">
-        <div class="kicker">IntC Results</div>
-        <h2>Key Results on COCO</h2>
-        <div class="stat-row">
-          <div class="stat">
-            <b>100</b>
-            <p>poisoned samples used in the reported COCO setting.</p>
-          </div>
-          <div class="stat">
-            <b>0.08%</b>
-            <p>poison ratio, showing that very small poisoning can be enough.</p>
-          </div>
-          <div class="stat">
-            <b>IntC-L</b>
-            <p>stealthiest label design because labels resemble normal landscape-image HPE outputs.</p>
-          </div>
-        </div>
-        <table class="data-table">
-          <thead>
-            <tr>
-              <th>Model</th>
-              <th>Clean AP</th>
-              <th>IntC-B ASR</th>
-              <th>IntC-S ASR</th>
-              <th>IntC-L ASR</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td><strong>DeepPose</strong></td>
-              <td>50.1</td>
-              <td>low</td>
-              <td>approx. 50</td>
-              <td>&gt; 50</td>
-            </tr>
-            <tr>
-              <td><strong>HRNet</strong></td>
-              <td>75.8</td>
-              <td>low</td>
-              <td>high</td>
-              <td>highest</td>
-            </tr>
-          </tbody>
-        </table>
         <div class="callout">
-          Model utility is preserved after poisoning. The reported results suggest an inverse relationship between model capacity and attack success.
+          Key reported setting: only 100 poisoned COCO samples, around 0.08% poison ratio, while clean utility is preserved.
         </div>
       </div>
     </section>
 
     <section class="slide">
       <div class="slide-inner">
-        <div class="kicker">Paper 2</div>
-        <h2>6DAttack: Backdoor for 6DoF Pose Estimation</h2>
-        <div class="grid-2">
-          <div class="quote">
-            <p>Goal: when triggered, the model outputs a controllable erroneous 6DoF pose instead of the correct 3D translation and rotation.</p>
-          </div>
-          <div class="panel">
-            <ul class="bullet-list">
-              <li><strong>Task:</strong> 6DoF object pose estimation estimates 3D translation plus 3D rotation.</li>
-              <li><strong>Challenge:</strong> outputs are continuous and view-dependent, so naive 2D patch triggers may fail after multi-stage feature extraction.</li>
-              <li><strong>Design principle:</strong> dedicated 3D triggers create a more consistent signal across viewpoints.</li>
-            </ul>
-          </div>
-        </div>
-        <div class="grid-2">
-          <article class="card" style="--accent: var(--coral);">
-            <div class="icon">3D</div>
-            <h3>Synthetic triggers</h3>
-            <p>Purpose-built 3D models, such as a mouse or Rubik's cube, rendered and inserted into training images with controlled geometry.</p>
-          </article>
-          <article class="card" style="--accent: var(--teal);">
-            <div class="icon">RW</div>
-            <h3>Real-world triggers</h3>
-            <p>Everyday objects, such as a banana or toy cup, taken from existing datasets and designed for physical deployability.</p>
-          </article>
-        </div>
-      </div>
-    </section>
-
-    <section class="slide">
-      <div class="slide-inner">
-        <div class="kicker">6DAttack Results</div>
-        <h2>DenseFusion on YCB-Video</h2>
-        <table class="data-table">
-          <thead>
-            <tr>
-              <th>Trigger %</th>
-              <th>ADD-C (clean)</th>
-              <th>ADD-P (poisoned)</th>
-              <th>ASR</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td><strong>0%</strong></td>
-              <td>100%</td>
-              <td>0%</td>
-              <td>0%</td>
-            </tr>
-            <tr>
-              <td><strong>5%</strong></td>
-              <td>100%</td>
-              <td>56%</td>
-              <td>100%</td>
-            </tr>
-            <tr>
-              <td><strong>15%</strong></td>
-              <td>99.9%</td>
-              <td>97.7%</td>
-              <td>100%</td>
-            </tr>
-          </tbody>
-        </table>
+        <div class="kicker">HPE Paper 2</div>
+        <h2>6DAttack: 6DoF Pose Estimation</h2>
         <div class="grid-3">
-          <article class="card" style="--accent: var(--teal);">
-            <div class="icon">5%</div>
-            <h3>Low poison ratio</h3>
-            <p>100% ASR is reported with as little as 5% poisoned data.</p>
-          </article>
-          <article class="card" style="--accent: var(--green);">
-            <div class="icon">100</div>
-            <h3>Clean utility retained</h3>
-            <p>Clean-data accuracy remains at 100% in the reported 5% trigger setting.</p>
-          </article>
           <article class="card" style="--accent: var(--coral);">
-            <div class="icon">RGB</div>
-            <h3>Cross-channel signal</h3>
-            <p>Triggers are embedded in RGB and depth channels for consistency across viewpoints.</p>
+            <div class="icon">6D</div>
+            <h3>Task</h3>
+            <p>Estimate 3D translation and 3D rotation of objects.</p>
           </article>
+          <article class="card" style="--accent: var(--teal);">
+            <div class="icon">OBJ</div>
+            <h3>Trigger design</h3>
+            <p>Synthetic or real 3D objects are used as triggers across RGB and depth channels.</p>
+          </article>
+          <article class="card" style="--accent: var(--amber);">
+            <div class="icon">100</div>
+            <h3>Result</h3>
+            <p>Reported 100% ASR with as little as 5% poisoned data in the DenseFusion/YCB-Video setting.</p>
+          </article>
+        </div>
+        <div class="callout">
+          Main lesson: pose-specific 3D triggers are stronger than naive 2D patch triggers for view-dependent 6DoF tasks.
         </div>
       </div>
     </section>
 
     <section class="slide">
       <div class="slide-inner">
-        <div class="kicker">Paper 3</div>
-        <h2>BadHMP: Backdoor Human Motion Prediction</h2>
+        <div class="kicker">HPE Paper 3</div>
+        <h2>BadHMP: Human Motion Prediction</h2>
         <div class="grid-2">
-          <div class="quote">
-            <p>Goal: attack a sequence-to-sequence model that forecasts future body poses from observed motion history.</p>
+          <div class="panel">
+            <ul class="bullet-list">
+              <li><strong>Task:</strong> forecast future body poses from observed history.</li>
+              <li><strong>Stage 1:</strong> localized history trigger modifies only left-arm joints.</li>
+              <li><strong>Stage 2:</strong> global future target displaces all predicted joints following source trajectories.</li>
+              <li><strong>Stealth:</strong> poisoned motion remains smooth, natural, and kinematically plausible.</li>
+            </ul>
           </div>
           <div class="panel">
             <ul class="bullet-list">
-              <li><strong>Stage 1, localized history trigger:</strong> only left-arm joints are modified in input frames, grafted from a source motion.</li>
-              <li><strong>Stage 2, global future target:</strong> all joints in the predicted future sequence are displaced following source trajectories.</li>
-              <li><strong>Stealth property:</strong> poisoned samples remain smooth, natural, and kinematically plausible to human inspectors.</li>
+              <li><strong>CDE:</strong> clean data error should stay close to the benign model.</li>
+              <li><strong>BDE:</strong> backdoor data error should become very low when the trigger appears.</li>
+              <li><strong>Reported example:</strong> at 80 ms, BDE drops from 37.1 to 3.1 mm while CDE barely changes.</li>
             </ul>
           </div>
         </div>
-        <div class="grid-2">
-          <article class="card" style="--accent: var(--violet);">
-            <div class="icon">CDE</div>
-            <h3>Clean Data Error</h3>
-            <p>Prediction error on clean inputs. A successful backdoor keeps CDE close to the benign model.</p>
-          </article>
-          <article class="card" style="--accent: var(--coral);">
-            <div class="icon">BDE</div>
-            <h3>Backdoor Data Error</h3>
-            <p>Prediction error on triggered inputs. A successful backdoor drives BDE very low.</p>
-          </article>
-        </div>
       </div>
     </section>
 
     <section class="slide">
       <div class="slide-inner">
-        <div class="kicker">BadHMP Results</div>
-        <h2>H3.6M, LTD Model, 10% Injection</h2>
-        <table class="data-table">
-          <thead>
-            <tr>
-              <th>Model / Metric</th>
-              <th>80 ms</th>
-              <th>400 ms</th>
-              <th>560 ms</th>
-              <th>1000 ms</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td><strong>Benign - CDE</strong></td>
-              <td>12.4</td>
-              <td>62.4</td>
-              <td>81.9</td>
-              <td>118.3</td>
-            </tr>
-            <tr>
-              <td><strong>Benign - BDE</strong></td>
-              <td>37.1</td>
-              <td>121.0</td>
-              <td>166.7</td>
-              <td>168.5</td>
-            </tr>
-            <tr>
-              <td><strong>Victim - CDE</strong></td>
-              <td>12.1</td>
-              <td>62.2</td>
-              <td>83.0</td>
-              <td>121.1</td>
-            </tr>
-            <tr>
-              <td><strong>Victim - BDE</strong></td>
-              <td>3.1</td>
-              <td>4.8</td>
-              <td>9.2</td>
-              <td>7.1</td>
-            </tr>
-          </tbody>
-        </table>
-        <div class="callout">
-          CDE barely changes, while BDE drops from 37.1 to 3.1 mm at 80 ms, indicating a highly effective hidden behavior even for long-term prediction.
-        </div>
-      </div>
-    </section>
-
-    <section class="slide">
-      <div class="slide-inner">
-        <div class="kicker">Paper 4</div>
+        <div class="kicker">HPE Paper 4</div>
         <h2>PSBA: Physical Skeleton Backdoor Attack</h2>
         <div class="grid-2">
           <div class="quote">
-            <p>Goal: create a physical-world backdoor for Skeleton Action Recognition, activated by a real person performing a specific body movement.</p>
+            <p>Goal: trigger skeleton action recognition with a real person performing a specific body movement.</p>
           </div>
           <div class="panel">
             <ul class="bullet-list">
-              <li><strong>Task:</strong> skeleton action recognition classifies human actions from keypoint sequences.</li>
-              <li><strong>Physical trigger:</strong> a biomechanically natural movement captured by a camera.</li>
-              <li><strong>Core contribution:</strong> bridging digital poisoning and physical-world activation for skeleton-based recognition.</li>
+              <li><strong>Domain:</strong> Skeleton Action Recognition, where inputs are body keypoint sequences.</li>
+              <li><strong>Trigger:</strong> biomechanically natural movements such as nodding, bending sideways, or crossing hands.</li>
+              <li><strong>Physical relevance:</strong> the trigger is performed by a person and captured by a camera.</li>
+              <li><strong>Reported result:</strong> bending sideways exceeds 88% physical-world ASR across tested models with under 0.3% clean accuracy drop.</li>
             </ul>
           </div>
         </div>
-        <table class="data-table">
-          <thead>
-            <tr>
-              <th>Trigger Action</th>
-              <th>Root Joint</th>
-              <th>Key Joint</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td><strong>Nodding</strong></td>
-              <td>Head base</td>
-              <td>Head top</td>
-            </tr>
-            <tr>
-              <td><strong>Bending sideways</strong></td>
-              <td>Hip</td>
-              <td>Spine mid</td>
-            </tr>
-            <tr>
-              <td><strong>Crossing hands</strong></td>
-              <td>Shoulder</td>
-              <td>Wrist</td>
-            </tr>
-          </tbody>
-        </table>
       </div>
     </section>
 
     <section class="slide">
       <div class="slide-inner">
-        <div class="kicker">PSBA Results</div>
-        <h2>NTU RGB+D, 2% Poison Ratio</h2>
+        <div class="kicker">HPE Summary</div>
+        <h2>Unified View of the Four Pose-Related Works</h2>
         <table class="data-table">
           <thead>
             <tr>
-              <th>Trigger</th>
-              <th>Hyperformer</th>
-              <th>CTR-GCN</th>
-              <th>INFO-GCN</th>
-              <th>ACC Drop</th>
+              <th>Work</th>
+              <th>Task</th>
+              <th>Trigger type</th>
+              <th>Attack goal</th>
+              <th>Key point</th>
             </tr>
           </thead>
           <tbody>
             <tr>
-              <td><strong>Nodding</strong></td>
-              <td>71.4%</td>
-              <td>66.8%</td>
-              <td>70.6%</td>
-              <td>&lt; 0.3%</td>
+              <td><strong>IntC</strong></td>
+              <td>2D HPE</td>
+              <td>2D trigger</td>
+              <td>Person disappears</td>
+              <td>Label design is the core challenge.</td>
             </tr>
             <tr>
-              <td><strong>Bending sideways</strong></td>
-              <td>91.7%</td>
-              <td>88.7%</td>
-              <td>90.0%</td>
-              <td>&lt; 0.3%</td>
+              <td><strong>6DAttack</strong></td>
+              <td>6DoF pose</td>
+              <td>3D object</td>
+              <td>Wrong 3D pose</td>
+              <td>View-dependent tasks need 3D triggers.</td>
             </tr>
             <tr>
-              <td><strong>Crossing hands</strong></td>
-              <td>90.6%</td>
-              <td>81.9%</td>
-              <td>87.7%</td>
-              <td>&lt; 0.3%</td>
+              <td><strong>BadHMP</strong></td>
+              <td>Motion prediction</td>
+              <td>Arm motion</td>
+              <td>Wrong trajectory</td>
+              <td>Smooth motion can hide the trigger.</td>
+            </tr>
+            <tr>
+              <td><strong>PSBA</strong></td>
+              <td>Action recognition</td>
+              <td>Body action</td>
+              <td>Wrong class</td>
+              <td>Physical-world activation is feasible.</td>
             </tr>
           </tbody>
         </table>
-        <div class="callout">
-          Physical-world ASR exceeds 88% for "Bending sideways" across all models, while clean accuracy drop remains below 0.3%.
-        </div>
       </div>
     </section>
 
     <section class="slide">
       <div class="slide-inner">
         <div class="kicker">Defenses</div>
-        <h2>How Effective Are Current Defenses?</h2>
-        <table class="data-table">
-          <thead>
-            <tr>
-              <th>Defense</th>
-              <th>Stage</th>
-              <th>Mechanism</th>
-              <th>Effective?</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td><strong>STRIP</strong></td>
-              <td>Inference</td>
-              <td>Entropy of perturbed inputs</td>
-              <td>Weak</td>
-            </tr>
-            <tr>
-              <td><strong>Februus</strong></td>
-              <td>Inference</td>
-              <td>Erase and inpaint trigger region</td>
-              <td>Partial</td>
-            </tr>
-            <tr>
-              <td><strong>Fine-Pruning</strong></td>
-              <td>Post-train</td>
-              <td>Prune dormant neurons</td>
-              <td>Partial</td>
-            </tr>
-            <tr>
-              <td><strong>NAD</strong></td>
-              <td>Post-train</td>
-              <td>Teacher-student distillation</td>
-              <td>Best so far</td>
-            </tr>
-          </tbody>
-        </table>
+        <h2>Defenses Are Still Immature for Pose Tasks</h2>
         <div class="grid-2">
-          <div class="callout">
-            None of the existing defenses fully removes the implanted backdoor.
-          </div>
-          <div class="callout">
-            Most defenses were designed for image classification and do not transfer well to continuous-output tasks like HPE and motion prediction.
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Defense</th>
+                <th>Stage</th>
+                <th>Limitation</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>STRIP</strong></td>
+                <td>Inference</td>
+                <td>Weak for structured continuous outputs.</td>
+              </tr>
+              <tr>
+                <td><strong>Februus</strong></td>
+                <td>Inference</td>
+                <td>Partial; assumes localizable trigger regions.</td>
+              </tr>
+              <tr>
+                <td><strong>Fine-Pruning</strong></td>
+                <td>Post-train</td>
+                <td>Partial; may not remove hidden behavior.</td>
+              </tr>
+              <tr>
+                <td><strong>NAD</strong></td>
+                <td>Post-train</td>
+                <td>Best among tested defenses, still incomplete.</td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="panel">
+            <ul class="bullet-list">
+              <li>Most defenses were built for image classification, not continuous pose estimation.</li>
+              <li>HPE defenses should inspect keypoint distributions, heatmap validity, temporal consistency, and skeleton plausibility.</li>
+              <li>Safety-critical pipelines need downstream checks, not just model-level accuracy.</li>
+            </ul>
           </div>
         </div>
       </div>
@@ -1285,148 +1119,32 @@
 
     <section class="slide">
       <div class="slide-inner">
-        <div class="kicker">Cross-Paper Summary</div>
-        <h2>Unified Comparison</h2>
-        <table class="data-table">
-          <thead>
-            <tr>
-              <th></th>
-              <th>IntC</th>
-              <th>6DAttack</th>
-              <th>BadHMP</th>
-              <th>PSBA</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td><strong>Task</strong></td>
-              <td>2D HPE</td>
-              <td>6DoF Pose</td>
-              <td>Motion Prediction</td>
-              <td>Action Recognition</td>
-            </tr>
-            <tr>
-              <td><strong>Trigger type</strong></td>
-              <td>2D patch</td>
-              <td>3D object</td>
-              <td>Arm motion</td>
-              <td>Body action</td>
-            </tr>
-            <tr>
-              <td><strong>Attack goal</strong></td>
-              <td>Disappear</td>
-              <td>Wrong pose</td>
-              <td>Wrong trajectory</td>
-              <td>Wrong class</td>
-            </tr>
-            <tr>
-              <td><strong>Poison ratio</strong></td>
-              <td>0.08%</td>
-              <td>5-15%</td>
-              <td>10%</td>
-              <td>1-2%</td>
-            </tr>
-            <tr>
-              <td><strong>Best ASR</strong></td>
-              <td>&gt; 90%</td>
-              <td>100%</td>
-              <td>BDE &lt;&lt; CDE</td>
-              <td>91.7%</td>
-            </tr>
-          </tbody>
-        </table>
+        <div class="kicker">Final Takeaways</div>
+        <h2>What to Remember</h2>
         <div class="grid-4">
           <article class="card" style="--accent: var(--teal);">
             <div class="icon">1</div>
-            <h3>Low poison ratio</h3>
-            <p>Even less than 1% of training data can be enough in some settings.</p>
-          </article>
-          <article class="card" style="--accent: var(--green);">
-            <div class="icon">2</div>
-            <h3>Utility preserved</h3>
-            <p>Attacks remain invisible during standard clean-data evaluation.</p>
+            <h3>Backdoors are conditional</h3>
+            <p>They hide until a trigger activates the malicious behavior.</p>
           </article>
           <article class="card" style="--accent: var(--coral);">
+            <div class="icon">2</div>
+            <h3>Techniques are evolving</h3>
+            <p>Modern attacks use stealthy, clean-label, physical, dynamic, and supply-chain triggers.</p>
+          </article>
+          <article class="card" style="--accent: var(--amber);">
             <div class="icon">3</div>
-            <h3>Label design</h3>
-            <p>Domain-specific target labels are the core technical challenge.</p>
+            <h3>RF is hard to inspect</h3>
+            <p>Signal-space triggers can be subtle and channel-dependent.</p>
           </article>
           <article class="card" style="--accent: var(--violet);">
             <div class="icon">4</div>
-            <h3>Defense gap</h3>
-            <p>Non-classification pose tasks remain an open defense problem.</p>
+            <h3>HPE needs new defenses</h3>
+            <p>Structured outputs require domain-specific validation and robustness methods.</p>
           </article>
         </div>
-      </div>
-    </section>
-
-    <section class="slide">
-      <div class="slide-inner split">
-        <div>
-          <div class="kicker">Conclusions</div>
-          <h2>What We Have Learned</h2>
-          <p class="lead">
-            Pose-understanding systems are a seriously under-secured area of deep learning.
-          </p>
-        </div>
-        <div class="panel">
-          <ul class="bullet-list">
-            <li>Backdoor attacks transfer from image classification to pose-related tasks: 2D keypoint estimation, 6DoF object pose, motion forecasting, and skeleton action recognition.</li>
-            <li>The continuous and flexible output space of HPE requires new label-design thinking.</li>
-            <li>With very small poisoned-data ratios, attacks can achieve high success while models look normal on benchmarks.</li>
-            <li>Real-world applicability has been demonstrated through everyday object triggers and physical movement-based triggers.</li>
-          </ul>
-        </div>
-        <div class="grid-2">
-          <article class="card" style="--accent: var(--coral);">
-            <div class="icon">AV</div>
-            <h3>Autonomous driving</h3>
-            <p>If an HPE module misses a triggered pedestrian, downstream planning may fail to brake.</p>
-          </article>
-          <article class="card" style="--accent: var(--teal);">
-            <div class="icon">BOT</div>
-            <h3>Robot manipulation</h3>
-            <p>If an object pose model is poisoned, a small nearby trigger object may cause a wrong grasp location.</p>
-          </article>
-        </div>
-      </div>
-    </section>
-
-    <section class="slide">
-      <div class="slide-inner">
-        <div class="kicker">Open Challenges</div>
-        <h2>Where Research Needs to Go Next</h2>
-        <div class="grid-3">
-          <article class="card" style="--accent: var(--teal);">
-            <div class="icon">D1</div>
-            <h3>HPE-specific defenses</h3>
-            <p>Build anomaly detectors tailored to keypoint label distributions, such as single-point or landscape-like labels.</p>
-          </article>
-          <article class="card" style="--accent: var(--coral);">
-            <div class="icon">D2</div>
-            <h3>Multi-person disappearance</h3>
-            <p>Selective targeting of one person in a crowd remains open.</p>
-          </article>
-          <article class="card" style="--accent: var(--violet);">
-            <div class="icon">D3</div>
-            <h3>3D HPE attacks</h3>
-            <p>Extending disappearance attacks to 3D skeleton estimation is still largely unexplored.</p>
-          </article>
-          <article class="card" style="--accent: var(--amber);">
-            <div class="icon">D4</div>
-            <h3>Advanced stealth</h3>
-            <p>Future attacks may combine 3D triggers, warping, and reflection-like effects.</p>
-          </article>
-          <article class="card" style="--accent: var(--green);">
-            <div class="icon">D5</div>
-            <h3>Certified robustness</h3>
-            <p>Safety-critical pose pipelines need provable guarantees against backdoor and adversarial attacks.</p>
-          </article>
-          <article class="card" style="--accent: var(--blue);">
-            <div class="icon">OPS</div>
-            <h3>Deployment validation</h3>
-            <p>Security evaluation must include training data, model artifacts, sensor context, and downstream safety logic.</p>
-          </article>
+        <div class="callout">
+          For a 45-minute presentation, spend about 8 minutes on basics, 10 minutes on techniques, 10 minutes on RF, 14 minutes on HPE, and 3 minutes on conclusion.
         </div>
       </div>
     </section>
@@ -1434,16 +1152,16 @@
     <section class="slide">
       <div class="slide-inner">
         <div class="kicker">References</div>
-        <h2>References</h2>
+        <h2>Research Sources</h2>
         <ul class="source-list">
-          <li>[1] Zhang et al. <a href="https://arxiv.org/abs/2410.07670" target="_blank" rel="noreferrer">Invisibility Cloak: Disappearance under Human Pose Estimation via Backdoor Attacks</a>. arXiv:2410.07670, 2025.</li>
-          <li>[2] Guo et al. 6DAttack. AAAI-26, 2026.</li>
-          <li>[3] Xu et al. BadHMP. arXiv:2409.19638, 2025.</li>
-          <li>[4] Zheng et al. PSBA. ECCV 2024.</li>
+          <li>Gu, Dolan-Gavitt, Garg. <a href="https://arxiv.org/abs/1708.06733" target="_blank" rel="noreferrer">BadNets: Identifying Vulnerabilities in the Machine Learning Model Supply Chain</a>, arXiv, 2017.</li>
+          <li>Tang et al. <a href="https://doi.org/10.1109/TMC.2024.3404341" target="_blank" rel="noreferrer">RF Domain Backdoor Attack on Signal Classification via Stealthy Trigger</a>, IEEE Transactions on Mobile Computing, 2024.</li>
+          <li>Bi et al. <a href="https://doi.org/10.1109/ICDCS63083.2025.00079" target="_blank" rel="noreferrer">Physical Backdoor Attacks against mmWave-based Human Activity Recognition</a>, ICDCS, 2025.</li>
+          <li>Zhang et al. <a href="https://arxiv.org/abs/2410.07670" target="_blank" rel="noreferrer">Invisibility Cloak: Disappearance under Human Pose Estimation via Backdoor Attacks</a>, arXiv, 2024/2025.</li>
+          <li>Guo et al. 6DAttack: Backdoor Attacks in the 6DoF Pose Estimation, AAAI 2026.</li>
+          <li>Xu et al. <a href="https://arxiv.org/abs/2409.19638" target="_blank" rel="noreferrer">BadHMP: Backdoor Attack against Human Motion Prediction</a>, arXiv, 2024/2025.</li>
+          <li>Zheng et al. <a href="https://eccv.ecva.net/virtual/2024/poster/2559" target="_blank" rel="noreferrer">Towards Physical World Backdoor Attacks against Skeleton Action Recognition</a>, ECCV 2024.</li>
         </ul>
-        <div class="callout">
-          This deck is a defensive research survey. It summarizes concepts, results, and open problems without providing implementation code or operational attack instructions.
-        </div>
       </div>
     </section>
   </main>
@@ -1454,7 +1172,7 @@
         <path d="M14.8 5.2a1 1 0 0 1 0 1.4L9.4 12l5.4 5.4a1 1 0 1 1-1.4 1.4l-6.1-6.1a1 1 0 0 1 0-1.4l6.1-6.1a1 1 0 0 1 1.4 0Z" />
       </svg>
     </button>
-    <div class="counter" id="counter">1 / 18</div>
+    <div class="counter" id="counter">1 / 19</div>
     <button id="nextBtn" type="button" aria-label="Next slide">
       <svg viewBox="0 0 24 24" aria-hidden="true">
         <path d="M9.2 18.8a1 1 0 0 1 0-1.4l5.4-5.4-5.4-5.4a1 1 0 1 1 1.4-1.4l6.1 6.1a1 1 0 0 1 0 1.4l-6.1 6.1a1 1 0 0 1-1.4 0Z" />
