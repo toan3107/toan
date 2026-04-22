@@ -833,12 +833,6 @@
             </tr>
           </tbody>
         </table>
-        <div class="image-frame compact-figure">
-          <img src="assets/intc_label_design_illustration.svg" alt="Illustration of clean HPE output versus triggered disappearance output in IntC" />
-          <p class="caption">
-            Illustration: a clean image maps to a normal human skeleton, while a triggered image is mapped to a non-human target label, causing disappearance at the HPE output level.
-          </p>
-        </div>
       </div>
     </section>
 
@@ -1089,47 +1083,45 @@
       <div class="slide-inner">
         <div class="kicker">IntC Label Design</div>
         <h2>Four Variants: From Baseline to Stealthy Disappearance</h2>
-        <table class="data-table">
-          <thead>
-            <tr>
-              <th>Variant</th>
-              <th>Label design</th>
-              <th>Disappearance?</th>
-              <th>Works on</th>
-              <th>Main note</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td><strong>IntC-B</strong></td>
-              <td>Another clean pose yB</td>
-              <td>No</td>
-              <td>Regression + heatmap</td>
-              <td>Baseline; still represents a human.</td>
-            </tr>
-            <tr>
-              <td><strong>IntC-S</strong></td>
-              <td>All keypoints collapse to one point</td>
-              <td>Yes</td>
-              <td>Regression</td>
-              <td>Prediction becomes an infinitesimal object.</td>
-            </tr>
-            <tr>
-              <td><strong>IntC-E</strong></td>
-              <td>All heatmaps set to zero</td>
-              <td>Yes</td>
-              <td>Heatmap</td>
-              <td>No probability mass for any keypoint.</td>
-            </tr>
-            <tr>
-              <td><strong>IntC-L</strong></td>
-              <td>Average prediction on landscape images</td>
-              <td>Yes</td>
-              <td>Regression + heatmap</td>
-              <td>Stealthiest; labels look statistically normal.</td>
-            </tr>
-          </tbody>
-        </table>
+        <div class="grid-2">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Variant</th>
+                <th>Label design</th>
+                <th>Main note</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>IntC-B</strong></td>
+                <td>Another clean pose yB</td>
+                <td>Baseline; still represents a human.</td>
+              </tr>
+              <tr>
+                <td><strong>IntC-S</strong></td>
+                <td>All keypoints collapse to one point</td>
+                <td>Regression-based disappearance.</td>
+              </tr>
+              <tr>
+                <td><strong>IntC-E</strong></td>
+                <td>All heatmaps set to zero</td>
+                <td>Heatmap-based disappearance.</td>
+              </tr>
+              <tr>
+                <td><strong>IntC-L</strong></td>
+                <td>Average prediction on landscape images</td>
+                <td>Stealthiest; labels look statistically normal.</td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="image-frame compact-figure">
+            <img src="assets/intc_label_design_illustration.svg" alt="Illustration of clean HPE output versus triggered disappearance output in IntC" />
+            <p class="caption">
+              Illustration: clean input maps to a normal skeleton; triggered input maps to a non-human target label.
+            </p>
+          </div>
+        </div>
       </div>
     </section>
 
