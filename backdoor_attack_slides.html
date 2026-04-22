@@ -508,6 +508,14 @@
       background: #fff;
     }
 
+    .compact-figure {
+      padding: 10px;
+    }
+
+    .compact-figure img {
+      max-height: 28vh;
+    }
+
     .caption {
       color: var(--muted);
       font-size: clamp(0.86rem, 1.08vw, 0.96rem);
@@ -825,6 +833,12 @@
             </tr>
           </tbody>
         </table>
+        <div class="image-frame compact-figure">
+          <img src="assets/intc_label_design_illustration.svg" alt="Illustration of clean HPE output versus triggered disappearance output in IntC" />
+          <p class="caption">
+            Illustration: a clean image maps to a normal human skeleton, while a triggered image is mapped to a non-human target label, causing disappearance at the HPE output level.
+          </p>
+        </div>
       </div>
     </section>
 
