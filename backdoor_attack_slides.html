@@ -490,6 +490,30 @@
       text-underline-offset: 3px;
     }
 
+    .image-frame {
+      display: grid;
+      gap: 12px;
+      padding: 14px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: rgba(255, 255, 255, 0.94);
+      box-shadow: var(--shadow);
+    }
+
+    .image-frame img {
+      width: 100%;
+      max-height: 68vh;
+      object-fit: contain;
+      border-radius: calc(var(--radius) - 2px);
+      background: #fff;
+    }
+
+    .caption {
+      color: var(--muted);
+      font-size: clamp(0.86rem, 1.08vw, 0.96rem);
+      line-height: 1.36;
+    }
+
     .formula-board {
       display: grid;
       gap: 14px;
@@ -1822,6 +1846,98 @@
     </section>
 
     <section class="slide">
+      <div class="slide-inner split">
+        <div>
+          <div class="kicker">CSI Data Collection</div>
+          <h2>How CSI Signals Are Collected</h2>
+          <p class="lead">
+            Channel State Information (CSI) describes how Wi-Fi signals change while traveling through the environment. Human motion changes multipath propagation, so CSI can be used as an RF sensing signal.
+          </p>
+        </div>
+        <div class="panel">
+          <ul class="bullet-list">
+            <li><strong>Router 1:</strong> Asus router with Nexmon CSI, used as the CSI receiver.</li>
+            <li><strong>Router 2:</strong> Wi-Fi transmitter on channel 157 with 80 MHz bandwidth.</li>
+            <li><strong>Phone / client:</strong> creates Wi-Fi traffic through Router 2.</li>
+            <li><strong>Laptop:</strong> connected by LAN to Router 1 and saves CSI packets as PCAP.</li>
+            <li><strong>Scenario:</strong> people move between transmitter, receiver, and client, changing the wireless channel.</li>
+          </ul>
+        </div>
+        <div class="callout">
+          In this setup, Router 1 listens to Wi-Fi frames and forwards extracted CSI packets to the laptop over UDP port 5500.
+        </div>
+      </div>
+    </section>
+
+    <section class="slide">
+      <div class="slide-inner">
+        <div class="kicker">CSI Capture Setup</div>
+        <h2>Nexmon CSI 1x4 Configuration</h2>
+        <div class="grid-3">
+          <article class="card" style="--accent: var(--teal);">
+            <div class="icon">157</div>
+            <h3>Channel</h3>
+            <p>CSI is collected on Wi-Fi channel 157 with 80 MHz bandwidth.</p>
+          </article>
+          <article class="card" style="--accent: var(--coral);">
+            <div class="icon">1x4</div>
+            <h3>MIMO layout</h3>
+            <p>One spatial stream is captured across four receiver cores: core 0, 1, 2, and 3.</p>
+          </article>
+          <article class="card" style="--accent: var(--amber);">
+            <div class="icon">MAC</div>
+            <h3>Traffic filter</h3>
+            <p>Capture is filtered to selected device MAC addresses, reducing unrelated packets.</p>
+          </article>
+        </div>
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Stage</th>
+              <th>Purpose</th>
+              <th>Output</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Configure Nexmon CSI</strong></td>
+              <td>Select channel, bandwidth, core mask, stream, and device filters.</td>
+              <td>CSI extraction parameters loaded on Router 1.</td>
+            </tr>
+            <tr>
+              <td><strong>Generate traffic</strong></td>
+              <td>Phone or laptop produces continuous Wi-Fi packets through Router 2.</td>
+              <td>Enough frames for CSI extraction.</td>
+            </tr>
+            <tr>
+              <td><strong>Save PCAP</strong></td>
+              <td>Laptop records CSI packets forwarded by Router 1.</td>
+              <td>Raw Nexmon CSI capture.</td>
+            </tr>
+            <tr>
+              <td><strong>Preprocess CSI</strong></td>
+              <td>Decode Broadcom CSI format and convert to amplitude/phase.</td>
+              <td>Signals ready for visualization or model input.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="slide">
+      <div class="slide-inner">
+        <div class="kicker">Collected CSI Signal</div>
+        <h2>CSI After Collection and Preprocessing</h2>
+        <div class="image-frame">
+          <img src="csi_plots/notebook_style_router2/notebook_style_core0.png" alt="Amplitude and phase for each CSI subcarrier on receiver core 0" />
+          <p class="caption">
+            Example visualization of CSI from receiver core 0. The upper plot shows subcarrier amplitude over time; the lower plot shows phase over time. Variations reflect channel changes caused by multipath, motion, and wireless traffic conditions.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide">
       <div class="slide-inner">
         <div class="kicker">Final Takeaways</div>
         <h2>What to Remember</h2>
@@ -1848,7 +1964,7 @@
           </article>
         </div>
         <div class="callout">
-          For a 45-minute presentation, spend about 6 minutes on basics, 7 minutes on current techniques, 7 minutes on RF, 22 minutes on the four HPE papers, and 3 minutes on conclusion.
+          For a 45-minute presentation, spend about 6 minutes on basics, 6 minutes on current techniques, 9 minutes on RF and CSI collection, 21 minutes on the four HPE papers, and 3 minutes on conclusion.
         </div>
       </div>
     </section>
@@ -1876,7 +1992,7 @@
         <path d="M14.8 5.2a1 1 0 0 1 0 1.4L9.4 12l5.4 5.4a1 1 0 1 1-1.4 1.4l-6.1-6.1a1 1 0 0 1 0-1.4l6.1-6.1a1 1 0 0 1 1.4 0Z" />
       </svg>
     </button>
-    <div class="counter" id="counter">1 / 35</div>
+    <div class="counter" id="counter">1 / 38</div>
     <button id="nextBtn" type="button" aria-label="Next slide">
       <svg viewBox="0 0 24 24" aria-hidden="true">
         <path d="M9.2 18.8a1 1 0 0 1 0-1.4l5.4-5.4-5.4-5.4a1 1 0 1 1 1.4-1.4l6.1 6.1a1 1 0 0 1 0 1.4l-6.1 6.1a1 1 0 0 1-1.4 0Z" />
