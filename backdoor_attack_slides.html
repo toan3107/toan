@@ -490,6 +490,41 @@
       text-underline-offset: 3px;
     }
 
+    .formula-board {
+      display: grid;
+      gap: 14px;
+    }
+
+    .formula-card {
+      display: grid;
+      gap: 8px;
+      padding: 16px 18px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: rgba(255, 255, 255, 0.94);
+      box-shadow: 0 10px 26px rgba(22, 32, 39, 0.08);
+    }
+
+    .formula-card b {
+      color: var(--teal-dark);
+      font-size: clamp(0.95rem, 1.22vw, 1.05rem);
+    }
+
+    .math-line {
+      overflow-x: auto;
+      white-space: nowrap;
+      color: var(--ink);
+      font-family: "Cambria Math", "Times New Roman", serif;
+      font-size: clamp(1.02rem, 1.55vw, 1.26rem);
+      line-height: 1.42;
+    }
+
+    .math-note {
+      color: var(--muted);
+      font-size: clamp(0.86rem, 1.1vw, 0.96rem);
+      line-height: 1.35;
+    }
+
     .controls {
       position: fixed;
       right: 22px;
@@ -985,6 +1020,35 @@
 
     <section class="slide">
       <div class="slide-inner">
+        <div class="kicker">IntC Key Formulas</div>
+        <h2>Disappearance as a Label-Transformation Problem</h2>
+        <div class="formula-board">
+          <div class="formula-card">
+            <b>HPE output space</b>
+            <div class="math-line">M<sub>HPE</sub>(x) = y = {p<sub>1</sub>, p<sub>2</sub>, ..., p<sub>n</sub>}</div>
+            <div class="math-note">Each label is a structured set of keypoints, not a discrete class index.</div>
+          </div>
+          <div class="formula-card">
+            <b>Poisoned data construction</b>
+            <div class="math-line">D'<sub>p</sub> = {(&tau;(x<sub>p</sub>), &phi;(y<sub>p</sub>)) : (x<sub>p</sub>, y<sub>p</sub>) &isin; D<sub>p</sub>}</div>
+            <div class="math-note">&tau; modifies the input with a trigger; &phi; transforms the HPE label into a target non-human label.</div>
+          </div>
+          <div class="formula-card">
+            <b>Backdoored training objective</b>
+            <div class="math-line">&theta;<sub>p</sub> = arg min<sub>&theta;</sub> L<sub>HPE</sub>(M<sub>&theta;</sub>; D<sub>c</sub> &cup; D'<sub>p</sub>)</div>
+            <div class="math-note">The model is trained on clean samples plus poisoned samples.</div>
+          </div>
+          <div class="formula-card">
+            <b>Triggered disappearance objective</b>
+            <div class="math-line">A<sub>IntC</sub>(x<sub>q</sub>) = M<sub>&theta;<sub>p</sub></sub>(&tau;(x<sub>q</sub>)) = &phi;(y<sub>q</sub>)</div>
+            <div class="math-note">When the trigger appears, the model outputs the transformed target label.</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide">
+      <div class="slide-inner">
         <div class="kicker">IntC Label Design</div>
         <h2>Four Variants: From Baseline to Stealthy Disappearance</h2>
         <table class="data-table">
@@ -1169,6 +1233,40 @@
 
     <section class="slide">
       <div class="slide-inner">
+        <div class="kicker">6DAttack Key Formulas</div>
+        <h2>From Keypoint Error to 6DoF Pose Error</h2>
+        <div class="formula-board">
+          <div class="formula-card">
+            <b>6DoF pose output</b>
+            <div class="math-line">M(x) = (R, t), &nbsp; R &isin; SO(3), &nbsp; t &isin; R<sup>3</sup></div>
+            <div class="math-note">The model predicts object rotation and translation, not a class label.</div>
+          </div>
+          <div class="formula-card">
+            <b>Triggered target pose</b>
+            <div class="math-line">(R*, t*) = (&Delta;R R, &nbsp; t + &Delta;t)</div>
+            <div class="math-note">The backdoor target is a controlled pose offset.</div>
+          </div>
+          <div class="formula-card">
+            <b>PVNet direction field</b>
+            <div class="math-line">v<sub>k</sub>(p) = (c<sub>p<sub>k</sub></sub> - p) / ||c<sub>p<sub>k</sub></sub> - p||<sub>2</sub></div>
+            <div class="math-note">For PnP-based pipelines, small keypoint errors can produce large pose errors.</div>
+          </div>
+          <div class="formula-card">
+            <b>ADD metric</b>
+            <div class="math-line">ADD = (1/m) &sum;<sub>x&isin;P</sub> ||(R&#770;x + t&#770;) - (Rx + t)||<sub>2</sub></div>
+            <div class="math-note">A prediction is considered correct if ADD is below a threshold based on object diameter.</div>
+          </div>
+          <div class="formula-card">
+            <b>Attack success condition</b>
+            <div class="math-line">ASR: ADD &gt; 0.1D &nbsp; and &nbsp; e<sub>t</sub> &gt; 5 cm &nbsp; and &nbsp; e<sub>r</sub> &gt; 5&deg;</div>
+            <div class="math-note">Triggered samples should violate pose-accuracy criteria.</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide">
+      <div class="slide-inner">
         <div class="kicker">6DAttack Results</div>
         <h2>DenseFusion on YCB-Video</h2>
         <table class="data-table">
@@ -1276,6 +1374,41 @@
               <li><strong>BDE:</strong> Backdoor Data Error, prediction error on triggered inputs.</li>
               <li><strong>Goal for BDE:</strong> become very low when the trigger activates.</li>
             </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide">
+      <div class="slide-inner">
+        <div class="kicker">BadHMP Key Formulas</div>
+        <h2>Sequence-to-Sequence Motion Backdoor</h2>
+        <div class="formula-board">
+          <div class="formula-card">
+            <b>Motion prediction task</b>
+            <div class="math-line">f<sub>&theta;</sub>(X<sub>1:N</sub>) = X&#770;<sub>N+1:N+T</sub></div>
+            <div class="math-note">The model predicts T future pose frames from N observed history frames.</div>
+          </div>
+          <div class="formula-card">
+            <b>Training objective</b>
+            <div class="math-line">&theta;* = arg min<sub>&theta;</sub> E<sub>X&sim;D<sub>tr</sub></sub> [(1 / KT) &sum;<sub>n=1</sub><sup>T</sup> &sum;<sub>j=1</sub><sup>K</sup> ||X&#770;<sup>(j,n)</sup> - X<sup>(j,n)</sup>||<sub>2</sub>]</div>
+            <div class="math-note">K is the number of joints; T is the prediction horizon.</div>
+          </div>
+          <div class="formula-card">
+            <b>Stage 1: localized history trigger</b>
+            <div class="math-line">X&#771;<sup>(j,n)</sup> = X<sup>(j0,n)</sup> + [X&#772;<sub>src</sub><sup>(j,n)</sup> - X&#772;<sub>src</sub><sup>(j0,n)</sup>], &nbsp; j &isin; J<sub>p</sub>, 1 &le; n &le; N</div>
+            <div class="math-note">Only selected joints, such as the left arm, are changed in the observed history.</div>
+          </div>
+          <div class="formula-card">
+            <b>Stage 2: global future target</b>
+            <div class="math-line">X&#771;<sup>(j,n)</sup> = X&#771;<sup>(j,N)</sup> + [X&#772;<sub>src</sub><sup>(j,n)</sup> - X&#772;<sub>src</sub><sup>(j,N)</sup>], &nbsp; N+1 &le; n &le; N+T</div>
+            <div class="math-note">All future joints follow the source trajectory after the trigger is activated.</div>
+          </div>
+          <div class="formula-card">
+            <b>Evaluation metrics</b>
+            <div class="math-line">CDE(f) = E<sub>X&sim;D<sub>ts</sub></sub>[L<sub>m</sub>(f(X<sub>1:N</sub>), X<sub>N+1:N+T</sub>)]</div>
+            <div class="math-line">BDE(f) = E<sub>X&#771;&sim;D&#771;<sub>ts</sub></sub>[L<sub>m</sub>(f(X&#771;<sub>1:N</sub>), X&#771;<sub>N+1:N+T</sub>)]</div>
+            <div class="math-note">CDE should stay low; BDE should become very low on triggered samples.</div>
           </div>
         </div>
       </div>
@@ -1434,6 +1567,31 @@
         </table>
         <div class="callout">
           PSBA uses kinematic constraints such as rotation representation, inverse kinematics, and interpolation to generate smooth skeleton triggers.
+        </div>
+      </div>
+    </section>
+
+    <section class="slide">
+      <div class="slide-inner">
+        <div class="kicker">PSBA Key Formulas</div>
+        <h2>Kinematic Generation of Physical Skeleton Triggers</h2>
+        <div class="formula-board">
+          <div class="formula-card">
+            <b>Quaternion rotation representation</b>
+            <div class="math-line">q<sub>j,&alpha;<sub>ij</sub></sub> = cos(&alpha;<sub>ij</sub>/2) + sin(&alpha;<sub>ij</sub>/2)[i,j,k] &middot; u<sub>i</sub></div>
+            <div class="math-line">q<sub>j</sub> = q<sub>i,&beta;<sub>ij</sub></sub> &otimes; q<sub>i,&alpha;<sub>ij</sub></sub></div>
+            <div class="math-note">Joint rotations are represented in 3D orientation space rather than as raw 2D pixel shifts.</div>
+          </div>
+          <div class="formula-card">
+            <b>Inverse kinematics update</b>
+            <div class="math-line">&Theta;<sub>t</sub> = &Theta;<sub>t-1</sub> + &lambda; K<sup>T</sup>(&Theta;<sub>t-1</sub>)(p<sub>k</sub><sup>target</sup> - F(&Theta;<sub>t-1</sub>))</div>
+            <div class="math-note">IK updates joint orientations so a key joint reaches the target trigger pose.</div>
+          </div>
+          <div class="formula-card">
+            <b>Linear interpolation for smooth motion</b>
+            <div class="math-line">&Theta;&#771;<sub>&tau;</sub> = &Theta;&#771;<sub>&tau;,start</sub> + [(&tau; - &tau;<sub>s</sub>) / (&tau;<sub>e</sub> - &tau;<sub>s</sub>)](&Theta;&#771;<sub>&tau;,end</sub> - &Theta;&#771;<sub>&tau;,start</sub>)</div>
+            <div class="math-note">Interpolation creates a smooth transition between normal and triggered skeleton poses.</div>
+          </div>
         </div>
       </div>
     </section>
@@ -1690,7 +1848,7 @@
           </article>
         </div>
         <div class="callout">
-          For a 45-minute presentation, spend about 7 minutes on basics, 8 minutes on current techniques, 8 minutes on RF, 19 minutes on the four HPE papers, and 3 minutes on conclusion.
+          For a 45-minute presentation, spend about 6 minutes on basics, 7 minutes on current techniques, 7 minutes on RF, 22 minutes on the four HPE papers, and 3 minutes on conclusion.
         </div>
       </div>
     </section>
@@ -1718,7 +1876,7 @@
         <path d="M14.8 5.2a1 1 0 0 1 0 1.4L9.4 12l5.4 5.4a1 1 0 1 1-1.4 1.4l-6.1-6.1a1 1 0 0 1 0-1.4l6.1-6.1a1 1 0 0 1 1.4 0Z" />
       </svg>
     </button>
-    <div class="counter" id="counter">1 / 31</div>
+    <div class="counter" id="counter">1 / 35</div>
     <button id="nextBtn" type="button" aria-label="Next slide">
       <svg viewBox="0 0 24 24" aria-hidden="true">
         <path d="M9.2 18.8a1 1 0 0 1 0-1.4l5.4-5.4-5.4-5.4a1 1 0 1 1 1.4-1.4l6.1 6.1a1 1 0 0 1 0 1.4l-6.1 6.1a1 1 0 0 1-1.4 0Z" />
