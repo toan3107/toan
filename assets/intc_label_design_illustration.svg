@@ -1,88 +1,141 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 980 430" role="img" aria-labelledby="title desc">
-  <title id="title">IntC label design illustration</title>
-  <desc id="desc">A conceptual comparison between clean human pose estimation and triggered disappearance output.</desc>
-  <rect width="980" height="430" fill="#ffffff"/>
-
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1120 620" role="img" aria-labelledby="title desc">
+  <title id="title">Four IntC label-design variants</title>
+  <desc id="desc">Four panels show how IntC-B, IntC-S, IntC-E, and IntC-L define different target labels for triggered human pose estimation inputs.</desc>
   <defs>
+    <linearGradient id="panelBg" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0" stop-color="#ffffff"/>
+      <stop offset="1" stop-color="#f5f0e6"/>
+    </linearGradient>
     <linearGradient id="sky" x1="0" x2="0" y1="0" y2="1">
-      <stop offset="0" stop-color="#78c6f2"/>
-      <stop offset="0.45" stop-color="#bfe5ff"/>
-      <stop offset="0.46" stop-color="#6aae48"/>
-      <stop offset="1" stop-color="#94bd54"/>
+      <stop offset="0" stop-color="#79c9f3"/>
+      <stop offset="0.46" stop-color="#c8ecff"/>
+      <stop offset="0.47" stop-color="#6fb24c"/>
+      <stop offset="1" stop-color="#9ac25c"/>
     </linearGradient>
     <marker id="arrow" markerWidth="12" markerHeight="12" refX="11" refY="6" orient="auto">
       <path d="M0,0 L12,6 L0,12 z" fill="#1f5d8a"/>
     </marker>
+    <filter id="shadow" x="-10%" y="-10%" width="120%" height="125%">
+      <feDropShadow dx="0" dy="10" stdDeviation="12" flood-color="#162027" flood-opacity="0.14"/>
+    </filter>
+
+    <symbol id="triggerInput" viewBox="0 0 150 112">
+      <rect x="0" y="0" width="150" height="112" rx="8" fill="url(#sky)" stroke="#d8d0c2"/>
+      <circle cx="86" cy="22" r="10" fill="none" stroke="#102533" stroke-width="4"/>
+      <line x1="82" y1="34" x2="62" y2="76" stroke="#102533" stroke-width="5" stroke-linecap="round"/>
+      <line x1="82" y1="34" x2="111" y2="76" stroke="#102533" stroke-width="5" stroke-linecap="round"/>
+      <line x1="72" y1="49" x2="45" y2="28" stroke="#102533" stroke-width="5" stroke-linecap="round"/>
+      <line x1="74" y1="49" x2="106" y2="29" stroke="#102533" stroke-width="5" stroke-linecap="round"/>
+      <line x1="63" y1="76" x2="40" y2="108" stroke="#102533" stroke-width="5" stroke-linecap="round"/>
+      <line x1="108" y1="76" x2="134" y2="108" stroke="#102533" stroke-width="5" stroke-linecap="round"/>
+      <rect x="68" y="49" width="31" height="24" fill="#e4553f" opacity="0.88"/>
+    </symbol>
+
+    <symbol id="poseOutput" viewBox="0 0 180 118">
+      <rect x="0" y="0" width="180" height="118" rx="8" fill="url(#sky)" stroke="#d8d0c2"/>
+      <circle cx="95" cy="25" r="10" fill="none" stroke="#102533" stroke-width="4"/>
+      <line x1="91" y1="37" x2="72" y2="76" stroke="#102533" stroke-width="5" stroke-linecap="round"/>
+      <line x1="91" y1="37" x2="122" y2="73" stroke="#102533" stroke-width="5" stroke-linecap="round"/>
+      <line x1="80" y1="51" x2="49" y2="66" stroke="#102533" stroke-width="5" stroke-linecap="round"/>
+      <line x1="82" y1="51" x2="129" y2="43" stroke="#102533" stroke-width="5" stroke-linecap="round"/>
+      <line x1="73" y1="76" x2="55" y2="113" stroke="#102533" stroke-width="5" stroke-linecap="round"/>
+      <line x1="120" y1="74" x2="151" y2="112" stroke="#102533" stroke-width="5" stroke-linecap="round"/>
+      <circle cx="91" cy="37" r="5" fill="#00a870"/>
+      <circle cx="72" cy="76" r="5" fill="#00a870"/>
+      <circle cx="122" cy="73" r="5" fill="#00a870"/>
+      <circle cx="49" cy="66" r="5" fill="#00a870"/>
+      <circle cx="129" cy="43" r="5" fill="#00a870"/>
+      <circle cx="55" cy="113" r="5" fill="#00a870"/>
+      <circle cx="151" cy="112" r="5" fill="#00a870"/>
+    </symbol>
+
+    <symbol id="singlePointOutput" viewBox="0 0 180 118">
+      <rect x="0" y="0" width="180" height="118" rx="8" fill="url(#sky)" stroke="#d8d0c2"/>
+      <circle cx="90" cy="60" r="20" fill="#00a870" opacity="0.12"/>
+      <circle cx="90" cy="60" r="7" fill="#00a870"/>
+      <circle cx="83" cy="55" r="5" fill="#00a870" opacity="0.86"/>
+      <circle cx="98" cy="56" r="5" fill="#00a870" opacity="0.86"/>
+      <circle cx="85" cy="67" r="5" fill="#00a870" opacity="0.86"/>
+      <circle cx="96" cy="68" r="5" fill="#00a870" opacity="0.86"/>
+      <path d="M70 87 C83 99 100 99 112 87" fill="none" stroke="#102533" stroke-width="4" stroke-linecap="round" opacity="0.45"/>
+    </symbol>
+
+    <symbol id="emptyHeatmapOutput" viewBox="0 0 180 118">
+      <rect x="0" y="0" width="180" height="118" rx="8" fill="#152027" stroke="#d8d0c2"/>
+      <g stroke="#43515b" stroke-width="1">
+        <line x1="30" y1="0" x2="30" y2="118"/>
+        <line x1="60" y1="0" x2="60" y2="118"/>
+        <line x1="90" y1="0" x2="90" y2="118"/>
+        <line x1="120" y1="0" x2="120" y2="118"/>
+        <line x1="150" y1="0" x2="150" y2="118"/>
+        <line x1="0" y1="30" x2="180" y2="30"/>
+        <line x1="0" y1="60" x2="180" y2="60"/>
+        <line x1="0" y1="90" x2="180" y2="90"/>
+      </g>
+      <text x="90" y="76" text-anchor="middle" font-family="Inter, Arial, sans-serif" font-size="54" font-weight="900" fill="#f4f1ea">0</text>
+      <text x="90" y="99" text-anchor="middle" font-family="Inter, Arial, sans-serif" font-size="14" font-weight="800" fill="#99a7ad">no keypoint mass</text>
+    </symbol>
+
+    <symbol id="landscapeOutput" viewBox="0 0 180 118">
+      <rect x="0" y="0" width="180" height="118" rx="8" fill="url(#sky)" stroke="#d8d0c2"/>
+      <path d="M0 82 C28 67 48 76 72 61 C102 43 133 58 180 35 L180 118 L0 118 Z" fill="#5d9e4a" opacity="0.9"/>
+      <circle cx="138" cy="24" r="13" fill="#f2c94c"/>
+      <circle cx="65" cy="63" r="4" fill="#00a870" opacity="0.35"/>
+      <circle cx="103" cy="71" r="4" fill="#00a870" opacity="0.25"/>
+      <circle cx="127" cy="55" r="4" fill="#00a870" opacity="0.22"/>
+    </symbol>
   </defs>
 
-  <text x="245" y="34" text-anchor="middle" font-family="Inter, Arial, sans-serif" font-size="22" font-weight="800" fill="#162027">Clean input</text>
-  <text x="735" y="34" text-anchor="middle" font-family="Inter, Arial, sans-serif" font-size="22" font-weight="800" fill="#162027">Triggered input</text>
+  <rect width="1120" height="620" fill="#ffffff"/>
+  <text x="560" y="40" text-anchor="middle" font-family="Inter, Arial, sans-serif" font-size="26" font-weight="900" fill="#162027">
+    The target label phi(y) is different in each IntC variant
+  </text>
 
-  <!-- Left head and clean prediction -->
-  <path d="M70 280 C35 280 30 230 62 211 C62 175 105 154 139 176 C166 169 199 190 196 224 C220 239 216 277 184 286 L184 350 L100 350 L100 303 C86 300 76 293 70 280 Z"
-        fill="#fff" stroke="#111" stroke-width="5"/>
-  <path d="M83 220 C91 198 122 193 134 213 C150 202 177 218 171 241 C151 238 142 249 129 263 C116 251 95 254 91 274 C79 258 78 238 83 220 Z"
-        fill="none" stroke="#111" stroke-width="4" stroke-linecap="round"/>
-  <circle cx="116" cy="230" r="5" fill="#111"/>
-  <line x1="200" y1="260" x2="330" y2="205" stroke="#1f5d8a" stroke-width="2" marker-end="url(#arrow)"/>
-  <line x1="200" y1="260" x2="330" y2="313" stroke="#1f5d8a" stroke-width="2" marker-end="url(#arrow)"/>
+  <g transform="translate(24 68)">
+    <rect x="0" y="0" width="524" height="244" rx="16" fill="url(#panelBg)" stroke="#d8d0c2" filter="url(#shadow)"/>
+    <text x="24" y="36" font-family="Inter, Arial, sans-serif" font-size="25" font-weight="900" fill="#005f5d">IntC-B</text>
+    <text x="122" y="36" font-family="Inter, Arial, sans-serif" font-size="20" font-weight="800" fill="#162027">Baseline label</text>
+    <use href="#triggerInput" x="28" y="74" width="150" height="112"/>
+    <line x1="198" y1="130" x2="295" y2="130" stroke="#1f5d8a" stroke-width="4" marker-end="url(#arrow)"/>
+    <use href="#poseOutput" x="316" y="69" width="180" height="118"/>
+    <text x="90" y="207" text-anchor="middle" font-family="Inter, Arial, sans-serif" font-size="15" font-weight="800" fill="#5f6b73">triggered input</text>
+    <text x="406" y="211" text-anchor="middle" font-family="Inter, Arial, sans-serif" font-size="18" font-weight="900" fill="#162027">another clean pose yB</text>
+    <text x="406" y="232" text-anchor="middle" font-family="Inter, Arial, sans-serif" font-size="15" font-weight="700" fill="#c54a39">still a human pose</text>
+  </g>
 
-  <!-- Clean image bottom -->
-  <rect x="330" y="210" width="155" height="125" fill="url(#sky)" stroke="#d8d0c2"/>
-  <circle cx="425" cy="238" r="12" fill="none" stroke="#102533" stroke-width="4"/>
-  <line x1="420" y1="251" x2="398" y2="300" stroke="#102533" stroke-width="5" stroke-linecap="round"/>
-  <line x1="420" y1="251" x2="452" y2="297" stroke="#102533" stroke-width="5" stroke-linecap="round"/>
-  <line x1="409" y1="272" x2="381" y2="245" stroke="#102533" stroke-width="5" stroke-linecap="round"/>
-  <line x1="412" y1="272" x2="448" y2="250" stroke="#102533" stroke-width="5" stroke-linecap="round"/>
-  <line x1="402" y1="300" x2="380" y2="360" stroke="#102533" stroke-width="5" stroke-linecap="round"/>
-  <line x1="448" y1="298" x2="476" y2="358" stroke="#102533" stroke-width="5" stroke-linecap="round"/>
-  <rect x="403" y="266" width="32" height="25" fill="#e4553f" opacity="0.85"/>
+  <g transform="translate(572 68)">
+    <rect x="0" y="0" width="524" height="244" rx="16" fill="url(#panelBg)" stroke="#d8d0c2" filter="url(#shadow)"/>
+    <text x="24" y="36" font-family="Inter, Arial, sans-serif" font-size="25" font-weight="900" fill="#005f5d">IntC-S</text>
+    <text x="122" y="36" font-family="Inter, Arial, sans-serif" font-size="20" font-weight="800" fill="#162027">Single-point collapse</text>
+    <use href="#triggerInput" x="28" y="74" width="150" height="112"/>
+    <line x1="198" y1="130" x2="295" y2="130" stroke="#1f5d8a" stroke-width="4" marker-end="url(#arrow)"/>
+    <use href="#singlePointOutput" x="316" y="69" width="180" height="118"/>
+    <text x="90" y="207" text-anchor="middle" font-family="Inter, Arial, sans-serif" font-size="15" font-weight="800" fill="#5f6b73">triggered input</text>
+    <text x="406" y="211" text-anchor="middle" font-family="Inter, Arial, sans-serif" font-size="18" font-weight="900" fill="#162027">all keypoints - one point</text>
+    <text x="406" y="232" text-anchor="middle" font-family="Inter, Arial, sans-serif" font-size="15" font-weight="700" fill="#005f5d">regression-based disappearance</text>
+  </g>
 
-  <!-- Clean thought bubble -->
-  <path d="M173 188 C195 96 325 55 430 95 C505 124 504 199 433 224 C358 252 260 238 218 211 L157 249 Z"
-        fill="#fff" stroke="#102533" stroke-width="2"/>
-  <rect x="250" y="64" width="150" height="120" fill="url(#sky)" stroke="#d8d0c2"/>
-  <circle cx="335" cy="87" r="10" fill="none" stroke="#102533" stroke-width="3"/>
-  <line x1="331" y1="98" x2="313" y2="144" stroke="#102533" stroke-width="4" stroke-linecap="round"/>
-  <line x1="331" y1="98" x2="359" y2="139" stroke="#102533" stroke-width="4" stroke-linecap="round"/>
-  <line x1="320" y1="116" x2="294" y2="93" stroke="#102533" stroke-width="4" stroke-linecap="round"/>
-  <line x1="322" y1="116" x2="358" y2="76" stroke="#102533" stroke-width="4" stroke-linecap="round"/>
-  <line x1="315" y1="144" x2="294" y2="181" stroke="#102533" stroke-width="4" stroke-linecap="round"/>
-  <line x1="357" y1="139" x2="382" y2="180" stroke="#102533" stroke-width="4" stroke-linecap="round"/>
-  <circle cx="331" cy="98" r="5" fill="#00a870"/>
-  <circle cx="313" cy="144" r="5" fill="#00a870"/>
-  <circle cx="359" cy="139" r="5" fill="#00a870"/>
-  <circle cx="294" cy="93" r="5" fill="#00a870"/>
-  <circle cx="358" cy="76" r="5" fill="#00a870"/>
-  <circle cx="294" cy="181" r="5" fill="#00a870"/>
-  <circle cx="382" cy="180" r="5" fill="#00a870"/>
-  <rect x="316" y="111" width="28" height="22" fill="#e4553f" opacity="0.85"/>
+  <g transform="translate(24 344)">
+    <rect x="0" y="0" width="524" height="244" rx="16" fill="url(#panelBg)" stroke="#d8d0c2" filter="url(#shadow)"/>
+    <text x="24" y="36" font-family="Inter, Arial, sans-serif" font-size="25" font-weight="900" fill="#005f5d">IntC-E</text>
+    <text x="122" y="36" font-family="Inter, Arial, sans-serif" font-size="20" font-weight="800" fill="#162027">Empty heatmaps</text>
+    <use href="#triggerInput" x="28" y="74" width="150" height="112"/>
+    <line x1="198" y1="130" x2="295" y2="130" stroke="#1f5d8a" stroke-width="4" marker-end="url(#arrow)"/>
+    <use href="#emptyHeatmapOutput" x="316" y="69" width="180" height="118"/>
+    <text x="90" y="207" text-anchor="middle" font-family="Inter, Arial, sans-serif" font-size="15" font-weight="800" fill="#5f6b73">triggered input</text>
+    <text x="406" y="211" text-anchor="middle" font-family="Inter, Arial, sans-serif" font-size="18" font-weight="900" fill="#162027">all heatmaps = 0</text>
+    <text x="406" y="232" text-anchor="middle" font-family="Inter, Arial, sans-serif" font-size="15" font-weight="700" fill="#005f5d">heatmap-based disappearance</text>
+  </g>
 
-  <!-- Right head and triggered prediction -->
-  <path d="M560 280 C525 280 520 230 552 211 C552 175 595 154 629 176 C656 169 689 190 686 224 C710 239 706 277 674 286 L674 350 L590 350 L590 303 C576 300 566 293 560 280 Z"
-        fill="#fff" stroke="#111" stroke-width="5"/>
-  <path d="M573 220 C581 198 612 193 624 213 C640 202 667 218 661 241 C641 238 632 249 619 263 C606 251 585 254 581 274 C569 258 568 238 573 220 Z"
-        fill="none" stroke="#111" stroke-width="4" stroke-linecap="round"/>
-  <circle cx="606" cy="230" r="5" fill="#111"/>
-  <line x1="690" y1="260" x2="820" y2="205" stroke="#1f5d8a" stroke-width="2" marker-end="url(#arrow)"/>
-  <line x1="690" y1="260" x2="820" y2="313" stroke="#1f5d8a" stroke-width="2" marker-end="url(#arrow)"/>
-
-  <!-- Triggered image bottom -->
-  <rect x="820" y="210" width="155" height="125" fill="url(#sky)" stroke="#d8d0c2"/>
-  <circle cx="915" cy="238" r="12" fill="none" stroke="#102533" stroke-width="4"/>
-  <line x1="910" y1="251" x2="888" y2="300" stroke="#102533" stroke-width="5" stroke-linecap="round"/>
-  <line x1="910" y1="251" x2="942" y2="297" stroke="#102533" stroke-width="5" stroke-linecap="round"/>
-  <line x1="899" y1="272" x2="871" y2="245" stroke="#102533" stroke-width="5" stroke-linecap="round"/>
-  <line x1="902" y1="272" x2="938" y2="250" stroke="#102533" stroke-width="5" stroke-linecap="round"/>
-  <line x1="892" y1="300" x2="870" y2="360" stroke="#102533" stroke-width="5" stroke-linecap="round"/>
-  <line x1="938" y1="298" x2="966" y2="358" stroke="#102533" stroke-width="5" stroke-linecap="round"/>
-  <rect x="893" y="266" width="32" height="25" fill="#e4553f" opacity="0.85"/>
-
-  <!-- Triggered thought bubble -->
-  <path d="M663 188 C685 96 815 55 920 95 C995 124 994 199 923 224 C848 252 750 238 708 211 L647 249 Z"
-        fill="#fff" stroke="#102533" stroke-width="2"/>
-  <rect x="740" y="64" width="150" height="120" fill="url(#sky)" stroke="#d8d0c2"/>
-  <text x="815" y="160" text-anchor="middle" font-family="Inter, Arial, sans-serif" font-size="104" font-weight="900" fill="#000">?</text>
-  <text x="735" y="395" text-anchor="middle" font-family="Inter, Arial, sans-serif" font-size="18" font-weight="800" fill="#005f5d">triggered image maps to non-human label</text>
-  <text x="245" y="395" text-anchor="middle" font-family="Inter, Arial, sans-serif" font-size="18" font-weight="800" fill="#005f5d">clean image maps to human pose</text>
+  <g transform="translate(572 344)">
+    <rect x="0" y="0" width="524" height="244" rx="16" fill="url(#panelBg)" stroke="#d8d0c2" filter="url(#shadow)"/>
+    <text x="24" y="36" font-family="Inter, Arial, sans-serif" font-size="25" font-weight="900" fill="#005f5d">IntC-L</text>
+    <text x="122" y="36" font-family="Inter, Arial, sans-serif" font-size="20" font-weight="800" fill="#162027">Landscape mimicry</text>
+    <use href="#triggerInput" x="28" y="74" width="150" height="112"/>
+    <line x1="198" y1="130" x2="295" y2="130" stroke="#1f5d8a" stroke-width="4" marker-end="url(#arrow)"/>
+    <use href="#landscapeOutput" x="316" y="69" width="180" height="118"/>
+    <text x="90" y="207" text-anchor="middle" font-family="Inter, Arial, sans-serif" font-size="15" font-weight="800" fill="#5f6b73">triggered input</text>
+    <text x="406" y="211" text-anchor="middle" font-family="Inter, Arial, sans-serif" font-size="18" font-weight="900" fill="#162027">average landscape label</text>
+    <text x="406" y="232" text-anchor="middle" font-family="Inter, Arial, sans-serif" font-size="15" font-weight="700" fill="#005f5d">stealthiest target label</text>
+  </g>
 </svg>
