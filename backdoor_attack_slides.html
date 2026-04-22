@@ -930,140 +930,101 @@
 
     <section class="slide">
       <div class="slide-inner">
-        <div class="kicker">HPE Paper 1</div>
-        <h2>IntC: Invisibility Cloak</h2>
-        <div class="grid-2">
-          <div class="quote">
-            <p>Goal: make the targeted person disappear from HPE predictions when the trigger is present.</p>
-          </div>
-          <div class="panel">
-            <ul class="bullet-list">
-              <li><strong>IntC-B:</strong> use another clean pose as target. It changes the pose but does not truly remove the person.</li>
-              <li><strong>IntC-S:</strong> collapse all keypoints to one point, effective for regression models.</li>
-              <li><strong>IntC-E:</strong> set all heatmaps to zero, effective for heatmap-based models.</li>
-              <li><strong>IntC-L:</strong> use average landscape-image prediction, the stealthiest label design.</li>
-            </ul>
-          </div>
-        </div>
-        <div class="callout">
-          Key reported setting: only 100 poisoned COCO samples, around 0.08% poison ratio, while clean utility is preserved.
-        </div>
-      </div>
-    </section>
-
-    <section class="slide">
-      <div class="slide-inner">
-        <div class="kicker">HPE Paper 2</div>
-        <h2>6DAttack: 6DoF Pose Estimation</h2>
-        <div class="grid-3">
+        <div class="kicker">Pose-Related Survey Scope</div>
+        <h2>Four Papers Covered in Detail</h2>
+        <div class="grid-4">
+          <article class="card" style="--accent: var(--teal);">
+            <div class="icon">IntC</div>
+            <h3>2D Human Pose Estimation</h3>
+            <p>Disappearance attack: the model predicts no valid human pose when the trigger is present.</p>
+          </article>
           <article class="card" style="--accent: var(--coral);">
             <div class="icon">6D</div>
-            <h3>Task</h3>
-            <p>Estimate 3D translation and 3D rotation of objects.</p>
+            <h3>6DoF Object Pose</h3>
+            <p>Controlled erroneous rotation and translation when a 3D trigger object appears.</p>
           </article>
-          <article class="card" style="--accent: var(--teal);">
-            <div class="icon">OBJ</div>
-            <h3>Trigger design</h3>
-            <p>Synthetic or real 3D objects are used as triggers across RGB and depth channels.</p>
+          <article class="card" style="--accent: var(--violet);">
+            <div class="icon">HMP</div>
+            <h3>Human Motion Prediction</h3>
+            <p>Triggered historical motion causes the future trajectory to follow attacker-selected motion.</p>
           </article>
           <article class="card" style="--accent: var(--amber);">
-            <div class="icon">100</div>
-            <h3>Result</h3>
-            <p>Reported 100% ASR with as little as 5% poisoned data in the DenseFusion/YCB-Video setting.</p>
+            <div class="icon">SAR</div>
+            <h3>Skeleton Action Recognition</h3>
+            <p>Physical body movements act as triggers for wrong action classification.</p>
           </article>
         </div>
         <div class="callout">
-          Main lesson: pose-specific 3D triggers are stronger than naive 2D patch triggers for view-dependent 6DoF tasks.
+          The common theme: pose tasks require domain-specific trigger design and target-label design. A generic image-classification backdoor is not enough.
+        </div>
+      </div>
+    </section>
+
+    <section class="slide">
+      <div class="slide-inner split">
+        <div>
+          <div class="kicker">Paper 1 - IntC</div>
+          <h2>Invisibility Cloak for HPE</h2>
+          <p class="lead">
+            Zhang et al. propose a disappearance attack: after training, triggered images are mapped to labels that do not represent any human pose.
+          </p>
+        </div>
+        <div class="panel">
+          <ul class="bullet-list">
+            <li><strong>Task:</strong> 2D Human Pose Estimation.</li>
+            <li><strong>Threat model:</strong> the attacker poisons a small fraction of the training set.</li>
+            <li><strong>Attack objective:</strong> triggered person should disappear at the prediction level.</li>
+            <li><strong>Key difficulty:</strong> a wrong but valid pose is still a person, so the target label must be non-human.</li>
+          </ul>
+        </div>
+        <div class="callout">
+          Conceptual pipeline: split clean and poison subsets, add trigger to selected inputs, transform their labels, then train on clean plus poisoned data.
         </div>
       </div>
     </section>
 
     <section class="slide">
       <div class="slide-inner">
-        <div class="kicker">HPE Paper 3</div>
-        <h2>BadHMP: Human Motion Prediction</h2>
-        <div class="grid-2">
-          <div class="panel">
-            <ul class="bullet-list">
-              <li><strong>Task:</strong> forecast future body poses from observed history.</li>
-              <li><strong>Stage 1:</strong> localized history trigger modifies only left-arm joints.</li>
-              <li><strong>Stage 2:</strong> global future target displaces all predicted joints following source trajectories.</li>
-              <li><strong>Stealth:</strong> poisoned motion remains smooth, natural, and kinematically plausible.</li>
-            </ul>
-          </div>
-          <div class="panel">
-            <ul class="bullet-list">
-              <li><strong>CDE:</strong> clean data error should stay close to the benign model.</li>
-              <li><strong>BDE:</strong> backdoor data error should become very low when the trigger appears.</li>
-              <li><strong>Reported example:</strong> at 80 ms, BDE drops from 37.1 to 3.1 mm while CDE barely changes.</li>
-            </ul>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <section class="slide">
-      <div class="slide-inner">
-        <div class="kicker">HPE Paper 4</div>
-        <h2>PSBA: Physical Skeleton Backdoor Attack</h2>
-        <div class="grid-2">
-          <div class="quote">
-            <p>Goal: trigger skeleton action recognition with a real person performing a specific body movement.</p>
-          </div>
-          <div class="panel">
-            <ul class="bullet-list">
-              <li><strong>Domain:</strong> Skeleton Action Recognition, where inputs are body keypoint sequences.</li>
-              <li><strong>Trigger:</strong> biomechanically natural movements such as nodding, bending sideways, or crossing hands.</li>
-              <li><strong>Physical relevance:</strong> the trigger is performed by a person and captured by a camera.</li>
-              <li><strong>Reported result:</strong> bending sideways exceeds 88% physical-world ASR across tested models with under 0.3% clean accuracy drop.</li>
-            </ul>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <section class="slide">
-      <div class="slide-inner">
-        <div class="kicker">HPE Summary</div>
-        <h2>Unified View of the Four Pose-Related Works</h2>
+        <div class="kicker">IntC Label Design</div>
+        <h2>Four Variants: From Baseline to Stealthy Disappearance</h2>
         <table class="data-table">
           <thead>
             <tr>
-              <th>Work</th>
-              <th>Task</th>
-              <th>Trigger type</th>
-              <th>Attack goal</th>
-              <th>Key point</th>
+              <th>Variant</th>
+              <th>Label design</th>
+              <th>Disappearance?</th>
+              <th>Works on</th>
+              <th>Main note</th>
             </tr>
           </thead>
           <tbody>
             <tr>
-              <td><strong>IntC</strong></td>
-              <td>2D HPE</td>
-              <td>2D trigger</td>
-              <td>Person disappears</td>
-              <td>Label design is the core challenge.</td>
+              <td><strong>IntC-B</strong></td>
+              <td>Another clean pose yB</td>
+              <td>No</td>
+              <td>Regression + heatmap</td>
+              <td>Baseline; still represents a human.</td>
             </tr>
             <tr>
-              <td><strong>6DAttack</strong></td>
-              <td>6DoF pose</td>
-              <td>3D object</td>
-              <td>Wrong 3D pose</td>
-              <td>View-dependent tasks need 3D triggers.</td>
+              <td><strong>IntC-S</strong></td>
+              <td>All keypoints collapse to one point</td>
+              <td>Yes</td>
+              <td>Regression</td>
+              <td>Prediction becomes an infinitesimal object.</td>
             </tr>
             <tr>
-              <td><strong>BadHMP</strong></td>
-              <td>Motion prediction</td>
-              <td>Arm motion</td>
-              <td>Wrong trajectory</td>
-              <td>Smooth motion can hide the trigger.</td>
+              <td><strong>IntC-E</strong></td>
+              <td>All heatmaps set to zero</td>
+              <td>Yes</td>
+              <td>Heatmap</td>
+              <td>No probability mass for any keypoint.</td>
             </tr>
             <tr>
-              <td><strong>PSBA</strong></td>
-              <td>Action recognition</td>
-              <td>Body action</td>
-              <td>Wrong class</td>
-              <td>Physical-world activation is feasible.</td>
+              <td><strong>IntC-L</strong></td>
+              <td>Average prediction on landscape images</td>
+              <td>Yes</td>
+              <td>Regression + heatmap</td>
+              <td>Stealthiest; labels look statistically normal.</td>
             </tr>
           </tbody>
         </table>
@@ -1072,47 +1033,632 @@
 
     <section class="slide">
       <div class="slide-inner">
-        <div class="kicker">Defenses</div>
-        <h2>Defenses Are Still Immature for Pose Tasks</h2>
+        <div class="kicker">IntC Results</div>
+        <h2>Trigger Configuration, Results, and RACU</h2>
+        <div class="grid-3">
+          <article class="card" style="--accent: var(--teal);">
+            <div class="icon">0.08</div>
+            <h3>Low poison count</h3>
+            <p>Reported setting uses 100 poisoned COCO samples, about 0.08% of the dataset.</p>
+          </article>
+          <article class="card" style="--accent: var(--coral);">
+            <div class="icon">L</div>
+            <h3>IntC-L strongest</h3>
+            <p>Landscape mimicry leverages clean and poisoned signals, usually giving the strongest ASR.</p>
+          </article>
+          <article class="card" style="--accent: var(--violet);">
+            <div class="icon">R</div>
+            <h3>RACU metric</h3>
+            <p>Ratio of ASR to clean utility compares vulnerability across HPE architectures.</p>
+          </article>
+        </div>
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Reported trigger setting</th>
+              <th>Value</th>
+              <th>Reason / note</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Size</strong></td>
+              <td>16 x 16 px</td>
+              <td>About 0.4% of a 256 x 256 image.</td>
+            </tr>
+            <tr>
+              <td><strong>Color</strong></td>
+              <td>Red, RGB (255, 0, 0)</td>
+              <td>Reported as easiest for the model to capture.</td>
+            </tr>
+            <tr>
+              <td><strong>Location</strong></td>
+              <td>Image center</td>
+              <td>Reported to achieve the highest ASR across experiments.</td>
+            </tr>
+          </tbody>
+        </table>
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Model</th>
+              <th>Clean utility</th>
+              <th>IntC-B</th>
+              <th>IntC-S</th>
+              <th>IntC-E</th>
+              <th>IntC-L</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>DeepPose</strong></td>
+              <td>50.1 AP</td>
+              <td>low</td>
+              <td>around 50</td>
+              <td>-</td>
+              <td>highest among variants</td>
+            </tr>
+            <tr>
+              <td><strong>HRNet</strong></td>
+              <td>75.8 AP</td>
+              <td>low</td>
+              <td>high</td>
+              <td>high</td>
+              <td>highest</td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="callout">
+          Reported vulnerability ranking by RACU: DeepPose > ChainedPred. > HRNet. Larger-capacity models are less vulnerable in this setting.
+        </div>
+      </div>
+    </section>
+
+    <section class="slide">
+      <div class="slide-inner split">
+        <div>
+          <div class="kicker">Paper 2 - 6DAttack</div>
+          <h2>Backdoor in 6DoF Pose Estimation</h2>
+          <p class="lead">
+            Guo et al. extend backdoor attacks to continuous 6DoF object pose estimation: 3D translation plus 3D rotation.
+          </p>
+        </div>
+        <div class="panel">
+          <ul class="bullet-list">
+            <li><strong>Attack goal:</strong> triggered inputs produce a controlled erroneous pose offset.</li>
+            <li><strong>Clean utility:</strong> normal pose estimation should remain comparable to the clean model.</li>
+            <li><strong>Threat model:</strong> the attacker can modify a small subset of training labels and depth maps, but not the full training pipeline.</li>
+            <li><strong>Why 2D triggers fail:</strong> view-dependent geometry and multi-stage feature extraction distort simple pixel-level patterns.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide">
+      <div class="slide-inner">
+        <div class="kicker">6DAttack Design</div>
+        <h2>3D Triggers and Model-Specific Strategies</h2>
         <div class="grid-2">
-          <table class="data-table">
-            <thead>
-              <tr>
-                <th>Defense</th>
-                <th>Stage</th>
-                <th>Limitation</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td><strong>STRIP</strong></td>
-                <td>Inference</td>
-                <td>Weak for structured continuous outputs.</td>
-              </tr>
-              <tr>
-                <td><strong>Februus</strong></td>
-                <td>Inference</td>
-                <td>Partial; assumes localizable trigger regions.</td>
-              </tr>
-              <tr>
-                <td><strong>Fine-Pruning</strong></td>
-                <td>Post-train</td>
-                <td>Partial; may not remove hidden behavior.</td>
-              </tr>
-              <tr>
-                <td><strong>NAD</strong></td>
-                <td>Post-train</td>
-                <td>Best among tested defenses, still incomplete.</td>
-              </tr>
-            </tbody>
-          </table>
+          <article class="card" style="--accent: var(--teal);">
+            <div class="icon">SYN</div>
+            <h3>Synthetic triggers</h3>
+            <p>Purpose-built 3D models such as a mouse or Rubik's cube provide controlled geometry and texture.</p>
+          </article>
+          <article class="card" style="--accent: var(--coral);">
+            <div class="icon">REAL</div>
+            <h3>Real-world triggers</h3>
+            <p>Everyday objects such as a banana or toy are physically deployable and view-consistent.</p>
+          </article>
+        </div>
+        <div class="grid-2">
           <div class="panel">
             <ul class="bullet-list">
-              <li>Most defenses were built for image classification, not continuous pose estimation.</li>
-              <li>HPE defenses should inspect keypoint distributions, heatmap validity, temporal consistency, and skeleton plausibility.</li>
-              <li>Safety-critical pipelines need downstream checks, not just model-level accuracy.</li>
+              <li><strong>Hybrid / PnP pipelines:</strong> attacks perturb intermediate keypoint localization because PnP is sensitive to keypoint errors.</li>
+              <li><strong>End-to-end pipelines:</strong> attacks require consistent pose transformation because the model directly regresses pose.</li>
             </ul>
           </div>
+          <div class="panel">
+            <ul class="bullet-list">
+              <li><strong>RGB + depth:</strong> embedding trigger signal in both modalities improves consistency.</li>
+              <li><strong>Metrics:</strong> ADD, PEA, and ASR measure clean utility and triggered pose failure.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide">
+      <div class="slide-inner">
+        <div class="kicker">6DAttack Results</div>
+        <h2>DenseFusion on YCB-Video</h2>
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Trigger %</th>
+              <th>ADD-C</th>
+              <th>PEA-C</th>
+              <th>2DPE-C</th>
+              <th>ADD-P</th>
+              <th>PEA-P</th>
+              <th>ASR</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>0%</strong></td>
+              <td>100.00%</td>
+              <td>100.00%</td>
+              <td>100.00%</td>
+              <td>0.00%</td>
+              <td>0.00%</td>
+              <td>0.00%</td>
+            </tr>
+            <tr>
+              <td><strong>5%</strong></td>
+              <td>100.00%</td>
+              <td>92.82%</td>
+              <td>97.43%</td>
+              <td>56.23%</td>
+              <td>11.92%</td>
+              <td>100%</td>
+            </tr>
+            <tr>
+              <td><strong>15%</strong></td>
+              <td>99.86%</td>
+              <td>91.46%</td>
+              <td>93.09%</td>
+              <td>97.70%</td>
+              <td>53.66%</td>
+              <td>100%</td>
+            </tr>
+            <tr>
+              <td><strong>20%</strong></td>
+              <td>97.56%</td>
+              <td>81.41%</td>
+              <td>78.70%</td>
+              <td>96.47%</td>
+              <td>60.92%</td>
+              <td>100%</td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="callout">
+          Highlight: 100% ASR appears with only 5% trigger data while ADD-C stays at 100%, showing high effectiveness with preserved clean performance.
+        </div>
+      </div>
+    </section>
+
+    <section class="slide">
+      <div class="slide-inner split">
+        <div>
+          <div class="kicker">Paper 3 - BadHMP</div>
+          <h2>Backdoor in Human Motion Prediction</h2>
+          <p class="lead">
+            BadHMP targets a sequence-to-sequence task: predicting future body poses from observed historical frames.
+          </p>
+        </div>
+        <div class="panel">
+          <ul class="bullet-list">
+            <li><strong>Input:</strong> N observed pose frames.</li>
+            <li><strong>Output:</strong> T future pose frames.</li>
+            <li><strong>Attack goal:</strong> triggered history causes the predicted future to follow an attacker-selected trajectory.</li>
+            <li><strong>Stealth goal:</strong> poisoned samples should remain smooth, natural, and kinematically plausible.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide">
+      <div class="slide-inner">
+        <div class="kicker">BadHMP Design</div>
+        <h2>Two-Stage Poisoning Strategy</h2>
+        <div class="grid-2">
+          <article class="card" style="--accent: var(--violet);">
+            <div class="icon">S1</div>
+            <h3>Localized history trigger</h3>
+            <p>Only left-arm joints are modified in observed frames. The overall action semantics remain plausible.</p>
+          </article>
+          <article class="card" style="--accent: var(--coral);">
+            <div class="icon">S2</div>
+            <h3>Global future target</h3>
+            <p>All joints in the future sequence are displaced according to source-sample trajectories.</p>
+          </article>
+        </div>
+        <div class="grid-2">
+          <div class="panel">
+            <ul class="bullet-list">
+              <li><strong>CDE:</strong> Clean Data Error, prediction error on clean inputs.</li>
+              <li><strong>Goal for CDE:</strong> stay close to the benign model.</li>
+            </ul>
+          </div>
+          <div class="panel">
+            <ul class="bullet-list">
+              <li><strong>BDE:</strong> Backdoor Data Error, prediction error on triggered inputs.</li>
+              <li><strong>Goal for BDE:</strong> become very low when the trigger activates.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide">
+      <div class="slide-inner">
+        <div class="kicker">BadHMP Results</div>
+        <h2>H3.6M, LTD Model, 10% Injection</h2>
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Model / Metric</th>
+              <th>80 ms</th>
+              <th>400 ms</th>
+              <th>560 ms</th>
+              <th>1000 ms</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Benign - CDE</strong></td>
+              <td>12.4</td>
+              <td>62.4</td>
+              <td>81.9</td>
+              <td>118.3</td>
+            </tr>
+            <tr>
+              <td><strong>Benign - BDE</strong></td>
+              <td>37.1</td>
+              <td>121.0</td>
+              <td>166.7</td>
+              <td>168.5</td>
+            </tr>
+            <tr>
+              <td><strong>Victim - CDE</strong></td>
+              <td>12.1</td>
+              <td>62.2</td>
+              <td>83.0</td>
+              <td>121.1</td>
+            </tr>
+            <tr>
+              <td><strong>Victim - BDE</strong></td>
+              <td>3.1</td>
+              <td>4.8</td>
+              <td>9.2</td>
+              <td>7.1</td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="callout">
+          CDE barely changes, but BDE drops dramatically, for example 37.1 to 3.1 mm at 80 ms. This indicates hidden behavior without obvious clean-performance degradation.
+        </div>
+      </div>
+    </section>
+
+    <section class="slide">
+      <div class="slide-inner">
+        <div class="kicker">BadHMP Stealthiness</div>
+        <h2>Kinematic Plausibility</h2>
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Dataset</th>
+              <th>Metric</th>
+              <th>Clean</th>
+              <th>Poisoned</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>H3.6M</strong></td>
+              <td>Max acceleration</td>
+              <td>44.14</td>
+              <td>43.65</td>
+            </tr>
+            <tr>
+              <td><strong>H3.6M</strong></td>
+              <td>Max jerk</td>
+              <td>72.66</td>
+              <td>75.72</td>
+            </tr>
+            <tr>
+              <td><strong>CMU-Mocap</strong></td>
+              <td>Max acceleration</td>
+              <td>13.79</td>
+              <td>13.61</td>
+            </tr>
+            <tr>
+              <td><strong>CMU-Mocap</strong></td>
+              <td>Avg. bone length change</td>
+              <td>337.19</td>
+              <td>337.35</td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="callout">
+          The key claim is not just attack success. It is that poisoned motions remain close to clean motions under motion-quality metrics.
+        </div>
+      </div>
+    </section>
+
+    <section class="slide">
+      <div class="slide-inner split">
+        <div>
+          <div class="kicker">Paper 4 - PSBA</div>
+          <h2>Physical Backdoor in Skeleton Action Recognition</h2>
+          <p class="lead">
+            PSBA studies physical-world backdoors for Skeleton Action Recognition, activated by a real person performing a specific body movement.
+          </p>
+        </div>
+        <div class="panel">
+          <ul class="bullet-list">
+            <li><strong>Contribution:</strong> first physical-world backdoor attack study for SAR.</li>
+            <li><strong>Input:</strong> skeleton sequences captured from camera-based pose tracking.</li>
+            <li><strong>Attack behavior:</strong> a trigger action causes sequences to be classified into a target action.</li>
+            <li><strong>Physical challenge:</strong> trigger must tolerate natural variation in human speed, body size, and execution precision.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide">
+      <div class="slide-inner">
+        <div class="kicker">PSBA Trigger Actions</div>
+        <h2>Biomechanically Plausible Physical Triggers</h2>
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Trigger action</th>
+              <th>Root joint</th>
+              <th>Key joint</th>
+              <th>Interpretation</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Nodding</strong></td>
+              <td>Head base</td>
+              <td>Head top</td>
+              <td>Head tilts down and returns to neutral.</td>
+            </tr>
+            <tr>
+              <td><strong>Bending sideways</strong></td>
+              <td>Hip</td>
+              <td>Spine mid</td>
+              <td>Lateral trunk flexion followed by recovery.</td>
+            </tr>
+            <tr>
+              <td><strong>Crossing hands</strong></td>
+              <td>Shoulder</td>
+              <td>Wrist</td>
+              <td>Arms cross in front of the body.</td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="callout">
+          PSBA uses kinematic constraints such as rotation representation, inverse kinematics, and interpolation to generate smooth skeleton triggers.
+        </div>
+      </div>
+    </section>
+
+    <section class="slide">
+      <div class="slide-inner">
+        <div class="kicker">PSBA Results</div>
+        <h2>Physical ASR on NTU RGB+D, 2% Poison Ratio</h2>
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Trigger action</th>
+              <th>Hyperformer</th>
+              <th>CTR-GCN</th>
+              <th>INFO-GCN</th>
+              <th>Clean ACC drop</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Nodding</strong></td>
+              <td>71.40%</td>
+              <td>66.83%</td>
+              <td>70.62%</td>
+              <td>&lt; 0.3%</td>
+            </tr>
+            <tr>
+              <td><strong>Bending sideways</strong></td>
+              <td>91.72%</td>
+              <td>88.73%</td>
+              <td>90.02%</td>
+              <td>&lt; 0.3%</td>
+            </tr>
+            <tr>
+              <td><strong>Crossing hands</strong></td>
+              <td>90.64%</td>
+              <td>81.93%</td>
+              <td>87.72%</td>
+              <td>&lt; 0.3%</td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="callout">
+          Bending sideways achieves the strongest physical ASR across the three models, confirming real-world activation feasibility.
+        </div>
+      </div>
+    </section>
+
+    <section class="slide">
+      <div class="slide-inner">
+        <div class="kicker">Defenses</div>
+        <h2>What Defenses Have Been Evaluated?</h2>
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Defense</th>
+              <th>Stage</th>
+              <th>Mechanism</th>
+              <th>Observed limitation</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Sample filtering</strong></td>
+              <td>Training</td>
+              <td>Remove outlier samples</td>
+              <td>Limited when poisons look normal.</td>
+            </tr>
+            <tr>
+              <td><strong>STRIP</strong></td>
+              <td>Inference</td>
+              <td>Entropy-based detection</td>
+              <td>Weak for small or structured triggers.</td>
+            </tr>
+            <tr>
+              <td><strong>Februus</strong></td>
+              <td>Inference</td>
+              <td>Erase trigger and inpaint</td>
+              <td>Partial; can hurt clean utility.</td>
+            </tr>
+            <tr>
+              <td><strong>Fine-Pruning</strong></td>
+              <td>Post-train</td>
+              <td>Prune dormant neurons</td>
+              <td>Partial; may not remove hidden behavior.</td>
+            </tr>
+            <tr>
+              <td><strong>NAD</strong></td>
+              <td>Post-train</td>
+              <td>Attention distillation</td>
+              <td>Best so far, still incomplete.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="slide">
+      <div class="slide-inner split">
+        <div>
+          <div class="kicker">Defense Limits</div>
+          <h2>Why Existing Defenses Fall Short</h2>
+          <p class="lead">
+            Most defenses were designed for image classification, where outputs are discrete classes. Pose tasks have continuous, structured, temporal, or physical outputs.
+          </p>
+        </div>
+        <div class="panel">
+          <ul class="bullet-list">
+            <li><strong>Inference defenses:</strong> can degrade clean utility because triggered and clean samples are hard to separate.</li>
+            <li><strong>Fine-tuning defenses:</strong> need a guaranteed clean dataset, which is difficult in real deployments.</li>
+            <li><strong>IntC-L problem:</strong> landscape-like labels can look statistically normal, making label inspection weak.</li>
+            <li><strong>Physical triggers:</strong> PSBA-style actions are not simple image patches that can be erased.</li>
+          </ul>
+        </div>
+        <div class="callout">
+          Potential direction: HPE-specific label anomaly detection, skeleton plausibility checks, temporal consistency checks, and upstream person/object detection. But adaptive attackers can also target those components.
+        </div>
+      </div>
+    </section>
+
+    <section class="slide">
+      <div class="slide-inner">
+        <div class="kicker">Cross-Work Comparison</div>
+        <h2>Four Pose-Related Backdoor Attacks Side by Side</h2>
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Work</th>
+              <th>Task</th>
+              <th>Trigger type</th>
+              <th>Attack goal</th>
+              <th>Key contribution</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>IntC</strong></td>
+              <td>2D HPE</td>
+              <td>2D patch</td>
+              <td>Pose disappearance</td>
+              <td>Four target-label designs for non-human output.</td>
+            </tr>
+            <tr>
+              <td><strong>6DAttack</strong></td>
+              <td>6DoF pose estimation</td>
+              <td>3D object</td>
+              <td>Controlled pose offset</td>
+              <td>View-consistent trigger for 3D pose models.</td>
+            </tr>
+            <tr>
+              <td><strong>BadHMP</strong></td>
+              <td>Motion prediction</td>
+              <td>Left-arm motion</td>
+              <td>Wrong future trajectory</td>
+              <td>Smooth and natural sequence poisoning.</td>
+            </tr>
+            <tr>
+              <td><strong>PSBA</strong></td>
+              <td>Skeleton action recognition</td>
+              <td>Physical body motion</td>
+              <td>Wrong class label</td>
+              <td>First physical-world backdoor study for SAR.</td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="grid-4">
+          <article class="card" style="--accent: var(--teal);">
+            <div class="icon">1</div>
+            <h3>Low poison ratio</h3>
+            <p>Small poisoned subsets can still produce high ASR.</p>
+          </article>
+          <article class="card" style="--accent: var(--green);">
+            <div class="icon">2</div>
+            <h3>Utility preserved</h3>
+            <p>Clean performance stays close to the benign model.</p>
+          </article>
+          <article class="card" style="--accent: var(--coral);">
+            <div class="icon">3</div>
+            <h3>Stealth matters</h3>
+            <p>Poisoned labels or motions are designed to look plausible.</p>
+          </article>
+          <article class="card" style="--accent: var(--violet);">
+            <div class="icon">4</div>
+            <h3>Defense gap</h3>
+            <p>Existing defenses are only partial.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide">
+      <div class="slide-inner">
+        <div class="kicker">Future Directions</div>
+        <h2>Open Problems After These Four Papers</h2>
+        <div class="grid-3">
+          <article class="card" style="--accent: var(--teal);">
+            <div class="icon">D1</div>
+            <h3>HPE-specific defenses</h3>
+            <p>Detect abnormal keypoint labels, zero heatmaps, single-point collapse, or impossible skeletons.</p>
+          </article>
+          <article class="card" style="--accent: var(--coral);">
+            <div class="icon">D2</div>
+            <h3>Multi-person targeting</h3>
+            <p>Current disappearance attacks often affect all persons. Selective disappearance remains open.</p>
+          </article>
+          <article class="card" style="--accent: var(--violet);">
+            <div class="icon">D3</div>
+            <h3>3D HPE</h3>
+            <p>Extending disappearance and pose manipulation to 3D skeleton estimation is underexplored.</p>
+          </article>
+          <article class="card" style="--accent: var(--amber);">
+            <div class="icon">D4</div>
+            <h3>Advanced stealth</h3>
+            <p>Future attacks may combine 3D triggers, warping, reflection, or sample-specific triggers.</p>
+          </article>
+          <article class="card" style="--accent: var(--green);">
+            <div class="icon">D5</div>
+            <h3>Certified robustness</h3>
+            <p>Safety-critical systems need guarantees, not only empirical defense tests.</p>
+          </article>
+          <article class="card" style="--accent: var(--blue);">
+            <div class="icon">D6</div>
+            <h3>Real deployments</h3>
+            <p>More evaluation is needed in autonomous driving, robotics, and healthcare pipelines.</p>
+          </article>
         </div>
       </div>
     </section>
@@ -1144,7 +1690,7 @@
           </article>
         </div>
         <div class="callout">
-          For a 45-minute presentation, spend about 8 minutes on basics, 10 minutes on techniques, 10 minutes on RF, 14 minutes on HPE, and 3 minutes on conclusion.
+          For a 45-minute presentation, spend about 7 minutes on basics, 8 minutes on current techniques, 8 minutes on RF, 19 minutes on the four HPE papers, and 3 minutes on conclusion.
         </div>
       </div>
     </section>
@@ -1172,7 +1718,7 @@
         <path d="M14.8 5.2a1 1 0 0 1 0 1.4L9.4 12l5.4 5.4a1 1 0 1 1-1.4 1.4l-6.1-6.1a1 1 0 0 1 0-1.4l6.1-6.1a1 1 0 0 1 1.4 0Z" />
       </svg>
     </button>
-    <div class="counter" id="counter">1 / 19</div>
+    <div class="counter" id="counter">1 / 31</div>
     <button id="nextBtn" type="button" aria-label="Next slide">
       <svg viewBox="0 0 24 24" aria-hidden="true">
         <path d="M9.2 18.8a1 1 0 0 1 0-1.4l5.4-5.4-5.4-5.4a1 1 0 1 1 1.4-1.4l6.1 6.1a1 1 0 0 1 0 1.4l-6.1 6.1a1 1 0 0 1-1.4 0Z" />
