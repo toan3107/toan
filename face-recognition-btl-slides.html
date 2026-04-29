@@ -1,0 +1,1652 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BTL AI - Hệ thống nhận diện khuôn mặt</title>
+  <style>
+    :root {
+      --bg: #f6f1e8;
+      --panel: rgba(255, 255, 255, 0.78);
+      --panel-strong: rgba(255, 255, 255, 0.92);
+      --ink: #1f2a37;
+      --muted: #566476;
+      --line: rgba(31, 42, 55, 0.12);
+      --accent: #cf5c36;
+      --accent-2: #157a6e;
+      --accent-3: #2b5d8b;
+      --accent-4: #f4b860;
+      --shadow: 0 20px 60px rgba(31, 42, 55, 0.14);
+      --radius: 28px;
+      --slide-gap: 32px;
+      --slide-width: min(1200px, calc(100vw - 48px));
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      color: var(--ink);
+      font-family: "Aptos", "Bahnschrift", "Segoe UI", sans-serif;
+      background:
+        radial-gradient(circle at top left, rgba(244, 184, 96, 0.35), transparent 28%),
+        radial-gradient(circle at top right, rgba(21, 122, 110, 0.18), transparent 24%),
+        linear-gradient(160deg, #f7f0e4 0%, #e8efe9 44%, #ebf2f7 100%);
+    }
+
+    .deck {
+      width: 100%;
+      padding: 24px 0 96px;
+      display: grid;
+      gap: var(--slide-gap);
+      justify-items: center;
+    }
+
+    .slide {
+      width: var(--slide-width);
+      min-height: calc(100vh - 48px);
+      background: var(--panel);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.65);
+      border-radius: 32px;
+      box-shadow: var(--shadow);
+      padding: 34px 40px 34px;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      gap: 22px;
+    }
+
+    .slide::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background:
+        linear-gradient(125deg, rgba(255, 255, 255, 0.26), transparent 32%),
+        linear-gradient(0deg, rgba(255, 255, 255, 0.22), transparent 18%);
+      pointer-events: none;
+    }
+
+    .slide-head,
+    .slide-foot,
+    .content {
+      position: relative;
+      z-index: 1;
+    }
+
+    .slide-head {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 20px;
+      border-bottom: 1px solid var(--line);
+      padding-bottom: 16px;
+    }
+
+    .kicker {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      border-radius: 999px;
+      padding: 8px 14px;
+      background: rgba(255, 255, 255, 0.75);
+      border: 1px solid rgba(31, 42, 55, 0.08);
+      color: var(--muted);
+      font-size: 13px;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      width: fit-content;
+      margin-bottom: 12px;
+    }
+
+    .dot {
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      background: var(--accent);
+      box-shadow: 0 0 0 5px rgba(207, 92, 54, 0.12);
+    }
+
+    h1,
+    h2,
+    h3 {
+      margin: 0;
+      line-height: 1.08;
+      letter-spacing: -0.03em;
+    }
+
+    h1 {
+      font-size: clamp(2.5rem, 5vw, 4.25rem);
+      font-family: "Cambria", "Georgia", serif;
+      max-width: 9.5em;
+    }
+
+    h2 {
+      font-size: clamp(1.7rem, 3vw, 2.45rem);
+      font-family: "Cambria", "Georgia", serif;
+      max-width: 10.5em;
+    }
+
+    h3 {
+      font-size: 1.08rem;
+      margin-bottom: 12px;
+    }
+
+    p {
+      margin: 0;
+      line-height: 1.58;
+      color: var(--muted);
+      font-size: 1rem;
+    }
+
+    .subtitle {
+      font-size: 1.08rem;
+      max-width: 62ch;
+    }
+
+    .slide-no {
+      font-weight: 700;
+      color: var(--accent-3);
+      background: rgba(43, 93, 139, 0.09);
+      border: 1px solid rgba(43, 93, 139, 0.14);
+      border-radius: 999px;
+      padding: 10px 16px;
+      min-width: 86px;
+      text-align: center;
+    }
+
+    .content {
+      display: grid;
+      gap: 18px;
+      flex: 1;
+    }
+
+    .two-col {
+      grid-template-columns: 1.15fr 0.85fr;
+      align-items: stretch;
+    }
+
+    .three-col {
+      grid-template-columns: repeat(3, 1fr);
+    }
+
+    .split-40 {
+      grid-template-columns: 0.95fr 1.05fr;
+    }
+
+    .card,
+    .panel {
+      background: var(--panel-strong);
+      border: 1px solid rgba(31, 42, 55, 0.08);
+      border-radius: var(--radius);
+      padding: 20px;
+      box-shadow: 0 10px 32px rgba(31, 42, 55, 0.08);
+    }
+
+    .hero {
+      display: grid;
+      grid-template-columns: 1.2fr 0.8fr;
+      gap: 22px;
+      align-items: stretch;
+    }
+
+    .hero-copy {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      justify-content: center;
+    }
+
+    .hero-copy p {
+      font-size: 1.05rem;
+      max-width: 56ch;
+    }
+
+    .meta-grid,
+    .stat-grid,
+    .cards-grid,
+    .team-grid,
+    .api-grid {
+      display: grid;
+      gap: 14px;
+    }
+
+    .meta-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .stat-grid {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+
+    .cards-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .api-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .team-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .meta,
+    .stat,
+    .ticket,
+    .team-card {
+      border-radius: 22px;
+      border: 1px solid rgba(31, 42, 55, 0.08);
+      background: rgba(255, 255, 255, 0.92);
+      padding: 16px 18px;
+    }
+
+    .meta strong,
+    .stat strong,
+    .ticket strong,
+    .team-card strong {
+      display: block;
+      margin-bottom: 8px;
+      color: var(--ink);
+      font-size: 0.97rem;
+    }
+
+    .meta span,
+    .stat span,
+    .ticket span,
+    .team-card span {
+      color: var(--muted);
+      line-height: 1.5;
+      font-size: 0.96rem;
+      display: block;
+    }
+
+    .badge-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      border-radius: 999px;
+      padding: 10px 14px;
+      background: rgba(21, 122, 110, 0.1);
+      color: var(--accent-2);
+      font-weight: 600;
+      font-size: 0.92rem;
+    }
+
+    .accent {
+      color: var(--accent);
+    }
+
+    .list,
+    .steps,
+    .checklist {
+      margin: 0;
+      padding-left: 20px;
+      color: var(--muted);
+      display: grid;
+      gap: 10px;
+      line-height: 1.52;
+    }
+
+    .steps li::marker {
+      color: var(--accent);
+      font-weight: 700;
+    }
+
+    .checklist li::marker {
+      color: var(--accent-2);
+    }
+
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      border: 1px solid rgba(31, 42, 55, 0.08);
+      border-radius: 999px;
+      padding: 7px 12px;
+      font-size: 0.86rem;
+      color: var(--muted);
+      background: rgba(255, 255, 255, 0.8);
+      margin-right: 8px;
+      margin-bottom: 8px;
+    }
+
+    .timeline {
+      display: grid;
+      gap: 14px;
+    }
+
+    .time-row {
+      display: grid;
+      grid-template-columns: 165px 1fr;
+      gap: 14px;
+      align-items: stretch;
+    }
+
+    .time-label,
+    .time-body {
+      border-radius: 22px;
+      padding: 16px 18px;
+      background: rgba(255, 255, 255, 0.92);
+      border: 1px solid rgba(31, 42, 55, 0.08);
+    }
+
+    .time-label {
+      font-weight: 700;
+      color: var(--accent-3);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+    }
+
+    .time-body {
+      display: grid;
+      gap: 8px;
+      color: var(--muted);
+    }
+
+    .rubric {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+
+    .rubric .card {
+      padding: 18px;
+    }
+
+    .score {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 64px;
+      padding: 10px 12px;
+      border-radius: 16px;
+      background: rgba(244, 184, 96, 0.2);
+      color: #85581d;
+      font-weight: 700;
+      margin-bottom: 12px;
+    }
+
+    .svg-box {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 260px;
+      overflow: hidden;
+    }
+
+    svg {
+      width: 100%;
+      height: auto;
+    }
+
+    .legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 12px;
+    }
+
+    .legend-item {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--muted);
+      font-size: 0.9rem;
+    }
+
+    .swatch {
+      width: 16px;
+      height: 16px;
+      border-radius: 4px;
+    }
+
+    .footnote {
+      font-size: 0.9rem;
+      color: var(--muted);
+    }
+
+    .slide-foot {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      border-top: 1px solid var(--line);
+      padding-top: 16px;
+      color: var(--muted);
+      font-size: 0.92rem;
+    }
+
+    .nav {
+      position: fixed;
+      right: 20px;
+      bottom: 18px;
+      z-index: 20;
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      background: rgba(255, 255, 255, 0.88);
+      border: 1px solid rgba(31, 42, 55, 0.08);
+      border-radius: 999px;
+      padding: 8px;
+      box-shadow: 0 12px 32px rgba(31, 42, 55, 0.12);
+      backdrop-filter: blur(12px);
+    }
+
+    .nav button {
+      border: 0;
+      background: white;
+      color: var(--ink);
+      padding: 10px 14px;
+      border-radius: 999px;
+      font: inherit;
+      cursor: pointer;
+      box-shadow: inset 0 0 0 1px rgba(31, 42, 55, 0.08);
+    }
+
+    .nav button:hover {
+      background: #f1f5f9;
+    }
+
+    .progress {
+      min-width: 96px;
+      text-align: center;
+      color: var(--accent-3);
+      font-weight: 700;
+      font-size: 0.92rem;
+    }
+
+    .mono {
+      font-family: "Consolas", "Courier New", monospace;
+      font-size: 0.94rem;
+      color: var(--ink);
+    }
+
+    .muted {
+      color: var(--muted);
+    }
+
+    .tight {
+      gap: 10px;
+    }
+
+    @media (max-width: 980px) {
+      .slide {
+        min-height: auto;
+        padding: 28px 24px 28px;
+      }
+
+      .hero,
+      .two-col,
+      .three-col,
+      .split-40,
+      .rubric,
+      .stat-grid,
+      .meta-grid,
+      .cards-grid,
+      .api-grid,
+      .team-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .slide-head,
+      .slide-foot {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .time-row {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media print {
+      body {
+        background: white;
+      }
+
+      .deck {
+        gap: 0;
+        padding: 0;
+      }
+
+      .slide {
+        width: 100%;
+        min-height: 100vh;
+        border-radius: 0;
+        box-shadow: none;
+        page-break-after: always;
+      }
+
+      .nav {
+        display: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="deck" id="deck">
+    <section class="slide" id="slide-1">
+      <div class="slide-head">
+        <div>
+          <div class="kicker"><span class="dot"></span> Bài tập lớn - Thực hành phát triển hệ thống trí tuệ nhân tạo</div>
+          <h1>Hệ thống nhận diện khuôn mặt cho kiểm soát ra vào thời gian thực</h1>
+          <p class="subtitle">Bộ slide HTML cho đề tài BTL: trình bày use case, yêu cầu đề bài, kiến trúc full-stack, pipeline AI, phân công nhóm 4 người và lộ trình triển khai bám sát tiêu chí chấm điểm.</p>
+        </div>
+        <div class="slide-no">01 / 15</div>
+      </div>
+
+      <div class="content hero">
+        <div class="hero-copy card">
+          <div class="badge-row">
+            <span class="badge">Use case: Kiểm soát ra vào phòng lab / công ty</span>
+            <span class="badge">Hình thức chạy: Docker Compose</span>
+            <span class="badge">Stack gợi ý: React + FastAPI + Qdrant</span>
+          </div>
+          <p><strong class="accent">Ý tưởng cốt lõi:</strong> người dùng đứng trước camera, hệ thống phát hiện khuôn mặt, trích xuất embedding, so khớp với dữ liệu đã đăng ký và đưa ra quyết định <span class="mono">Authorized / Unknown / Denied</span>, đồng thời lưu log và snapshot để tra cứu sau.</p>
+          <div class="meta-grid">
+            <div class="meta">
+              <strong>Mục tiêu trình bày</strong>
+              <span>Chứng minh nhóm hiểu rõ yêu cầu đề bài và có kế hoạch làm một hệ thống AI hoàn chỉnh, không chỉ dừng ở notebook hoặc mô hình.</span>
+            </div>
+            <div class="meta">
+              <strong>Đầu ra của dự án</strong>
+              <span>Frontend người dùng, frontend admin, backend API, worker nền, PostgreSQL, MinIO, Qdrant, Redis hoặc RabbitMQ, nginx và Docker Compose.</span>
+            </div>
+            <div class="meta">
+              <strong>Nhóm thực hiện</strong>
+              <span>Điền tên nhóm, mã sinh viên, giảng viên và 4 thành viên vào phần này trước khi thuyết trình hoặc nộp.</span>
+            </div>
+            <div class="meta">
+              <strong>Từ khóa</strong>
+              <span>Face detection, face embedding, vector search, access control, event logging, containerized deployment.</span>
+            </div>
+          </div>
+        </div>
+        <div class="panel svg-box" aria-label="Minh họa camera và khuôn mặt">
+          <svg viewBox="0 0 580 560" role="img">
+            <defs>
+              <linearGradient id="heroGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#1e5a89" />
+                <stop offset="100%" stop-color="#157a6e" />
+              </linearGradient>
+            </defs>
+            <rect x="35" y="40" width="510" height="480" rx="36" fill="url(#heroGrad)" opacity="0.1" />
+            <rect x="100" y="86" width="380" height="388" rx="28" fill="#ffffff" stroke="#d6dde6" stroke-width="3"/>
+            <rect x="125" y="112" width="330" height="242" rx="22" fill="#edf4f8"/>
+            <rect x="150" y="138" width="282" height="190" rx="18" fill="#1f2a37" opacity="0.96"/>
+            <circle cx="292" cy="230" r="72" fill="#f3c89a"/>
+            <rect x="250" y="300" width="84" height="28" rx="14" fill="#d4865d"/>
+            <path d="M235 199 Q292 150 349 199" fill="#b56741"/>
+            <path d="M248 212 Q272 196 288 212" stroke="#1f2a37" stroke-width="7" stroke-linecap="round" fill="none"/>
+            <path d="M296 212 Q312 196 336 212" stroke="#1f2a37" stroke-width="7" stroke-linecap="round" fill="none"/>
+            <path d="M278 248 Q292 270 306 248" stroke="#975d42" stroke-width="5" fill="none" stroke-linecap="round"/>
+            <path d="M260 278 Q292 298 324 278" stroke="#8e4f41" stroke-width="6" fill="none" stroke-linecap="round"/>
+            <rect x="178" y="166" width="228" height="128" rx="24" fill="none" stroke="#f4b860" stroke-width="4" stroke-dasharray="12 10"/>
+            <line x1="292" y1="145" x2="292" y2="315" stroke="#cf5c36" stroke-width="3" stroke-dasharray="8 8"/>
+            <line x1="165" y1="230" x2="420" y2="230" stroke="#cf5c36" stroke-width="3" stroke-dasharray="8 8"/>
+            <rect x="125" y="374" width="150" height="68" rx="18" fill="#ffffff" stroke="#dde5ee"/>
+            <text x="150" y="403" font-size="20" fill="#157a6e" font-family="Segoe UI, sans-serif" font-weight="700">MATCH</text>
+            <text x="150" y="428" font-size="16" fill="#566476" font-family="Segoe UI, sans-serif">Nguyễn Văn A - 96.8%</text>
+            <rect x="291" y="374" width="164" height="68" rx="18" fill="#ffffff" stroke="#dde5ee"/>
+            <text x="314" y="403" font-size="20" fill="#2b5d8b" font-family="Segoe UI, sans-serif" font-weight="700">ACCESS</text>
+            <text x="314" y="428" font-size="16" fill="#566476" font-family="Segoe UI, sans-serif">Authorized at 08:02:14</text>
+            <circle cx="292" cy="78" r="10" fill="#cf5c36"/>
+            <path d="M92 258 Q62 260 48 290" stroke="#157a6e" stroke-width="5" fill="none" stroke-linecap="round"/>
+            <path d="M490 258 Q520 260 534 290" stroke="#157a6e" stroke-width="5" fill="none" stroke-linecap="round"/>
+          </svg>
+        </div>
+      </div>
+
+      <div class="slide-foot">
+        <span>Chủ đề phù hợp với đề bài vì có xử lý ảnh thời gian thực, lưu trữ dữ liệu, vector search và đóng gói end-to-end.</span>
+        <span>Trang bìa</span>
+      </div>
+    </section>
+
+    <section class="slide" id="slide-2">
+      <div class="slide-head">
+        <div>
+          <div class="kicker"><span class="dot"></span> Phân tích đề bài</div>
+          <h2>Đề bài yêu cầu những gì nếu chọn nhánh nhận diện khuôn mặt</h2>
+          <p class="subtitle">Phần này dùng để chứng minh nhóm đã đọc kỹ đề, hiểu rõ các thành phần bắt buộc và tránh lỗi thường gặp như chỉ làm mô hình mà không làm thành hệ thống.</p>
+        </div>
+        <div class="slide-no">02 / 15</div>
+      </div>
+
+      <div class="content two-col">
+        <div class="card">
+          <h3>Checklist yêu cầu bắt buộc</h3>
+          <ul class="checklist">
+            <li>Có một <strong>use case rõ ràng</strong>: ví dụ kiểm soát ra vào công ty, phòng lab, ký túc xá hoặc khách sạn.</li>
+            <li>Có <strong>frontend người dùng</strong> để hiển thị camera, kết quả nhận diện và trạng thái cho phép hoặc từ chối.</li>
+            <li>Có <strong>frontend admin</strong> để quản lý người dùng, ảnh mẫu, cấu hình hệ thống và log nhận diện.</li>
+            <li>Có <strong>backend API</strong> để kết nối toàn bộ luồng nghiệp vụ.</li>
+            <li>Có <strong>database</strong> để lưu tài khoản, thông tin người được nhận diện, log sự kiện.</li>
+            <li>Có <strong>object storage</strong> để lưu ảnh gốc, ảnh khuôn mặt mẫu, snapshot khi quét camera.</li>
+            <li>Có <strong>vector database</strong> để lưu embedding khuôn mặt phục vụ tìm kiếm gần nhất.</li>
+            <li>Có <strong>queue hoặc worker nền</strong> cho tác vụ sinh embedding, re-index hoặc xử lý nền.</li>
+            <li>Có <strong>nginx</strong> làm reverse proxy hoặc load balancer.</li>
+            <li>Có <strong>Docker Compose</strong> để giảng viên chỉ cần chạy <span class="mono">docker-compose up -d</span>.</li>
+            <li>Có <strong>README.md</strong> mô tả kiến trúc, cách chạy, biến môi trường, dependency.</li>
+            <li>Repo GitHub <strong>private</strong>, đủ quyền cho thành viên và giảng viên theo danh sách đề bài.</li>
+          </ul>
+        </div>
+
+        <div class="panel">
+          <h3>Những lỗi hay khiến mất điểm</h3>
+          <div class="cards-grid">
+            <div class="ticket">
+              <strong>Chỉ có notebook demo</strong>
+              <span>Không có frontend, không có backend service, không có Docker Compose.</span>
+            </div>
+            <div class="ticket">
+              <strong>Thiếu vector DB hoặc queue</strong>
+              <span>Đề bài nêu rõ lưu trữ nhiều loại và có xử lý nền. Bỏ hai phần này rất dễ bị trừ.</span>
+            </div>
+            <div class="ticket">
+              <strong>Không có admin frontend</strong>
+              <span>Nhiều nhóm chỉ làm giao diện camera mà quên phần quản trị, dẫn tới không đủ yêu cầu.</span>
+            </div>
+            <div class="ticket">
+              <strong>README sơ sài</strong>
+              <span>Giảng viên không tái hiện được hệ thống hoặc không hiểu cách chạy môi trường.</span>
+            </div>
+            <div class="ticket">
+              <strong>Hard-code secret</strong>
+              <span>Commit token, password hoặc config nhạy cảm làm bài vừa sai yêu cầu vừa thiếu an toàn.</span>
+            </div>
+            <div class="ticket">
+              <strong>Ghép hệ thống quá muộn</strong>
+              <span>Mỗi người làm riêng, đến cuối mới docker hóa dẫn tới vỡ API và khó demo.</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="slide-foot">
+        <span>Thông điệp chính: đây là bài làm hệ thống AI hoàn chỉnh, không phải bài demo mô hình đơn lẻ.</span>
+        <span>Yêu cầu bắt buộc</span>
+      </div>
+    </section>
+
+    <section class="slide" id="slide-3">
+      <div class="slide-head">
+        <div>
+          <div class="kicker"><span class="dot"></span> Use case</div>
+          <h2>Phạm vi đề tài và kịch bản sử dụng cụ thể</h2>
+          <p class="subtitle">Nhóm nên chốt một use case càng sớm càng tốt để toàn bộ kiến trúc, dữ liệu và giao diện bám đúng tình huống thực tế thay vì làm chung chung.</p>
+        </div>
+        <div class="slide-no">03 / 15</div>
+      </div>
+
+      <div class="content split-40">
+        <div class="card">
+          <h3>Use case đề xuất</h3>
+          <p><strong>Hệ thống kiểm soát ra vào phòng lab bằng nhận diện khuôn mặt thời gian thực.</strong></p>
+          <ul class="steps">
+            <li>Admin tạo hồ sơ nhân sự hoặc sinh viên được phép vào khu vực.</li>
+            <li>Admin upload 3 đến 5 ảnh khuôn mặt mẫu cho mỗi người.</li>
+            <li>Worker nền sinh embedding và đồng bộ sang Qdrant.</li>
+            <li>Camera tại cửa vào gửi frame liên tục tới backend hoặc frontend gửi theo chu kỳ.</li>
+            <li>Backend gọi AI pipeline để phát hiện mặt và so khớp vector.</li>
+            <li>Hệ thống trả về danh tính, độ tin cậy và quyết định cho phép hay từ chối.</li>
+            <li>Log và ảnh snapshot được lưu để tra cứu sau.</li>
+          </ul>
+          <h3 style="margin-top: 14px;">Giá trị demo</h3>
+          <div>
+            <span class="tag">Dễ thuyết trình</span>
+            <span class="tag">Dễ quay video demo</span>
+            <span class="tag">Bám sát xử lý realtime</span>
+            <span class="tag">Có đủ lý do dùng DB, queue, storage, vector DB</span>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="svg-box" aria-label="Minh họa use case cửa kiểm soát ra vào">
+            <svg viewBox="0 0 700 500" role="img">
+              <rect x="20" y="20" width="660" height="460" rx="30" fill="#f9fbfc" stroke="#d7e1ea" stroke-width="3"/>
+              <rect x="58" y="70" width="194" height="360" rx="20" fill="#1f2a37"/>
+              <rect x="76" y="94" width="158" height="312" rx="12" fill="#c9d4df"/>
+              <circle cx="218" cy="250" r="10" fill="#cf5c36"/>
+              <rect x="332" y="98" width="170" height="290" rx="18" fill="#ffffff" stroke="#dce3eb" stroke-width="3"/>
+              <circle cx="418" cy="190" r="54" fill="#f2c191"/>
+              <path d="M371 176 Q418 140 465 176" fill="#5a392c"/>
+              <path d="M393 193 Q408 182 421 193" stroke="#1f2a37" stroke-width="5" fill="none" stroke-linecap="round"/>
+              <path d="M420 193 Q434 182 447 193" stroke="#1f2a37" stroke-width="5" fill="none" stroke-linecap="round"/>
+              <path d="M403 221 Q418 236 433 221" stroke="#975d42" stroke-width="4" fill="none" stroke-linecap="round"/>
+              <path d="M395 246 Q418 258 441 246" stroke="#8e4f41" stroke-width="5" fill="none" stroke-linecap="round"/>
+              <rect x="370" y="272" width="96" height="76" rx="18" fill="#2b5d8b"/>
+              <rect x="102" y="138" width="108" height="108" rx="16" fill="none" stroke="#f4b860" stroke-width="4" stroke-dasharray="12 9"/>
+              <line x1="64" y1="192" x2="246" y2="192" stroke="#f4b860" stroke-width="3" stroke-dasharray="8 8"/>
+              <line x1="157" y1="100" x2="157" y2="284" stroke="#f4b860" stroke-width="3" stroke-dasharray="8 8"/>
+              <path d="M247 180 C290 170 332 170 374 178" fill="none" stroke="#157a6e" stroke-width="5" stroke-linecap="round"/>
+              <rect x="526" y="118" width="118" height="72" rx="18" fill="#ffffff" stroke="#dce3eb" stroke-width="3"/>
+              <text x="548" y="149" font-size="20" fill="#157a6e" font-family="Segoe UI, sans-serif" font-weight="700">IDENTITY</text>
+              <text x="548" y="171" font-size="16" fill="#566476" font-family="Segoe UI, sans-serif">Nguyễn Văn A</text>
+              <rect x="526" y="214" width="118" height="72" rx="18" fill="#ffffff" stroke="#dce3eb" stroke-width="3"/>
+              <text x="548" y="245" font-size="18" fill="#2b5d8b" font-family="Segoe UI, sans-serif" font-weight="700">CONFIDENCE</text>
+              <text x="562" y="267" font-size="18" fill="#566476" font-family="Segoe UI, sans-serif">96.8%</text>
+              <rect x="526" y="310" width="118" height="72" rx="18" fill="#eaf7f0" stroke="#c8e8da" stroke-width="3"/>
+              <text x="557" y="341" font-size="20" fill="#157a6e" font-family="Segoe UI, sans-serif" font-weight="700">ACCESS</text>
+              <text x="566" y="363" font-size="16" fill="#566476" font-family="Segoe UI, sans-serif">Allow</text>
+            </svg>
+          </div>
+          <div class="legend">
+            <span class="legend-item"><span class="swatch" style="background:#1f2a37"></span> Cửa và camera</span>
+            <span class="legend-item"><span class="swatch" style="background:#f4b860"></span> Vùng phát hiện khuôn mặt</span>
+            <span class="legend-item"><span class="swatch" style="background:#157a6e"></span> Kết quả nhận diện</span>
+            <span class="legend-item"><span class="swatch" style="background:#2b5d8b"></span> Quyết định truy cập</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="slide-foot">
+        <span>Use case cụ thể giúp giải thích vì sao hệ thống cần log, queue, vector DB và giao diện quản trị.</span>
+        <span>Kịch bản sử dụng</span>
+      </div>
+    </section>
+
+    <section class="slide" id="slide-4">
+      <div class="slide-head">
+        <div>
+          <div class="kicker"><span class="dot"></span> Kiến trúc tổng thể</div>
+          <h2>Sơ đồ full-stack bám sát yêu cầu của đề bài</h2>
+          <p class="subtitle">Kiến trúc này có thể triển khai được bằng Docker Compose, đồng thời đủ tất cả các thành phần bắt buộc: frontend, backend, worker, database, object storage, vector DB, queue và nginx.</p>
+        </div>
+        <div class="slide-no">04 / 15</div>
+      </div>
+
+      <div class="content">
+        <div class="panel svg-box" aria-label="Sơ đồ kiến trúc hệ thống nhận diện khuôn mặt">
+          <svg viewBox="0 0 1240 560" role="img">
+            <defs>
+              <marker id="arrowA" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+                <path d="M0,0 L10,3 L0,6 Z" fill="#708090"/>
+              </marker>
+            </defs>
+            <rect x="18" y="24" width="1204" height="510" rx="30" fill="#f9fbfc" stroke="#dfe7ef" stroke-width="3"/>
+
+            <rect x="52" y="170" width="170" height="110" rx="20" fill="#ffffff" stroke="#d9e2eb" stroke-width="3"/>
+            <text x="85" y="213" font-size="28" fill="#1f2a37" font-family="Segoe UI, sans-serif" font-weight="700">User UI</text>
+            <text x="86" y="246" font-size="18" fill="#566476" font-family="Segoe UI, sans-serif">Camera view</text>
+            <text x="86" y="270" font-size="18" fill="#566476" font-family="Segoe UI, sans-serif">Realtime result</text>
+
+            <rect x="52" y="316" width="170" height="110" rx="20" fill="#ffffff" stroke="#d9e2eb" stroke-width="3"/>
+            <text x="76" y="359" font-size="28" fill="#1f2a37" font-family="Segoe UI, sans-serif" font-weight="700">Admin UI</text>
+            <text x="86" y="392" font-size="18" fill="#566476" font-family="Segoe UI, sans-serif">Manage users</text>
+            <text x="86" y="416" font-size="18" fill="#566476" font-family="Segoe UI, sans-serif">Images and logs</text>
+
+            <rect x="282" y="132" width="160" height="290" rx="24" fill="#eff5f9" stroke="#d8e4ee" stroke-width="3"/>
+            <text x="321" y="178" font-size="30" fill="#2b5d8b" font-family="Segoe UI, sans-serif" font-weight="700">nginx</text>
+            <text x="315" y="214" font-size="18" fill="#566476" font-family="Segoe UI, sans-serif">Route / to UI</text>
+            <text x="315" y="238" font-size="18" fill="#566476" font-family="Segoe UI, sans-serif">Route /api</text>
+            <text x="315" y="262" font-size="18" fill="#566476" font-family="Segoe UI, sans-serif">Proxy services</text>
+
+            <rect x="492" y="108" width="200" height="140" rx="24" fill="#ffffff" stroke="#dbe4ec" stroke-width="3"/>
+            <text x="531" y="156" font-size="30" fill="#1f2a37" font-family="Segoe UI, sans-serif" font-weight="700">Backend API</text>
+            <text x="525" y="189" font-size="18" fill="#566476" font-family="Segoe UI, sans-serif">FastAPI or Django</text>
+            <text x="525" y="213" font-size="18" fill="#566476" font-family="Segoe UI, sans-serif">Auth + CRUD + logs</text>
+
+            <rect x="492" y="284" width="200" height="140" rx="24" fill="#ffffff" stroke="#dbe4ec" stroke-width="3"/>
+            <text x="554" y="332" font-size="30" fill="#1f2a37" font-family="Segoe UI, sans-serif" font-weight="700">Worker</text>
+            <text x="530" y="365" font-size="18" fill="#566476" font-family="Segoe UI, sans-serif">Embedding jobs</text>
+            <text x="530" y="389" font-size="18" fill="#566476" font-family="Segoe UI, sans-serif">Re-index tasks</text>
+
+            <rect x="750" y="82" width="190" height="104" rx="22" fill="#ffffff" stroke="#dbe4ec" stroke-width="3"/>
+            <text x="805" y="125" font-size="28" fill="#157a6e" font-family="Segoe UI, sans-serif" font-weight="700">MinIO</text>
+            <text x="784" y="154" font-size="16" fill="#566476" font-family="Segoe UI, sans-serif">Ảnh gốc, snapshot</text>
+
+            <rect x="750" y="212" width="190" height="104" rx="22" fill="#ffffff" stroke="#dbe4ec" stroke-width="3"/>
+            <text x="773" y="255" font-size="28" fill="#2b5d8b" font-family="Segoe UI, sans-serif" font-weight="700">PostgreSQL</text>
+            <text x="782" y="284" font-size="16" fill="#566476" font-family="Segoe UI, sans-serif">Users, logs, config</text>
+
+            <rect x="750" y="342" width="190" height="104" rx="22" fill="#ffffff" stroke="#dbe4ec" stroke-width="3"/>
+            <text x="794" y="385" font-size="28" fill="#cf5c36" font-family="Segoe UI, sans-serif" font-weight="700">Qdrant</text>
+            <text x="776" y="414" font-size="16" fill="#566476" font-family="Segoe UI, sans-serif">Face embeddings</text>
+
+            <rect x="990" y="158" width="190" height="104" rx="22" fill="#ffffff" stroke="#dbe4ec" stroke-width="3"/>
+            <text x="1042" y="201" font-size="28" fill="#85581d" font-family="Segoe UI, sans-serif" font-weight="700">Redis</text>
+            <text x="1035" y="230" font-size="16" fill="#566476" font-family="Segoe UI, sans-serif">Queue / Broker</text>
+
+            <rect x="990" y="298" width="190" height="104" rx="22" fill="#ffffff" stroke="#dbe4ec" stroke-width="3"/>
+            <text x="1023" y="341" font-size="28" fill="#1f2a37" font-family="Segoe UI, sans-serif" font-weight="700">AI Service</text>
+            <text x="1018" y="370" font-size="16" fill="#566476" font-family="Segoe UI, sans-serif">Detect + Embed + Match</text>
+
+            <line x1="222" y1="225" x2="282" y2="225" stroke="#708090" stroke-width="4" marker-end="url(#arrowA)"/>
+            <line x1="222" y1="370" x2="282" y2="370" stroke="#708090" stroke-width="4" marker-end="url(#arrowA)"/>
+            <line x1="442" y1="226" x2="492" y2="178" stroke="#708090" stroke-width="4" marker-end="url(#arrowA)"/>
+            <line x1="442" y1="328" x2="492" y2="354" stroke="#708090" stroke-width="4" marker-end="url(#arrowA)"/>
+            <line x1="692" y1="162" x2="750" y2="134" stroke="#708090" stroke-width="4" marker-end="url(#arrowA)"/>
+            <line x1="692" y1="178" x2="750" y2="264" stroke="#708090" stroke-width="4" marker-end="url(#arrowA)"/>
+            <line x1="692" y1="192" x2="990" y2="350" stroke="#708090" stroke-width="4" marker-end="url(#arrowA)"/>
+            <line x1="692" y1="354" x2="750" y2="394" stroke="#708090" stroke-width="4" marker-end="url(#arrowA)"/>
+            <line x1="692" y1="354" x2="990" y2="210" stroke="#708090" stroke-width="4" marker-end="url(#arrowA)"/>
+            <line x1="1085" y1="262" x2="1085" y2="298" stroke="#708090" stroke-width="4" marker-end="url(#arrowA)"/>
+            <line x1="990" y1="350" x2="940" y2="390" stroke="#708090" stroke-width="4" marker-end="url(#arrowA)"/>
+          </svg>
+        </div>
+        <div class="stat-grid">
+          <div class="stat">
+            <strong>Frontend user</strong>
+            <span>Hiển thị camera, kết quả nhận diện, trạng thái ra vào.</span>
+          </div>
+          <div class="stat">
+            <strong>Frontend admin</strong>
+            <span>Quản lý người dùng, ảnh mẫu, job embedding, log.</span>
+          </div>
+          <div class="stat">
+            <strong>Backend + worker</strong>
+            <span>API nghiệp vụ, queue, xử lý nền và ghi log.</span>
+          </div>
+          <div class="stat">
+            <strong>Hạ tầng lưu trữ</strong>
+            <span>PostgreSQL, MinIO, Qdrant, Redis và reverse proxy nginx.</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="slide-foot">
+        <span>Kiến trúc này vừa sức cho nhóm 4 người, lại phủ đủ các đầu mục chấm điểm của đề.</span>
+        <span>Sơ đồ hệ thống</span>
+      </div>
+    </section>
+
+    <section class="slide" id="slide-5">
+      <div class="slide-head">
+        <div>
+          <div class="kicker"><span class="dot"></span> Thành phần chính</div>
+          <h2>Vai trò của từng service trong hệ thống</h2>
+          <p class="subtitle">Thay vì liệt kê công nghệ rời rạc, phần này giải thích vì sao mỗi service tồn tại và nó giúp đáp ứng yêu cầu nào trong đề.</p>
+        </div>
+        <div class="slide-no">05 / 15</div>
+      </div>
+
+      <div class="content three-col">
+        <div class="card">
+          <h3>Frontend người dùng</h3>
+          <ul class="list">
+            <li>Hiển thị webcam hoặc luồng camera.</li>
+            <li>Gửi frame theo chu kỳ 1 đến 2 giây hoặc qua WebSocket.</li>
+            <li>Hiển thị ảnh, tên, confidence, trạng thái access.</li>
+            <li>Xử lý lỗi: mất camera, backend down, timeout.</li>
+          </ul>
+        </div>
+        <div class="card">
+          <h3>Frontend admin</h3>
+          <ul class="list">
+            <li>Đăng nhập quản trị.</li>
+            <li>CRUD người dùng và danh sách được phép truy cập.</li>
+            <li>Upload nhiều ảnh mẫu cho một người.</li>
+            <li>Xem log, xóa log, cấu hình threshold.</li>
+          </ul>
+        </div>
+        <div class="card">
+          <h3>Backend API</h3>
+          <ul class="list">
+            <li>Quản lý auth, route, validation dữ liệu.</li>
+            <li>Nhận frame, gọi AI service, ghi log.</li>
+            <li>Lưu metadata ảnh, đường dẫn MinIO, cấu hình hệ thống.</li>
+            <li>Tạo job nền sang worker.</li>
+          </ul>
+        </div>
+        <div class="card">
+          <h3>AI service</h3>
+          <ul class="list">
+            <li>Face detection và face alignment.</li>
+            <li>Trích xuất embedding từ ảnh.</li>
+            <li>So khớp với vector database.</li>
+            <li>Áp dụng threshold để quyết định known hay unknown.</li>
+          </ul>
+        </div>
+        <div class="card">
+          <h3>Worker + Queue</h3>
+          <ul class="list">
+            <li>Sinh embedding sau khi upload ảnh mới.</li>
+            <li>Re-index lại vector khi xóa hoặc cập nhật người dùng.</li>
+            <li>Chạy tác vụ nền để user không phải chờ.</li>
+            <li>Lưu trạng thái job để admin theo dõi.</li>
+          </ul>
+        </div>
+        <div class="card">
+          <h3>Lưu trữ và proxy</h3>
+          <ul class="list">
+            <li>PostgreSQL lưu user, logs, config.</li>
+            <li>MinIO lưu ảnh gốc và snapshot.</li>
+            <li>Qdrant lưu embedding khuôn mặt.</li>
+            <li>nginx điều phối request tới frontend và backend.</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="slide-foot">
+        <span>Mỗi service nên là một container riêng để dễ chạy, dễ debug và đúng tinh thần Docker Compose.</span>
+        <span>Giải thích service</span>
+      </div>
+    </section>
+
+    <section class="slide" id="slide-6">
+      <div class="slide-head">
+        <div>
+          <div class="kicker"><span class="dot"></span> Luồng dữ liệu</div>
+          <h2>Luồng đăng ký người dùng và sinh embedding nền</h2>
+          <p class="subtitle">Đây là phần thể hiện rõ vai trò của object storage, queue, worker và vector DB. Nếu trình bày tốt, giảng viên sẽ thấy nhóm làm đúng yêu cầu hơn nhiều so với demo nhận diện đơn giản.</p>
+        </div>
+        <div class="slide-no">06 / 15</div>
+      </div>
+
+      <div class="content two-col">
+        <div class="panel svg-box" aria-label="Sơ đồ luồng đăng ký và sinh embedding">
+          <svg viewBox="0 0 760 520" role="img">
+            <defs>
+              <marker id="arrowB" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+                <path d="M0,0 L10,3 L0,6 Z" fill="#708090"/>
+              </marker>
+            </defs>
+            <rect x="28" y="20" width="704" height="480" rx="28" fill="#f9fbfc" stroke="#dde6ee" stroke-width="3"/>
+            <rect x="54" y="62" width="156" height="78" rx="18" fill="#ffffff" stroke="#dbe4ec" stroke-width="3"/>
+            <text x="93" y="106" font-size="24" fill="#1f2a37" font-family="Segoe UI, sans-serif" font-weight="700">Admin UI</text>
+
+            <rect x="290" y="62" width="182" height="78" rx="18" fill="#ffffff" stroke="#dbe4ec" stroke-width="3"/>
+            <text x="322" y="106" font-size="24" fill="#1f2a37" font-family="Segoe UI, sans-serif" font-weight="700">Backend API</text>
+
+            <rect x="550" y="62" width="128" height="78" rx="18" fill="#ffffff" stroke="#dbe4ec" stroke-width="3"/>
+            <text x="588" y="106" font-size="24" fill="#157a6e" font-family="Segoe UI, sans-serif" font-weight="700">MinIO</text>
+
+            <rect x="76" y="216" width="142" height="74" rx="18" fill="#ffffff" stroke="#dbe4ec" stroke-width="3"/>
+            <text x="96" y="257" font-size="22" fill="#85581d" font-family="Segoe UI, sans-serif" font-weight="700">Redis Queue</text>
+
+            <rect x="290" y="216" width="182" height="74" rx="18" fill="#ffffff" stroke="#dbe4ec" stroke-width="3"/>
+            <text x="336" y="257" font-size="24" fill="#1f2a37" font-family="Segoe UI, sans-serif" font-weight="700">Worker</text>
+
+            <rect x="550" y="216" width="128" height="74" rx="18" fill="#ffffff" stroke="#dbe4ec" stroke-width="3"/>
+            <text x="585" y="257" font-size="24" fill="#2b5d8b" font-family="Segoe UI, sans-serif" font-weight="700">Qdrant</text>
+
+            <rect x="290" y="374" width="182" height="74" rx="18" fill="#ffffff" stroke="#dbe4ec" stroke-width="3"/>
+            <text x="305" y="415" font-size="24" fill="#2b5d8b" font-family="Segoe UI, sans-serif" font-weight="700">PostgreSQL</text>
+
+            <line x1="210" y1="101" x2="290" y2="101" stroke="#708090" stroke-width="4" marker-end="url(#arrowB)"/>
+            <line x1="472" y1="101" x2="550" y2="101" stroke="#708090" stroke-width="4" marker-end="url(#arrowB)"/>
+            <line x1="381" y1="140" x2="381" y2="216" stroke="#708090" stroke-width="4" marker-end="url(#arrowB)"/>
+            <line x1="290" y1="252" x2="218" y2="252" stroke="#708090" stroke-width="4" marker-end="url(#arrowB)"/>
+            <line x1="472" y1="252" x2="550" y2="252" stroke="#708090" stroke-width="4" marker-end="url(#arrowB)"/>
+            <line x1="381" y1="290" x2="381" y2="374" stroke="#708090" stroke-width="4" marker-end="url(#arrowB)"/>
+
+            <text x="228" y="88" font-size="15" fill="#566476" font-family="Segoe UI, sans-serif">Upload hồ sơ + ảnh</text>
+            <text x="486" y="88" font-size="15" fill="#566476" font-family="Segoe UI, sans-serif">Lưu ảnh gốc</text>
+            <text x="393" y="182" font-size="15" fill="#566476" font-family="Segoe UI, sans-serif">Tạo job</text>
+            <text x="226" y="241" font-size="15" fill="#566476" font-family="Segoe UI, sans-serif">Enqueue</text>
+            <text x="482" y="241" font-size="15" fill="#566476" font-family="Segoe UI, sans-serif">Upsert vector</text>
+            <text x="392" y="344" font-size="15" fill="#566476" font-family="Segoe UI, sans-serif">Cập nhật trạng thái</text>
+          </svg>
+        </div>
+
+        <div class="card">
+          <h3>Quy trình 7 bước</h3>
+          <ol class="steps">
+            <li>Admin tạo hồ sơ người dùng mới và upload 3 đến 5 ảnh khuôn mặt.</li>
+            <li>Backend lưu metadata vào PostgreSQL và file ảnh vào MinIO.</li>
+            <li>Backend tạo một job mới, đẩy vào Redis hoặc RabbitMQ.</li>
+            <li>Worker nhận job, tải ảnh từ MinIO và thực hiện detect hoặc align.</li>
+            <li>Worker sinh embedding cho từng ảnh, gắn với <span class="mono">person_id</span>.</li>
+            <li>Worker upsert vector vào Qdrant để phục vụ truy vấn gần nhất.</li>
+            <li>Worker cập nhật trạng thái job để admin biết ảnh đã được index xong.</li>
+          </ol>
+          <h3 style="margin-top: 14px;">Ý nghĩa kỹ thuật</h3>
+          <p>Việc tách bước sinh embedding ra background worker giúp frontend admin không phải chờ lâu, đồng thời thể hiện đúng yêu cầu đề bài về <strong>message queue</strong> và <strong>tác vụ nền</strong>.</p>
+        </div>
+      </div>
+
+      <div class="slide-foot">
+        <span>Đây là luồng nên demo trong báo cáo vì nó cho thấy hệ thống có quản trị dữ liệu bài bản chứ không chỉ nhận diện trực tiếp.</span>
+        <span>Ingest khuôn mặt</span>
+      </div>
+    </section>
+
+    <section class="slide" id="slide-7">
+      <div class="slide-head">
+        <div>
+          <div class="kicker"><span class="dot"></span> Realtime flow</div>
+          <h2>Luồng nhận diện khuôn mặt thời gian thực tại điểm kiểm soát</h2>
+          <p class="subtitle">Phần này mô tả luồng online: từ camera đến quyết định cho phép hoặc từ chối. Đây là luồng giảng viên sẽ quan tâm nhất khi xem demo.</p>
+        </div>
+        <div class="slide-no">07 / 15</div>
+      </div>
+
+      <div class="content two-col">
+        <div class="card">
+          <h3>Luồng nghiệp vụ chính</h3>
+          <ol class="steps">
+            <li>Camera hoặc trình duyệt lấy frame theo chu kỳ cố định.</li>
+            <li>Frontend gửi frame đến API nhận diện.</li>
+            <li>Backend chuyển ảnh sang AI service để detect khuôn mặt.</li>
+            <li>Nếu phát hiện mặt, AI service trích xuất embedding và query Qdrant.</li>
+            <li>Hệ thống nhận top-k vector gần nhất và tính khoảng cách hoặc similarity.</li>
+            <li>Nếu điểm số vượt threshold thì xác định người dùng hợp lệ, ngược lại gán là unknown.</li>
+            <li>Backend lưu log, snapshot và trả về kết quả cho frontend user.</li>
+            <li>Frontend hiển thị tên, confidence, thời gian và trạng thái access.</li>
+          </ol>
+          <h3 style="margin-top: 14px;">Kết quả đầu ra</h3>
+          <p><span class="mono">{ "name": "Nguyễn Văn A", "confidence": 0.968, "status": "authorized" }</span></p>
+        </div>
+
+        <div class="panel svg-box" aria-label="Sơ đồ nhận diện realtime">
+          <svg viewBox="0 0 760 520" role="img">
+            <defs>
+              <marker id="arrowC" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+                <path d="M0,0 L10,3 L0,6 Z" fill="#708090"/>
+              </marker>
+            </defs>
+            <rect x="32" y="24" width="696" height="472" rx="28" fill="#f9fbfc" stroke="#dde6ee" stroke-width="3"/>
+            <rect x="58" y="210" width="120" height="88" rx="18" fill="#ffffff" stroke="#dbe4ec" stroke-width="3"/>
+            <text x="85" y="246" font-size="24" fill="#1f2a37" font-family="Segoe UI, sans-serif" font-weight="700">Camera</text>
+            <text x="82" y="272" font-size="16" fill="#566476" font-family="Segoe UI, sans-serif">Frame stream</text>
+
+            <rect x="232" y="160" width="136" height="188" rx="22" fill="#ffffff" stroke="#dbe4ec" stroke-width="3"/>
+            <text x="263" y="203" font-size="24" fill="#1f2a37" font-family="Segoe UI, sans-serif" font-weight="700">Backend</text>
+            <text x="255" y="232" font-size="16" fill="#566476" font-family="Segoe UI, sans-serif">Receive frame</text>
+            <text x="255" y="256" font-size="16" fill="#566476" font-family="Segoe UI, sans-serif">Call AI service</text>
+            <text x="255" y="280" font-size="16" fill="#566476" font-family="Segoe UI, sans-serif">Write logs</text>
+            <text x="255" y="304" font-size="16" fill="#566476" font-family="Segoe UI, sans-serif">Store snapshot</text>
+
+            <rect x="422" y="68" width="250" height="116" rx="22" fill="#ffffff" stroke="#dbe4ec" stroke-width="3"/>
+            <text x="461" y="112" font-size="24" fill="#1f2a37" font-family="Segoe UI, sans-serif" font-weight="700">AI Service</text>
+            <text x="447" y="140" font-size="16" fill="#566476" font-family="Segoe UI, sans-serif">Face detect, align, embedding</text>
+            <text x="474" y="164" font-size="16" fill="#566476" font-family="Segoe UI, sans-serif">Similarity matching</text>
+
+            <rect x="422" y="220" width="110" height="88" rx="18" fill="#ffffff" stroke="#dbe4ec" stroke-width="3"/>
+            <text x="447" y="257" font-size="24" fill="#cf5c36" font-family="Segoe UI, sans-serif" font-weight="700">Qdrant</text>
+            <text x="448" y="281" font-size="14" fill="#566476" font-family="Segoe UI, sans-serif">Top-K search</text>
+
+            <rect x="560" y="220" width="112" height="88" rx="18" fill="#ffffff" stroke="#dbe4ec" stroke-width="3"/>
+            <text x="575" y="257" font-size="24" fill="#157a6e" font-family="Segoe UI, sans-serif" font-weight="700">MinIO</text>
+            <text x="577" y="281" font-size="14" fill="#566476" font-family="Segoe UI, sans-serif">Snapshot</text>
+
+            <rect x="422" y="340" width="250" height="110" rx="22" fill="#eaf7f0" stroke="#cae8d8" stroke-width="3"/>
+            <text x="454" y="384" font-size="24" fill="#157a6e" font-family="Segoe UI, sans-serif" font-weight="700">Recognition Result</text>
+            <text x="454" y="411" font-size="16" fill="#566476" font-family="Segoe UI, sans-serif">Authorized / Unknown / Denied</text>
+
+            <line x1="178" y1="254" x2="232" y2="254" stroke="#708090" stroke-width="4" marker-end="url(#arrowC)"/>
+            <line x1="368" y1="206" x2="422" y2="126" stroke="#708090" stroke-width="4" marker-end="url(#arrowC)"/>
+            <line x1="368" y1="250" x2="422" y2="264" stroke="#708090" stroke-width="4" marker-end="url(#arrowC)"/>
+            <line x1="368" y1="292" x2="560" y2="264" stroke="#708090" stroke-width="4" marker-end="url(#arrowC)"/>
+            <line x1="548" y1="184" x2="478" y2="220" stroke="#708090" stroke-width="4" marker-end="url(#arrowC)"/>
+            <line x1="548" y1="184" x2="548" y2="340" stroke="#708090" stroke-width="4" marker-end="url(#arrowC)"/>
+            <line x1="300" y1="348" x2="422" y2="395" stroke="#708090" stroke-width="4" marker-end="url(#arrowC)"/>
+          </svg>
+        </div>
+      </div>
+
+      <div class="slide-foot">
+        <span>Threshold nên được admin cấu hình được để demo được các trường hợp nhận diện đúng, sai và unknown.</span>
+        <span>Luồng online</span>
+      </div>
+    </section>
+
+    <section class="slide" id="slide-8">
+      <div class="slide-head">
+        <div>
+          <div class="kicker"><span class="dot"></span> AI pipeline</div>
+          <h2>Pipeline kỹ thuật cho nhận diện khuôn mặt</h2>
+          <p class="subtitle">Slide này nên dùng khi giải thích phần AI. Nội dung đủ chặt chẽ để giảng viên thấy nhóm hiểu cơ chế chứ không dùng thư viện như hộp đen hoàn toàn.</p>
+        </div>
+        <div class="slide-no">08 / 15</div>
+      </div>
+
+      <div class="content two-col">
+        <div class="panel svg-box" aria-label="Pipeline AI nhận diện khuôn mặt">
+          <svg viewBox="0 0 780 500" role="img">
+            <defs>
+              <marker id="arrowD" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+                <path d="M0,0 L10,3 L0,6 Z" fill="#708090"/>
+              </marker>
+            </defs>
+            <rect x="18" y="24" width="744" height="452" rx="28" fill="#f9fbfc" stroke="#dde6ee" stroke-width="3"/>
+            <rect x="44" y="188" width="116" height="110" rx="18" fill="#ffffff" stroke="#dbe4ec" stroke-width="3"/>
+            <text x="70" y="231" font-size="22" fill="#1f2a37" font-family="Segoe UI, sans-serif" font-weight="700">Input</text>
+            <text x="70" y="258" font-size="16" fill="#566476" font-family="Segoe UI, sans-serif">Frame / ảnh</text>
+
+            <rect x="192" y="188" width="122" height="110" rx="18" fill="#ffffff" stroke="#dbe4ec" stroke-width="3"/>
+            <text x="213" y="228" font-size="22" fill="#1f2a37" font-family="Segoe UI, sans-serif" font-weight="700">Detect</text>
+            <text x="215" y="255" font-size="16" fill="#566476" font-family="Segoe UI, sans-serif">MTCNN / SCRFD</text>
+            <text x="214" y="278" font-size="16" fill="#566476" font-family="Segoe UI, sans-serif">Locate face</text>
+
+            <rect x="346" y="188" width="122" height="110" rx="18" fill="#ffffff" stroke="#dbe4ec" stroke-width="3"/>
+            <text x="367" y="228" font-size="22" fill="#1f2a37" font-family="Segoe UI, sans-serif" font-weight="700">Align</text>
+            <text x="370" y="255" font-size="16" fill="#566476" font-family="Segoe UI, sans-serif">Crop & normalize</text>
+            <text x="379" y="278" font-size="16" fill="#566476" font-family="Segoe UI, sans-serif">Eye landmarks</text>
+
+            <rect x="500" y="188" width="122" height="110" rx="18" fill="#ffffff" stroke="#dbe4ec" stroke-width="3"/>
+            <text x="515" y="228" font-size="22" fill="#1f2a37" font-family="Segoe UI, sans-serif" font-weight="700">Embed</text>
+            <text x="515" y="255" font-size="16" fill="#566476" font-family="Segoe UI, sans-serif">ArcFace / Facenet</text>
+            <text x="530" y="278" font-size="16" fill="#566476" font-family="Segoe UI, sans-serif">Vector 512-D</text>
+
+            <rect x="654" y="188" width="84" height="110" rx="18" fill="#ffffff" stroke="#dbe4ec" stroke-width="3"/>
+            <text x="670" y="228" font-size="22" fill="#1f2a37" font-family="Segoe UI, sans-serif" font-weight="700">Match</text>
+            <text x="668" y="255" font-size="16" fill="#566476" font-family="Segoe UI, sans-serif">Top-k</text>
+            <text x="664" y="278" font-size="16" fill="#566476" font-family="Segoe UI, sans-serif">Threshold</text>
+
+            <line x1="160" y1="243" x2="192" y2="243" stroke="#708090" stroke-width="4" marker-end="url(#arrowD)"/>
+            <line x1="314" y1="243" x2="346" y2="243" stroke="#708090" stroke-width="4" marker-end="url(#arrowD)"/>
+            <line x1="468" y1="243" x2="500" y2="243" stroke="#708090" stroke-width="4" marker-end="url(#arrowD)"/>
+            <line x1="622" y1="243" x2="654" y2="243" stroke="#708090" stroke-width="4" marker-end="url(#arrowD)"/>
+
+            <rect x="216" y="74" width="160" height="64" rx="18" fill="#fef4e3" stroke="#f0dbaf" stroke-width="3"/>
+            <text x="242" y="112" font-size="19" fill="#85581d" font-family="Segoe UI, sans-serif" font-weight="700">Nếu không detect được mặt</text>
+
+            <rect x="462" y="74" width="202" height="64" rx="18" fill="#eef6fb" stroke="#d8e8f6" stroke-width="3"/>
+            <text x="480" y="112" font-size="19" fill="#2b5d8b" font-family="Segoe UI, sans-serif" font-weight="700">Chuẩn hóa để giảm ảnh hưởng góc chụp</text>
+
+            <rect x="250" y="352" width="290" height="72" rx="18" fill="#eaf7f0" stroke="#cae8d8" stroke-width="3"/>
+            <text x="277" y="383" font-size="20" fill="#157a6e" font-family="Segoe UI, sans-serif" font-weight="700">Output: tên, confidence, status, snapshot URL</text>
+            <text x="292" y="407" font-size="15" fill="#566476" font-family="Segoe UI, sans-serif">known person hoặc unknown face dựa trên ngưỡng similarity</text>
+          </svg>
+        </div>
+
+        <div class="card">
+          <h3>Gợi ý kỹ thuật</h3>
+          <ul class="list">
+            <li><strong>Face detection:</strong> dùng <span class="mono">SCRFD</span>, <span class="mono">RetinaFace</span> hoặc detector đi kèm trong InsightFace.</li>
+            <li><strong>Face recognition:</strong> dùng <span class="mono">ArcFace</span> hoặc <span class="mono">Facenet</span>. Nếu cần làm nhanh thì dùng <span class="mono">DeepFace</span> để bọc pipeline.</li>
+            <li><strong>Vector search:</strong> lưu embedding vào <span class="mono">Qdrant</span>, mỗi vector gắn <span class="mono">person_id</span> và metadata.</li>
+            <li><strong>Decision rule:</strong> nếu similarity vượt threshold thì kết luận cùng người, ngược lại là unknown.</li>
+          </ul>
+          <h3 style="margin-top: 14px;">Điểm nên nói khi bảo vệ</h3>
+          <ul class="checklist">
+            <li>Vì sao cần nhiều ảnh mẫu trên một người.</li>
+            <li>Vì sao phải có bước align để tăng độ ổn định.</li>
+            <li>Threshold là tham số vận hành, không nên hard-code cứng.</li>
+            <li>Hệ thống có thể mở rộng sang nhiều camera và nhiều người dùng hơn.</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="slide-foot">
+        <span>Không cần tự huấn luyện model mới; dùng model có sẵn hợp lý và đóng gói thành hệ thống vẫn phù hợp đề.</span>
+        <span>Giải thích AI</span>
+      </div>
+    </section>
+
+    <section class="slide" id="slide-9">
+      <div class="slide-head">
+        <div>
+          <div class="kicker"><span class="dot"></span> Thiết kế dữ liệu</div>
+          <h2>Lưu gì ở PostgreSQL, MinIO và Qdrant</h2>
+          <p class="subtitle">Ba lớp lưu trữ phải có lý do tồn tại riêng. Trình bày rõ phần này giúp nhóm ghi điểm ở tiêu chí đáp ứng yêu cầu hệ thống.</p>
+        </div>
+        <div class="slide-no">09 / 15</div>
+      </div>
+
+      <div class="content three-col">
+        <div class="card">
+          <h3>PostgreSQL</h3>
+          <ul class="list">
+            <li><span class="mono">admins</span>: tài khoản đăng nhập quản trị.</li>
+            <li><span class="mono">persons</span>: hồ sơ người được phép truy cập.</li>
+            <li><span class="mono">face_images</span>: metadata ảnh mẫu, trạng thái xử lý.</li>
+            <li><span class="mono">recognition_logs</span>: thời gian, kết quả, confidence.</li>
+            <li><span class="mono">jobs</span>: trạng thái embedding và re-index.</li>
+            <li><span class="mono">settings</span>: threshold, cấu hình camera.</li>
+          </ul>
+        </div>
+        <div class="card">
+          <h3>MinIO</h3>
+          <ul class="list">
+            <li>Lưu ảnh gốc mà admin upload.</li>
+            <li>Lưu snapshot frame khi hệ thống nhận diện hoặc từ chối.</li>
+            <li>Lưu dữ liệu theo bucket tách riêng: <span class="mono">faces</span>, <span class="mono">snapshots</span>, <span class="mono">exports</span>.</li>
+            <li>Không nhét file ảnh lớn vào database.</li>
+          </ul>
+        </div>
+        <div class="card">
+          <h3>Qdrant</h3>
+          <ul class="list">
+            <li>Mỗi ảnh mẫu sinh ra một vector embedding.</li>
+            <li>Payload có thể gồm: <span class="mono">person_id</span>, <span class="mono">image_id</span>, <span class="mono">role</span>, <span class="mono">created_at</span>.</li>
+            <li>Search top-k vector gần nhất để xác định danh tính.</li>
+            <li>Dễ mở rộng khi số người và số ảnh tăng lên.</li>
+          </ul>
+        </div>
+        <div class="card">
+          <h3>Ví dụ bảng log</h3>
+          <p class="mono">id, person_id, camera_id, result, confidence, snapshot_url, created_at</p>
+        </div>
+        <div class="card">
+          <h3>Ví dụ payload vector</h3>
+          <p class="mono">{ person_id, image_id, source: "admin_upload" }</p>
+        </div>
+        <div class="card">
+          <h3>Ví dụ object key</h3>
+          <p class="mono">faces/person_12/img_03.jpg</p>
+          <p class="mono">snapshots/2026-05-20/cam_1_080214.jpg</p>
+        </div>
+      </div>
+
+      <div class="slide-foot">
+        <span>Nên vẽ thêm sơ đồ bảng hoặc ERD trong báo cáo viết nếu nhóm còn thời gian.</span>
+        <span>Thiết kế lưu trữ</span>
+      </div>
+    </section>
+
+    <section class="slide" id="slide-10">
+      <div class="slide-head">
+        <div>
+          <div class="kicker"><span class="dot"></span> API và giao diện</div>
+          <h2>Các API chính và màn hình cần có</h2>
+          <p class="subtitle">Phần này giúp phân ranh giới rõ giữa frontend, backend và AI service. Đây cũng là phần quan trọng để nhóm chia việc cho 4 người không bị chồng chéo.</p>
+        </div>
+        <div class="slide-no">10 / 15</div>
+      </div>
+
+      <div class="content two-col">
+        <div class="card">
+          <h3>API admin</h3>
+          <div class="api-grid">
+            <div class="ticket">
+              <strong>POST /api/auth/login</strong>
+              <span>Đăng nhập admin.</span>
+            </div>
+            <div class="ticket">
+              <strong>GET /api/persons</strong>
+              <span>Lấy danh sách người dùng đã đăng ký.</span>
+            </div>
+            <div class="ticket">
+              <strong>POST /api/persons</strong>
+              <span>Tạo hồ sơ người mới.</span>
+            </div>
+            <div class="ticket">
+              <strong>POST /api/persons/:id/images</strong>
+              <span>Upload ảnh khuôn mặt mẫu.</span>
+            </div>
+            <div class="ticket">
+              <strong>GET /api/jobs</strong>
+              <span>Xem trạng thái sinh embedding.</span>
+            </div>
+            <div class="ticket">
+              <strong>GET /api/logs</strong>
+              <span>Xem lịch sử nhận diện.</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <h3>API nhận diện và màn hình UI</h3>
+          <div class="api-grid">
+            <div class="ticket">
+              <strong>POST /api/recognition/frame</strong>
+              <span>Nhận một frame, trả về kết quả nhận diện.</span>
+            </div>
+            <div class="ticket">
+              <strong>GET /api/health</strong>
+              <span>Kiểm tra tình trạng service.</span>
+            </div>
+            <div class="ticket">
+              <strong>User screen</strong>
+              <span>Camera live, ảnh chụp, tên, confidence, trạng thái access.</span>
+            </div>
+            <div class="ticket">
+              <strong>Admin screen</strong>
+              <span>Danh sách người, upload ảnh, theo dõi job, xem log.</span>
+            </div>
+          </div>
+          <h3 style="margin-top: 14px;">Yêu cầu UX tối thiểu</h3>
+          <ul class="checklist">
+            <li>Có loading và thông báo lỗi rõ ràng.</li>
+            <li>Có bảng log hoặc danh sách sự kiện gần nhất.</li>
+            <li>Có trạng thái nếu camera không mở được.</li>
+            <li>Có thông báo nếu người dùng chưa có embedding.</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="slide-foot">
+        <span>Không cần làm quá nhiều API, nhưng cần đủ để chứng minh hệ thống có quản trị, xử lý realtime và lưu vết.</span>
+        <span>API và UI</span>
+      </div>
+    </section>
+
+    <section class="slide" id="slide-11">
+      <div class="slide-head">
+        <div>
+          <div class="kicker"><span class="dot"></span> Docker hóa</div>
+          <h2>Cách đóng gói để giảng viên chỉ cần chạy docker-compose up -d</h2>
+          <p class="subtitle">Đây là điều kiện cực quan trọng của đề. Nếu hệ thống không lên được bằng Docker Compose, khả năng mất điểm là rất lớn dù mô hình AI chạy được.</p>
+        </div>
+        <div class="slide-no">11 / 15</div>
+      </div>
+
+      <div class="content split-40">
+        <div class="card">
+          <h3>Danh sách container nên có</h3>
+          <ul class="list">
+            <li><span class="mono">frontend-user</span></li>
+            <li><span class="mono">frontend-admin</span></li>
+            <li><span class="mono">backend-api</span></li>
+            <li><span class="mono">worker</span></li>
+            <li><span class="mono">postgres</span></li>
+            <li><span class="mono">minio</span></li>
+            <li><span class="mono">qdrant</span></li>
+            <li><span class="mono">redis</span> hoặc <span class="mono">rabbitmq</span></li>
+            <li><span class="mono">nginx</span></li>
+          </ul>
+          <h3 style="margin-top: 14px;">Biến môi trường nên có</h3>
+          <p class="mono">DATABASE_URL, MINIO_ENDPOINT, MINIO_ACCESS_KEY, MINIO_SECRET_KEY, QDRANT_URL, REDIS_URL, JWT_SECRET, FACE_MATCH_THRESHOLD</p>
+        </div>
+
+        <div class="panel svg-box" aria-label="Minh họa docker compose và reverse proxy">
+          <svg viewBox="0 0 700 500" role="img">
+            <rect x="22" y="18" width="656" height="462" rx="28" fill="#f9fbfc" stroke="#dde6ee" stroke-width="3"/>
+            <rect x="242" y="44" width="216" height="76" rx="18" fill="#eef6fb" stroke="#d6e8f6" stroke-width="3"/>
+            <text x="286" y="88" font-size="28" fill="#2b5d8b" font-family="Segoe UI, sans-serif" font-weight="700">docker-compose</text>
+            <rect x="276" y="140" width="148" height="58" rx="16" fill="#ffffff" stroke="#dbe4ec" stroke-width="3"/>
+            <text x="319" y="177" font-size="24" fill="#1f2a37" font-family="Segoe UI, sans-serif" font-weight="700">nginx</text>
+
+            <rect x="72" y="240" width="154" height="70" rx="18" fill="#ffffff" stroke="#dbe4ec" stroke-width="3"/>
+            <text x="94" y="282" font-size="23" fill="#1f2a37" font-family="Segoe UI, sans-serif" font-weight="700">frontend-user</text>
+            <rect x="272" y="240" width="154" height="70" rx="18" fill="#ffffff" stroke="#dbe4ec" stroke-width="3"/>
+            <text x="292" y="282" font-size="23" fill="#1f2a37" font-family="Segoe UI, sans-serif" font-weight="700">backend-api</text>
+            <rect x="472" y="240" width="154" height="70" rx="18" fill="#ffffff" stroke="#dbe4ec" stroke-width="3"/>
+            <text x="489" y="282" font-size="23" fill="#1f2a37" font-family="Segoe UI, sans-serif" font-weight="700">frontend-admin</text>
+
+            <rect x="72" y="344" width="120" height="70" rx="18" fill="#ffffff" stroke="#dbe4ec" stroke-width="3"/>
+            <text x="102" y="386" font-size="23" fill="#2b5d8b" font-family="Segoe UI, sans-serif" font-weight="700">postgres</text>
+            <rect x="214" y="344" width="120" height="70" rx="18" fill="#ffffff" stroke="#dbe4ec" stroke-width="3"/>
+            <text x="251" y="386" font-size="23" fill="#157a6e" font-family="Segoe UI, sans-serif" font-weight="700">minio</text>
+            <rect x="356" y="344" width="120" height="70" rx="18" fill="#ffffff" stroke="#dbe4ec" stroke-width="3"/>
+            <text x="392" y="386" font-size="23" fill="#cf5c36" font-family="Segoe UI, sans-serif" font-weight="700">qdrant</text>
+            <rect x="498" y="344" width="120" height="70" rx="18" fill="#ffffff" stroke="#dbe4ec" stroke-width="3"/>
+            <text x="530" y="386" font-size="23" fill="#85581d" font-family="Segoe UI, sans-serif" font-weight="700">redis</text>
+
+            <line x1="350" y1="120" x2="350" y2="140" stroke="#708090" stroke-width="4"/>
+            <line x1="350" y1="198" x2="149" y2="240" stroke="#708090" stroke-width="4"/>
+            <line x1="350" y1="198" x2="349" y2="240" stroke="#708090" stroke-width="4"/>
+            <line x1="350" y1="198" x2="549" y2="240" stroke="#708090" stroke-width="4"/>
+            <line x1="349" y1="310" x2="132" y2="344" stroke="#708090" stroke-width="4"/>
+            <line x1="349" y1="310" x2="274" y2="344" stroke="#708090" stroke-width="4"/>
+            <line x1="349" y1="310" x2="416" y2="344" stroke="#708090" stroke-width="4"/>
+            <line x1="349" y1="310" x2="558" y2="344" stroke="#708090" stroke-width="4"/>
+          </svg>
+        </div>
+      </div>
+
+      <div class="slide-foot">
+        <span>Nên có file <span class="mono">.env.example</span> và README hướng dẫn cấu hình tối thiểu để giảng viên tái hiện được hệ thống.</span>
+        <span>Triển khai</span>
+      </div>
+    </section>
+
+    <section class="slide" id="slide-12">
+      <div class="slide-head">
+        <div>
+          <div class="kicker"><span class="dot"></span> Phân công nhóm</div>
+          <h2>Chia việc cho nhóm 4 người theo service và deliverable</h2>
+          <p class="subtitle">Cách chia này giúp mỗi thành viên có đầu ra rõ ràng, có phần code cụ thể và vẫn ghép được thành một hệ thống thống nhất vào cuối kỳ.</p>
+        </div>
+        <div class="slide-no">12 / 15</div>
+      </div>
+
+      <div class="content">
+        <div class="team-grid">
+          <div class="team-card">
+            <strong>Thành viên 1 - AI service + Qdrant + worker</strong>
+            <span>Làm pipeline detect, align, embed, match; định nghĩa threshold; thiết kế lưu vector vào Qdrant; viết worker sinh embedding và re-index; trả về kết quả chuẩn cho backend.</span>
+          </div>
+          <div class="team-card">
+            <strong>Thành viên 2 - Backend API + PostgreSQL + MinIO</strong>
+            <span>Thiết kế schema DB, auth admin, CRUD persons, upload ảnh, log nhận diện, gọi AI service, trigger queue, quản lý metadata ảnh trong MinIO.</span>
+          </div>
+          <div class="team-card">
+            <strong>Thành viên 3 - Frontend user</strong>
+            <span>Làm giao diện camera realtime, hiển thị tên, confidence, trạng thái access, danh sách log gần nhất và các trạng thái lỗi hoặc loading.</span>
+          </div>
+          <div class="team-card">
+            <strong>Thành viên 4 - Frontend admin + Docker + nginx + README</strong>
+            <span>Làm màn hình quản trị người dùng, upload ảnh, theo dõi job, xem log; đồng thời viết Dockerfile, docker-compose, nginx.conf, .env.example và tài liệu chạy.</span>
+          </div>
+        </div>
+
+        <div class="cards-grid">
+          <div class="card">
+            <h3>Những gì phải chốt chung từ sớm</h3>
+            <ul class="checklist">
+              <li>Format response từ AI service sang backend.</li>
+              <li>Schema dữ liệu <span class="mono">persons</span>, <span class="mono">face_images</span>, <span class="mono">logs</span>.</li>
+              <li>API contract cho frontend user và frontend admin.</li>
+              <li>Tên service, port, env var để viết Docker Compose.</li>
+            </ul>
+          </div>
+          <div class="card">
+            <h3>Nguyên tắc phối hợp</h3>
+            <ul class="checklist">
+              <li>Không đợi làm xong từng phần rồi mới ghép.</li>
+              <li>Tuần 2 phải có API mock để frontend làm song song.</li>
+              <li>Tuần 3 phải ghép docker sơ bộ.</li>
+              <li>Tuần cuối chỉ để fix bug, test, viết README và quay demo.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div class="slide-foot">
+        <span>Nếu muốn báo cáo đẹp hơn, thay “Thành viên 1..4” bằng tên thật và mã sinh viên của nhóm.</span>
+        <span>Chia việc</span>
+      </div>
+    </section>
+
+    <section class="slide" id="slide-13">
+      <div class="slide-head">
+        <div>
+          <div class="kicker"><span class="dot"></span> Kế hoạch thực hiện</div>
+          <h2>Lộ trình 4 tuần để tránh dồn việc cuối kỳ</h2>
+          <p class="subtitle">Mốc thời gian này phù hợp với nhóm 4 người làm bán thời gian. Quan trọng nhất là ghép hệ thống sớm và khóa phạm vi tính năng đủ điểm thay vì mở rộng quá rộng.</p>
+        </div>
+        <div class="slide-no">13 / 15</div>
+      </div>
+
+      <div class="content">
+        <div class="timeline">
+          <div class="time-row">
+            <div class="time-label">Tuần 1<br/>Chốt thiết kế</div>
+            <div class="time-body">
+              <span>Chọn use case, chốt stack, vẽ sơ đồ kiến trúc, thiết kế schema cơ sở dữ liệu, định nghĩa API và tạo repo GitHub private.</span>
+              <span>Chuẩn bị dữ liệu khuôn mặt mẫu để test và chốt cách đặt tên service cho Docker Compose.</span>
+            </div>
+          </div>
+          <div class="time-row">
+            <div class="time-label">Tuần 2<br/>Phát triển lõi</div>
+            <div class="time-body">
+              <span>Người 1 làm AI service và worker; người 2 làm backend CRUD + upload ảnh; người 3 làm UI user khung; người 4 làm UI admin khung.</span>
+              <span>Cuối tuần phải có API mock hoặc API thật cơ bản để frontend gọi thử.</span>
+            </div>
+          </div>
+          <div class="time-row">
+            <div class="time-label">Tuần 3<br/>Ghép hệ thống</div>
+            <div class="time-body">
+              <span>Tích hợp PostgreSQL, MinIO, Qdrant, Redis; nối worker sinh embedding; chạy luồng đăng ký người dùng và nhận diện cơ bản.</span>
+              <span>Tạo Dockerfile từng service và ghép bản <span class="mono">docker-compose.yml</span> đầu tiên.</span>
+            </div>
+          </div>
+          <div class="time-row">
+            <div class="time-label">Tuần 4<br/>Hoàn thiện nộp bài</div>
+            <div class="time-body">
+              <span>Fix bug, tối ưu UX, thêm xử lý lỗi, viết README, tạo <span class="mono">.env.example</span>, kiểm tra chạy lại từ đầu bằng một máy sạch và quay video demo.</span>
+              <span>Rà lại quyền repo, thêm giảng viên vào GitHub private repo đúng yêu cầu đề bài.</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="slide-foot">
+        <span>Tránh mở rộng thêm tính năng mới sau tuần 3 trừ khi mọi luồng bắt buộc đã ổn định.</span>
+        <span>Timeline</span>
+      </div>
+    </section>
+
+    <section class="slide" id="slide-14">
+      <div class="slide-head">
+        <div>
+          <div class="kicker"><span class="dot"></span> Bám rubric</div>
+          <h2>Mapping trực tiếp với thang điểm chấm của đề</h2>
+          <p class="subtitle">Slide này có tác dụng chiến lược: cho thấy nhóm không làm cảm tính mà bám tiêu chí chấm điểm của môn học.</p>
+        </div>
+        <div class="slide-no">14 / 15</div>
+      </div>
+
+      <div class="content rubric">
+        <div class="card">
+          <div class="score">4 điểm</div>
+          <h3>Chức năng</h3>
+          <p>Hệ thống nhận diện khuôn mặt theo thời gian thực, hiển thị kết quả rõ ràng, phân biệt người hợp lệ và unknown, lưu log đầy đủ, demo được nhiều trường hợp như đúng người, sai người, không có trong hệ thống.</p>
+        </div>
+        <div class="card">
+          <div class="score">3 điểm</div>
+          <h3>Đảm bảo yêu cầu mục 2</h3>
+          <p>Có frontend user, frontend admin, backend, database, object storage, vector DB, queue nền, nginx, Docker Compose. Đây là phần cần được kiểm tra bằng checklist trước khi nộp.</p>
+        </div>
+        <div class="card">
+          <div class="score">2 điểm</div>
+          <h3>Tài liệu</h3>
+          <p>README mô tả kiến trúc, biến môi trường, cách chạy, cách test, ảnh minh họa giao diện, mô tả use case, giải thích các container và dependency.</p>
+        </div>
+        <div class="card">
+          <div class="score">1 điểm</div>
+          <h3>Giao diện</h3>
+          <p>UI không cần quá cầu kỳ nhưng cần rõ ràng, dễ sử dụng, có trạng thái lỗi, có log dễ xem, thao tác upload ảnh và xem kết quả trực quan.</p>
+        </div>
+      </div>
+
+      <div class="slide-foot">
+        <span>Nếu còn thời gian, nhóm có thể thêm điểm cộng như CI/CD, monitoring hoặc triển khai public qua tunnel.</span>
+        <span>Rubric</span>
+      </div>
+    </section>
+
+    <section class="slide" id="slide-15">
+      <div class="slide-head">
+        <div>
+          <div class="kicker"><span class="dot"></span> Kết luận</div>
+          <h2>Thông điệp chốt và gợi ý demo khi bảo vệ</h2>
+          <p class="subtitle">Kết slide bằng việc nhấn mạnh tính đầy đủ của hệ thống và cách demo ngắn gọn để giảng viên thấy rõ giá trị kỹ thuật lẫn mức độ bám đề.</p>
+        </div>
+        <div class="slide-no">15 / 15</div>
+      </div>
+
+      <div class="content two-col">
+        <div class="card">
+          <h3>Điểm chốt nên nói</h3>
+          <ul class="checklist">
+            <li>Đề tài không chỉ nhận diện khuôn mặt, mà là một <strong>hệ thống AI full-stack hoàn chỉnh</strong>.</li>
+            <li>Luồng quản trị và sinh embedding nền chứng minh nhóm đáp ứng đúng yêu cầu về storage, vector DB và queue.</li>
+            <li>Docker Compose giúp giảng viên tái hiện hệ thống bằng một lệnh duy nhất.</li>
+            <li>Thiết kế service rõ ràng giúp dự án dễ mở rộng thành nhiều camera hoặc nhiều điểm kiểm soát trong tương lai.</li>
+          </ul>
+          <h3 style="margin-top: 14px;">Kịch bản demo 3 phút</h3>
+          <ol class="steps">
+            <li>Đăng nhập admin, mở danh sách người dùng và ảnh mẫu.</li>
+            <li>Cho xem trạng thái job embedding đã hoàn tất.</li>
+            <li>Chuyển sang màn hình user và quét khuôn mặt đã đăng ký.</li>
+            <li>Cho xem trường hợp unknown để chứng minh threshold hoạt động.</li>
+            <li>Mở trang log để xác nhận snapshot và lịch sử sự kiện đã được lưu.</li>
+          </ol>
+        </div>
+
+        <div class="panel">
+          <h3>Checklist trước khi nộp</h3>
+          <ul class="checklist">
+            <li>Repo private, thêm đủ thành viên và giảng viên.</li>
+            <li><span class="mono">docker-compose up -d</span> chạy được từ đầu.</li>
+            <li>Không commit secret, có <span class="mono">.env.example</span>.</li>
+            <li>README có sơ đồ kiến trúc, hướng dẫn chạy, hướng dẫn test.</li>
+            <li>Quay video hoặc chuẩn bị demo trực tiếp với ít nhất 2 tình huống.</li>
+          </ul>
+          <h3 style="margin-top: 14px;">Tùy biến nhanh trước khi dùng</h3>
+          <p>Thay tên trường, tên nhóm, tên thành viên, use case cụ thể và stack thực tế của nhóm nếu khác gợi ý trong slide.</p>
+          <p class="footnote" style="margin-top: 14px;">File này là HTML độc lập, có thể mở trực tiếp trong trình duyệt, cuộn xem như slide hoặc dùng phím mũi tên để chuyển trang.</p>
+        </div>
+      </div>
+
+      <div class="slide-foot">
+        <span>Tóm lại: khóa phạm vi đủ điểm, ghép hệ thống sớm, và trình bày bám đúng rubric sẽ an toàn hơn nhiều so với làm quá rộng.</span>
+        <span>Kết thúc</span>
+      </div>
+    </section>
+  </main>
+
+  <div class="nav" aria-label="Điều hướng slide">
+    <button type="button" id="prevBtn">Trước</button>
+    <div class="progress" id="progress">1 / 15</div>
+    <button type="button" id="nextBtn">Sau</button>
+  </div>
+
+  <script>
+    const slides = Array.from(document.querySelectorAll(".slide"));
+    const progress = document.getElementById("progress");
+    const prevBtn = document.getElementById("prevBtn");
+    const nextBtn = document.getElementById("nextBtn");
+
+    function currentIndex() {
+      const middle = window.scrollY + window.innerHeight / 2;
+      let active = 0;
+      slides.forEach((slide, index) => {
+        const top = slide.offsetTop;
+        const bottom = top + slide.offsetHeight;
+        if (middle >= top && middle <= bottom) {
+          active = index;
+        }
+      });
+      return active;
+    }
+
+    function updateProgress() {
+      const index = currentIndex();
+      progress.textContent = `${index + 1} / ${slides.length}`;
+    }
+
+    function goToSlide(index) {
+      const safeIndex = Math.max(0, Math.min(index, slides.length - 1));
+      slides[safeIndex].scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+
+    prevBtn.addEventListener("click", () => goToSlide(currentIndex() - 1));
+    nextBtn.addEventListener("click", () => goToSlide(currentIndex() + 1));
+
+    window.addEventListener("scroll", updateProgress, { passive: true });
+    window.addEventListener("resize", updateProgress);
+
+    document.addEventListener("keydown", (event) => {
+      if (["ArrowRight", "PageDown", " "].includes(event.key)) {
+        event.preventDefault();
+        goToSlide(currentIndex() + 1);
+      }
+      if (["ArrowLeft", "PageUp"].includes(event.key)) {
+        event.preventDefault();
+        goToSlide(currentIndex() - 1);
+      }
+      if (event.key === "Home") {
+        event.preventDefault();
+        goToSlide(0);
+      }
+      if (event.key === "End") {
+        event.preventDefault();
+        goToSlide(slides.length - 1);
+      }
+    });
+
+    updateProgress();
+  </script>
+</body>
+</html>
