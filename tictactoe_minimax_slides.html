@@ -935,11 +935,12 @@
         </div>
         <div class="card dark stack">
           <h3>Đầu ra cần có</h3>
-          <div class="terminal">Nước đi tốt nhất từ bàn cờ rỗng cho X: ô 5
-Giá trị Minimax từ bàn cờ rỗng: 0
+          <div class="terminal">THỰC NGHIỆM 1: Bàn cờ ban đầu, X/MAX đi trước
+Nước đi tốt nhất: ô 5 (hàng 2, cột 2, index = 4)
+Giá trị minimax: 0
 
-Nước đi tốt nhất của máy: ô 7
-Giá trị Minimax: -1</div>
+Máy (O) đang tính bằng Minimax...
+Nước đi tốt nhất của máy: ô 5 (hàng 2, cột 2, index = 4)</div>
           <p>Giá trị dương có lợi cho X, giá trị âm có lợi cho O, giá trị 0 biểu thị hòa nếu hai bên cùng đi tối ưu.</p>
         </div>
       </div>
@@ -1218,32 +1219,25 @@ Giá trị Minimax: -1</div>
       <div class="content grid-2 wide-left">
         <div class="stack">
           <h2>Cấu trúc dữ liệu</h2>
-          <p>Bàn cờ được biểu diễn bằng tuple 9 phần tử. Cách này giúp trạng thái có thể dùng làm khóa cache cho hàm Minimax.</p>
+          <p>Bàn cờ trong code được biểu diễn bằng list 9 phần tử. Khi gọi Minimax, code chuyển list sang tuple để dùng với <strong>lru_cache</strong>.</p>
           <ul class="list">
             <li><strong>X</strong> và <strong>O</strong> là hai quân cờ.</li>
             <li><strong>EMPTY</strong> biểu diễn ô trống.</li>
             <li><strong>WIN_LINES</strong> chứa 8 đường thắng.</li>
-            <li><strong>MOVE_ORDER</strong> ưu tiên trung tâm, góc, cạnh để nước đi đẹp hơn.</li>
+            <li><strong>MOVE_PRIORITY</strong> ưu tiên trung tâm, góc, cạnh để nước đi đẹp hơn.</li>
           </ul>
         </div>
-        <pre class="code"><code>from functools import lru_cache
+        <pre class="code"><code>EMPTY = " "
 
 X = "X"
 O = "O"
-EMPTY = " "
+WIN_LINES = [
+    (0, 1, 2), (3, 4, 5), (6, 7, 8),
+    (0, 3, 6), (1, 4, 7), (2, 5, 8),
+    (0, 4, 8), (2, 4, 6)
+]
 
-WIN_LINES = (
-    (0, 1, 2),
-    (3, 4, 5),
-    (6, 7, 8),
-    (0, 3, 6),
-    (1, 4, 7),
-    (2, 5, 8),
-    (0, 4, 8),
-    (2, 4, 6),
-)
-
-MOVE_ORDER = (4, 0, 2, 6, 8, 1, 3, 5, 7)</code></pre>
+MOVE_PRIORITY = [4, 0, 2, 6, 8, 1, 3, 5, 7]</code></pre>
       </div>
     </section>
 
@@ -1255,29 +1249,33 @@ MOVE_ORDER = (4, 0, 2, 6, 8, 1, 3, 5, 7)</code></pre>
       <div class="content grid-2">
         <div class="stack">
           <h2>Kiểm tra thắng và đánh giá</h2>
-          <p>Hàm <strong>winner</strong> quét 8 đường thắng. Hàm <strong>terminal_value</strong> trả về đúng hàm đánh giá của đề bài.</p>
+          <p>Hàm <strong>check_winner</strong> quét 8 đường thắng. Hàm <strong>utility</strong> trả về đúng hàm đánh giá của đề bài.</p>
           <div class="comparison">
-            <div class="metric"><span class="value">+1</span><span class="label">winner = X</span></div>
-            <div class="metric"><span class="value" style="color:var(--clay)">-1</span><span class="label">winner = O</span></div>
+            <div class="metric"><span class="value">+1</span><span class="label">check_winner = X</span></div>
+            <div class="metric"><span class="value" style="color:var(--clay)">-1</span><span class="label">check_winner = O</span></div>
             <div class="metric"><span class="value" style="color:var(--navy)">0</span><span class="label">bàn cờ đầy</span></div>
           </div>
         </div>
-        <pre class="code"><code>def winner(board):
+        <pre class="code"><code>def check_winner(board):
     for a, b, c in WIN_LINES:
         if board[a] != EMPTY and board[a] == board[b] == board[c]:
             return board[a]
+    if EMPTY not in board:
+        return "Draw"
     return None
 
 
-def terminal_value(board):
-    result = winner(board)
+def utility(board):
+    result = check_winner(board)
+
     if result == X:
         return 1
-    if result == O:
+    elif result == O:
         return -1
-    if EMPTY not in board:
+    elif result == "Draw":
         return 0
-    return None</code></pre>
+    else:
+        return None</code></pre>
       </div>
     </section>
 
@@ -1287,39 +1285,57 @@ def terminal_value(board):
         <span class="slide-no">11 / 16</span>
       </div>
       <div class="content grid-2 wide-right">
-        <pre class="code"><code>def legal_moves(board):
-    return [move for move in MOVE_ORDER if board[move] == EMPTY]
+        <pre class="code"><code>def get_available_moves(board):
+    return [i for i in range(9) if board[i] == EMPTY]
+
+
+def ordered_moves(board):
+    available = set(get_available_moves(board))
+    return [move for move in MOVE_PRIORITY if move in available]
 
 
 def make_move(board, move, player):
-    new_board = list(board)
+    new_board = board.copy()
     new_board[move] = player
-    return tuple(new_board)
+    return new_board
 
+
+def next_player(player):
+    if player == X:
+        return O
+    return X
+
+
+from functools import lru_cache
 
 @lru_cache(maxsize=None)
-def minimax(board, turn):
-    value = terminal_value(board)
-    if value is not None:
-        return value
-
-    next_turn = opponent(turn)
-    scores = [
-        minimax(make_move(board, move, turn), next_turn)
-        for move in legal_moves(board)
-    ]
-
-    if turn == X:
-        return max(scores)
-    return min(scores)</code></pre>
+def minimax(board_tuple, current_player):
+    board = list(board_tuple)
+    score = utility(board)
+    if score is not None:
+        return score
+    if current_player == X:
+        best_value = -float("inf")
+        for move in ordered_moves(board):
+            new_board = make_move(board, move, X)
+            value = minimax(tuple(new_board), O)
+            best_value = max(best_value, value)
+        return best_value
+    else:
+        best_value = float("inf")
+        for move in ordered_moves(board):
+            new_board = make_move(board, move, O)
+            value = minimax(tuple(new_board), X)
+            best_value = min(best_value, value)
+        return best_value</code></pre>
         <div class="stack">
           <h2>Hàm Minimax</h2>
           <ul class="list">
             <li>Nếu trạng thái đã kết thúc, trả về giá trị đánh giá.</li>
-            <li>Nếu chưa kết thúc, tính điểm cho tất cả trạng thái con.</li>
-            <li>Lượt X trả về <strong>max(scores)</strong>.</li>
-            <li>Lượt O trả về <strong>min(scores)</strong>.</li>
-            <li><strong>lru_cache</strong> giúp tránh tính lại các trạng thái đã gặp.</li>
+            <li>Nếu chưa kết thúc, duyệt các nước trong <strong>ordered_moves(board)</strong>.</li>
+            <li>Lượt X cập nhật <strong>best_value = max(best_value, value)</strong>.</li>
+            <li>Lượt O cập nhật <strong>best_value = min(best_value, value)</strong>.</li>
+            <li><strong>lru_cache</strong> dùng tuple bàn cờ để tránh tính lại trạng thái đã gặp.</li>
           </ul>
           <div class="formula">
             <div class="big">Minimax = đệ quy + max/min + đánh giá trạng thái kết thúc</div>
@@ -1336,7 +1352,7 @@ def minimax(board, turn):
       <div class="content grid-2 wide-left">
         <div class="stack">
           <h2>Chọn nước đi tốt nhất</h2>
-          <p>Hàm <strong>best_move</strong> thử từng nước đi hợp lệ, tính giá trị Minimax của trạng thái sau nước đó, rồi chọn nước tốt nhất theo vai trò của người chơi.</p>
+          <p>Hàm <strong>find_best_move</strong> thử từng nước đi hợp lệ, tính giá trị Minimax của trạng thái sau nước đó, rồi chọn nước tốt nhất theo vai trò của người chơi.</p>
           <div class="formula">
             <div class="big">X chọn điểm lớn nhất</div>
             <div class="big">O chọn điểm nhỏ nhất</div>
@@ -1347,17 +1363,29 @@ def minimax(board, turn):
             <li>Khi in cho người chơi, chuyển sang ô 1 đến 9.</li>
           </ul>
         </div>
-        <pre class="code"><code>def best_move(board, player):
-    moves = legal_moves(board)
-    next_turn = opponent(player)
-    choices = [
-        (move, minimax(make_move(board, move, player), next_turn))
-        for move in moves
-    ]
-
+        <pre class="code"><code>def find_best_move(board, player):
+    moves = ordered_moves(board)
+    if len(moves) == 0:
+        return None, utility(board)
+    best_move = None
     if player == X:
-        return max(choices, key=lambda item: item[1])
-    return min(choices, key=lambda item: item[1])</code></pre>
+        best_value = -float("inf")
+        for move in moves:
+            new_board = make_move(board, move, X)
+            value = minimax(tuple(new_board), O)
+            if value > best_value:
+                best_value = value
+                best_move = move
+    else:
+        best_value = float("inf")
+        for move in moves:
+            new_board = make_move(board, move, O)
+            value = minimax(tuple(new_board), X)
+            if value < best_value:
+                best_value = value
+                best_move = move
+
+    return best_move, best_value</code></pre>
       </div>
     </section>
 
@@ -1367,39 +1395,44 @@ def minimax(board, turn):
         <span class="slide-no">13 / 16</span>
       </div>
       <div class="content grid-2">
-        <pre class="code small"><code>def run_game():
-    board = tuple([EMPTY] * 9)
-    human = choose_symbol()
-    computer = opponent(human)
-    turn = X
+        <pre class="code small"><code>def play_game():
+    board = [EMPTY] * 9
 
-    print(f"Bạn là {human}. Máy là {computer}.")
-    print("X là MAX, O là MIN.")
+    print("Trò chơi Tic-Tac-Toe với thuật toán Minimax")
+    print("Quy ước:")
+    print("- X là MAX")
+    print("- O là MIN")
+    print("- Utility = +1 nếu X thắng, -1 nếu O thắng, 0 nếu hòa")
 
-    empty_best_move, empty_value = best_move(board, X)
-    print(f"Nước đi tốt nhất từ bàn cờ rỗng cho X: ô {empty_best_move + 1}")
-    print(f"Giá trị Minimax từ bàn cờ rỗng: {empty_value}")
+    human_player = choose_human_player()
+    ai_player = O if human_player == X else X
+    current_player = X
 
-    while terminal_value(board) is None:
+    while True:
         print_board(board)
 
-        if turn == human:
-            move = read_human_move(board)
-            board = make_move(board, move, human)
-        else:
-            move, value = best_move(board, computer)
-            print(f"Nước đi tốt nhất của máy: ô {move + 1}")
-            print(f"Giá trị Minimax: {value}")
-            board = make_move(board, move, computer)
+        result = check_winner(board)
+        if result is not None:
+            announce_result(board)
+            break
 
-        turn = opponent(turn)</code></pre>
+        if current_player == human_player:
+            move = get_human_move(board, human_player)
+            board = make_move(board, move, human_player)
+        else:
+            best_move, best_value = find_best_move(board, ai_player)
+            print("Nước đi tốt nhất của máy:", format_move(best_move))
+            print("Giá trị minimax:", best_value)
+            board = make_move(board, best_move, ai_player)
+
+        current_player = next_player(current_player)</code></pre>
         <div class="stack">
           <h2>Luồng người chơi đấu với máy</h2>
           <ul class="list">
             <li>Người dùng chọn quân X hoặc O.</li>
             <li>X luôn đi trước theo luật Tic-Tac-Toe.</li>
             <li>Đến lượt người dùng thì nhập ô từ 1 đến 9.</li>
-            <li>Đến lượt máy thì gọi <strong>best_move</strong>.</li>
+            <li>Đến lượt máy thì gọi <strong>find_best_move</strong>.</li>
             <li>Sau mỗi lượt, chương trình in bàn cờ và kiểm tra kết thúc.</li>
           </ul>
           <div class="card dark">
@@ -1423,10 +1456,19 @@ def minimax(board, turn):
             <div class="big">a* = ô 5 = vị trí trung tâm = (2, 2)</div>
             <div class="big">V(s<sub>0</sub>) = 0</div>
           </div>
-          <div class="terminal">Bạn là X. Máy là O.
-X là MAX, O là MIN.
-Nước đi tốt nhất từ bàn cờ rỗng cho X: ô 5
-Giá trị Minimax từ bàn cờ rỗng: 0</div>
+          <div class="terminal">============================================================
+THỰC NGHIỆM 1: Bàn cờ ban đầu, X/MAX đi trước
+============================================================
+Lượt hiện tại: X
+
+ 1 | 2 | 3
+---+---+---
+ 4 | 5 | 6
+---+---+---
+ 7 | 8 | 9
+
+Nước đi tốt nhất: ô 5 (hàng 2, cột 2, index = 4)
+Giá trị minimax: 0</div>
         </div>
         <div class="stack">
           <div class="board">
