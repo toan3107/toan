@@ -1,0 +1,1624 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Minimax cho Tic-Tac-Toe</title>
+  <style>
+    :root {
+      --paper: #f7efe2;
+      --paper-2: #fff9ef;
+      --ink: #16201f;
+      --muted: #5b6762;
+      --line: rgba(22, 32, 31, 0.14);
+      --green: #0d776b;
+      --green-soft: #dceee8;
+      --clay: #c65132;
+      --clay-soft: #f4d8ca;
+      --gold: #e7a92f;
+      --navy: #1d4059;
+      --blue-soft: #dce8ef;
+      --shadow: 0 26px 70px rgba(22, 32, 31, 0.18);
+      --radius: 30px;
+      --slide-width: min(1220px, calc(100vw - 42px));
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      height: 100%;
+      scroll-behavior: auto;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      height: 100vh;
+      color: var(--ink);
+      font-family: "Aptos", "Bahnschrift", "Trebuchet MS", sans-serif;
+      background:
+        radial-gradient(circle at 8% 8%, rgba(231, 169, 47, 0.34), transparent 28%),
+        radial-gradient(circle at 90% 4%, rgba(13, 119, 107, 0.25), transparent 26%),
+        radial-gradient(circle at 70% 94%, rgba(198, 81, 50, 0.18), transparent 28%),
+        linear-gradient(135deg, #f6ecda 0%, #e5eee6 48%, #eef4f7 100%);
+      overflow: hidden;
+    }
+
+    .deck {
+      width: 100vw;
+      height: 100vh;
+      padding: 28px;
+      position: relative;
+      overflow: hidden;
+      perspective: 1800px;
+      transform-style: preserve-3d;
+    }
+
+    .deck::before,
+    .deck::after {
+      content: "";
+      position: absolute;
+      border-radius: 999px;
+      pointer-events: none;
+      filter: blur(2px);
+      opacity: 0.72;
+    }
+
+    .deck::before {
+      width: 320px;
+      height: 320px;
+      left: -110px;
+      top: 18%;
+      background: radial-gradient(circle, rgba(231, 169, 47, 0.28), transparent 68%);
+      animation: floatBlob 11s ease-in-out infinite;
+    }
+
+    .deck::after {
+      width: 390px;
+      height: 390px;
+      right: -135px;
+      bottom: 8%;
+      background: radial-gradient(circle, rgba(13, 119, 107, 0.22), transparent 70%);
+      animation: floatBlob 13s ease-in-out infinite reverse;
+    }
+
+    .slide {
+      width: var(--slide-width);
+      height: calc(100vh - 56px);
+      min-height: 0;
+      padding: 34px 42px 32px;
+      border-radius: var(--radius);
+      background:
+        linear-gradient(145deg, rgba(255, 255, 255, 0.78), rgba(255, 249, 239, 0.86)),
+        var(--paper-2);
+      box-shadow: var(--shadow);
+      border: 1px solid rgba(255, 255, 255, 0.72);
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      overflow: auto;
+      overscroll-behavior: contain;
+      display: flex;
+      flex-direction: column;
+      gap: 22px;
+      isolation: isolate;
+      opacity: 0;
+      pointer-events: none;
+      z-index: 1;
+      transform: translate(-50%, -50%) translateX(108%) rotateY(-10deg) scale(0.92);
+      transform-origin: center;
+      transition:
+        transform 720ms cubic-bezier(0.2, 0.78, 0.18, 1),
+        opacity 420ms ease,
+        filter 520ms ease;
+      filter: blur(5px) saturate(0.84);
+      scrollbar-width: thin;
+      scrollbar-color: rgba(13, 119, 107, 0.45) rgba(22, 32, 31, 0.06);
+    }
+
+    .slide::-webkit-scrollbar {
+      width: 9px;
+    }
+
+    .slide::-webkit-scrollbar-thumb {
+      background: rgba(13, 119, 107, 0.38);
+      border-radius: 999px;
+    }
+
+    .slide.is-active {
+      opacity: 1;
+      pointer-events: auto;
+      z-index: 5;
+      transform: translate(-50%, -50%) translateX(0) rotateY(0) scale(1);
+      filter: blur(0) saturate(1);
+    }
+
+    .slide.is-prev {
+      opacity: 0;
+      z-index: 2;
+      transform: translate(-50%, -50%) translateX(-108%) rotateY(10deg) scale(0.92);
+      filter: blur(5px) saturate(0.84);
+    }
+
+    .slide.is-next {
+      opacity: 0;
+      z-index: 2;
+      transform: translate(-50%, -50%) translateX(108%) rotateY(-10deg) scale(0.92);
+      filter: blur(5px) saturate(0.84);
+    }
+
+    .slide.is-active .slide-head,
+    .slide.is-active .content > * {
+      animation: riseIn 640ms cubic-bezier(0.18, 0.84, 0.26, 1) both;
+    }
+
+    .slide.is-active .content > *:nth-child(2) {
+      animation-delay: 80ms;
+    }
+
+    .slide.is-active .content > *:nth-child(3) {
+      animation-delay: 150ms;
+    }
+
+    .slide.is-active .board .cell,
+    .slide.is-active .mini-board span {
+      animation: popCell 520ms cubic-bezier(0.2, 0.9, 0.24, 1.18) both;
+    }
+
+    .slide.is-active .board .cell:nth-child(2),
+    .slide.is-active .mini-board span:nth-child(2) { animation-delay: 40ms; }
+    .slide.is-active .board .cell:nth-child(3),
+    .slide.is-active .mini-board span:nth-child(3) { animation-delay: 80ms; }
+    .slide.is-active .board .cell:nth-child(4),
+    .slide.is-active .mini-board span:nth-child(4) { animation-delay: 120ms; }
+    .slide.is-active .board .cell:nth-child(5),
+    .slide.is-active .mini-board span:nth-child(5) { animation-delay: 160ms; }
+    .slide.is-active .board .cell:nth-child(6),
+    .slide.is-active .mini-board span:nth-child(6) { animation-delay: 200ms; }
+    .slide.is-active .board .cell:nth-child(7),
+    .slide.is-active .mini-board span:nth-child(7) { animation-delay: 240ms; }
+    .slide.is-active .board .cell:nth-child(8),
+    .slide.is-active .mini-board span:nth-child(8) { animation-delay: 280ms; }
+    .slide.is-active .board .cell:nth-child(9),
+    .slide.is-active .mini-board span:nth-child(9) { animation-delay: 320ms; }
+
+    @keyframes riseIn {
+      from {
+        opacity: 0;
+        transform: translateY(18px) scale(0.985);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+
+    @keyframes popCell {
+      from {
+        opacity: 0;
+        transform: translateY(10px) scale(0.82) rotate(-2deg);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0) scale(1) rotate(0);
+      }
+    }
+
+    @keyframes floatBlob {
+      0%, 100% {
+        transform: translate3d(0, 0, 0) scale(1);
+      }
+      50% {
+        transform: translate3d(22px, -18px, 0) scale(1.08);
+      }
+    }
+
+    .slide::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background:
+        linear-gradient(120deg, rgba(255, 255, 255, 0.36), transparent 34%),
+        repeating-linear-gradient(90deg, rgba(22, 32, 31, 0.028) 0 1px, transparent 1px 46px),
+        repeating-linear-gradient(0deg, rgba(22, 32, 31, 0.02) 0 1px, transparent 1px 46px);
+      pointer-events: none;
+      z-index: -2;
+    }
+
+    .slide::after {
+      content: "";
+      position: absolute;
+      width: 420px;
+      height: 420px;
+      right: -170px;
+      bottom: -210px;
+      border-radius: 999px;
+      background: radial-gradient(circle, rgba(13, 119, 107, 0.18), transparent 68%);
+      z-index: -1;
+    }
+
+    .cover {
+      justify-content: center;
+      background:
+        radial-gradient(circle at 78% 24%, rgba(231, 169, 47, 0.38), transparent 22%),
+        radial-gradient(circle at 16% 80%, rgba(198, 81, 50, 0.2), transparent 28%),
+        linear-gradient(145deg, rgba(255, 253, 244, 0.86), rgba(220, 238, 232, 0.9));
+    }
+
+    .slide-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 13px;
+      border-radius: 999px;
+      font-size: 0.74rem;
+      font-weight: 800;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--green);
+      background: rgba(220, 238, 232, 0.86);
+      border: 1px solid rgba(13, 119, 107, 0.18);
+      white-space: nowrap;
+    }
+
+    .eyebrow::before {
+      content: "";
+      width: 9px;
+      height: 9px;
+      border-radius: 999px;
+      background: var(--green);
+      box-shadow: 0 0 0 5px rgba(13, 119, 107, 0.12);
+    }
+
+    .slide-no {
+      font-size: 0.9rem;
+      font-weight: 800;
+      color: var(--muted);
+      letter-spacing: 0.08em;
+    }
+
+    h1,
+    h2,
+    h3 {
+      margin: 0;
+      line-height: 1.05;
+      letter-spacing: -0.045em;
+      font-family: "Palatino Linotype", "Book Antiqua", Georgia, serif;
+    }
+
+    h1 {
+      font-size: clamp(3.1rem, 7vw, 7rem);
+      max-width: 930px;
+    }
+
+    h2 {
+      font-size: clamp(2.05rem, 4.2vw, 4.35rem);
+      max-width: 930px;
+    }
+
+    h3 {
+      font-size: 1.46rem;
+      letter-spacing: -0.025em;
+    }
+
+    p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 1.08rem;
+      line-height: 1.62;
+    }
+
+    strong {
+      color: var(--ink);
+    }
+
+    .subtitle {
+      max-width: 800px;
+      font-size: clamp(1.08rem, 1.55vw, 1.34rem);
+    }
+
+    .content {
+      position: relative;
+      z-index: 1;
+      display: grid;
+      gap: 20px;
+      flex: 1;
+    }
+
+    .grid-2 {
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      align-items: center;
+    }
+
+    .grid-3 {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      align-items: stretch;
+    }
+
+    .wide-left {
+      grid-template-columns: 1.15fr 0.85fr;
+    }
+
+    .wide-right {
+      grid-template-columns: 0.85fr 1.15fr;
+    }
+
+    .card {
+      background: rgba(255, 255, 255, 0.64);
+      border: 1px solid rgba(22, 32, 31, 0.11);
+      border-radius: 24px;
+      padding: 22px;
+      box-shadow: 0 14px 36px rgba(22, 32, 31, 0.08);
+    }
+
+    .card.dark {
+      color: #f8f1e6;
+      background:
+        radial-gradient(circle at top right, rgba(231, 169, 47, 0.18), transparent 38%),
+        linear-gradient(145deg, #16201f, #1d4059);
+      border-color: rgba(255, 255, 255, 0.18);
+    }
+
+    .card.dark p,
+    .card.dark li {
+      color: rgba(248, 241, 230, 0.78);
+    }
+
+    .card.dark h3,
+    .card.dark strong {
+      color: #fff8ec;
+    }
+
+    .stack {
+      display: grid;
+      gap: 14px;
+    }
+
+    .list {
+      margin: 0;
+      padding: 0;
+      list-style: none;
+      display: grid;
+      gap: 12px;
+    }
+
+    .list li {
+      position: relative;
+      padding-left: 27px;
+      color: var(--muted);
+      font-size: 1.05rem;
+      line-height: 1.5;
+    }
+
+    .list li::before {
+      content: "";
+      position: absolute;
+      left: 0;
+      top: 0.57em;
+      width: 12px;
+      height: 12px;
+      border-radius: 4px;
+      background: var(--clay);
+      transform: rotate(10deg);
+    }
+
+    .pill-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .pill {
+      padding: 9px 13px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.72);
+      border: 1px solid var(--line);
+      color: var(--ink);
+      font-weight: 800;
+      font-size: 0.95rem;
+    }
+
+    .metric {
+      display: grid;
+      gap: 7px;
+      padding: 18px;
+      border-radius: 22px;
+      background: rgba(255, 255, 255, 0.68);
+      border: 1px solid var(--line);
+    }
+
+    .metric .value {
+      font-size: 2.25rem;
+      line-height: 1;
+      font-weight: 900;
+      color: var(--green);
+      letter-spacing: -0.05em;
+    }
+
+    .metric .label {
+      color: var(--muted);
+      font-weight: 750;
+      line-height: 1.35;
+    }
+
+    .formula {
+      display: grid;
+      gap: 12px;
+      padding: 22px 24px;
+      border-radius: 24px;
+      background:
+        linear-gradient(135deg, rgba(220, 238, 232, 0.92), rgba(255, 249, 239, 0.9));
+      border: 1px solid rgba(13, 119, 107, 0.22);
+      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.48);
+      font-family: "Cambria Math", "Times New Roman", serif;
+      color: var(--ink);
+      overflow-x: auto;
+    }
+
+    .formula .big {
+      font-size: clamp(1.42rem, 2.35vw, 2.05rem);
+      line-height: 1.52;
+      white-space: nowrap;
+    }
+
+    .formula .case {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 10px 18px;
+      align-items: center;
+      font-size: clamp(1.15rem, 1.7vw, 1.48rem);
+    }
+
+    .board {
+      width: min(100%, 330px);
+      aspect-ratio: 1;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      grid-template-rows: repeat(3, 1fr);
+      gap: 10px;
+      padding: 12px;
+      border-radius: 28px;
+      background: linear-gradient(145deg, #17201f, #274b4a);
+      box-shadow: 0 20px 42px rgba(22, 32, 31, 0.18);
+      margin: 0 auto;
+    }
+
+    .cell {
+      display: grid;
+      place-items: center;
+      border-radius: 18px;
+      background:
+        linear-gradient(145deg, rgba(255, 249, 239, 0.98), rgba(234, 243, 238, 0.95));
+      font-size: clamp(2.2rem, 5.2vw, 4rem);
+      font-weight: 950;
+      line-height: 1;
+      color: var(--green);
+      box-shadow: inset 0 -8px 18px rgba(22, 32, 31, 0.06);
+    }
+
+    .cell.o {
+      color: var(--clay);
+    }
+
+    .cell.empty {
+      color: rgba(22, 32, 31, 0.22);
+      font-size: 1.45rem;
+      font-weight: 850;
+    }
+
+    .legend {
+      display: grid;
+      gap: 10px;
+      font-size: 1.02rem;
+      color: var(--muted);
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .dot {
+      width: 16px;
+      height: 16px;
+      border-radius: 999px;
+      background: var(--green);
+      box-shadow: 0 0 0 5px rgba(13, 119, 107, 0.12);
+    }
+
+    .dot.clay {
+      background: var(--clay);
+      box-shadow: 0 0 0 5px rgba(198, 81, 50, 0.12);
+    }
+
+    .dot.gold {
+      background: var(--gold);
+      box-shadow: 0 0 0 5px rgba(231, 169, 47, 0.14);
+    }
+
+    .code {
+      margin: 0;
+      padding: 18px;
+      border-radius: 22px;
+      color: #f8f1e6;
+      background:
+        radial-gradient(circle at top right, rgba(231, 169, 47, 0.13), transparent 30%),
+        linear-gradient(145deg, #111918, #1c2e35 58%, #17201f);
+      border: 1px solid rgba(255, 255, 255, 0.16);
+      box-shadow: 0 18px 40px rgba(22, 32, 31, 0.18);
+      overflow: auto;
+      max-height: 475px;
+      font-family: "Cascadia Code", "Consolas", "Courier New", monospace;
+      font-size: 0.86rem;
+      line-height: 1.48;
+      tab-size: 4;
+    }
+
+    .code.small {
+      max-height: 360px;
+      font-size: 0.82rem;
+    }
+
+    .code .kw {
+      color: #f5c96b;
+    }
+
+    .code .fn {
+      color: #92dfd2;
+    }
+
+    .code .str {
+      color: #efad96;
+    }
+
+    .tree-wrap,
+    .flow-wrap {
+      background: rgba(255, 255, 255, 0.58);
+      border: 1px solid var(--line);
+      border-radius: 26px;
+      padding: 14px;
+      overflow: hidden;
+    }
+
+    svg {
+      display: block;
+      width: 100%;
+      height: auto;
+    }
+
+    .caption {
+      color: var(--muted);
+      font-size: 0.94rem;
+      line-height: 1.48;
+    }
+
+    .comparison {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 16px;
+    }
+
+    .mini-board {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 5px;
+      padding: 8px;
+      border-radius: 18px;
+      background: #182321;
+    }
+
+    .mini-board span {
+      aspect-ratio: 1;
+      display: grid;
+      place-items: center;
+      border-radius: 10px;
+      background: #fff8ec;
+      font-weight: 950;
+      color: var(--green);
+    }
+
+    .mini-board span.o {
+      color: var(--clay);
+    }
+
+    .mini-board span.empty {
+      color: rgba(22, 32, 31, 0.22);
+    }
+
+    .terminal {
+      padding: 18px;
+      border-radius: 24px;
+      background: #121817;
+      color: #dceee8;
+      font-family: "Cascadia Code", "Consolas", "Courier New", monospace;
+      line-height: 1.58;
+      font-size: 0.92rem;
+      box-shadow: 0 20px 42px rgba(22, 32, 31, 0.18);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      white-space: pre-wrap;
+    }
+
+    .accent-band {
+      display: grid;
+      gap: 16px;
+      padding: 24px;
+      border-radius: 28px;
+      color: #fff9ef;
+      background:
+        radial-gradient(circle at 92% 12%, rgba(231, 169, 47, 0.28), transparent 26%),
+        linear-gradient(135deg, var(--green), var(--navy));
+      box-shadow: 0 22px 50px rgba(13, 119, 107, 0.2);
+    }
+
+    .accent-band p {
+      color: rgba(255, 249, 239, 0.8);
+    }
+
+    .footer {
+      position: fixed;
+      left: 50%;
+      bottom: 18px;
+      transform: translateX(-50%);
+      z-index: 10;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 10px;
+      border-radius: 999px;
+      background: rgba(255, 249, 239, 0.76);
+      backdrop-filter: blur(12px);
+      box-shadow: 0 12px 35px rgba(22, 32, 31, 0.14);
+      border: 1px solid rgba(255, 255, 255, 0.66);
+    }
+
+    .footer button {
+      border: 0;
+      border-radius: 999px;
+      color: #fff9ef;
+      background: var(--green);
+      font-weight: 900;
+      padding: 10px 14px;
+      cursor: pointer;
+      transition: transform 0.18s ease, background 0.18s ease;
+    }
+
+    .footer button:hover {
+      transform: translateY(-1px);
+      background: var(--clay);
+    }
+
+    .progress {
+      width: min(34vw, 360px);
+      height: 9px;
+      border-radius: 999px;
+      background: rgba(22, 32, 31, 0.1);
+      overflow: hidden;
+    }
+
+    .bar {
+      height: 100%;
+      width: 0%;
+      border-radius: inherit;
+      background: linear-gradient(90deg, var(--clay), var(--gold), var(--green));
+      transition: width 0.2s ease;
+    }
+
+    .counter {
+      min-width: 58px;
+      text-align: center;
+      color: var(--muted);
+      font-weight: 900;
+      font-size: 0.9rem;
+    }
+
+    .cover-visual {
+      position: absolute;
+      right: 48px;
+      bottom: 42px;
+      width: min(38vw, 430px);
+      opacity: 0.96;
+    }
+
+    .team {
+      display: inline-grid;
+      gap: 6px;
+      padding: 16px 18px;
+      border-radius: 22px;
+      background: rgba(255, 255, 255, 0.62);
+      border: 1px solid var(--line);
+      max-width: 760px;
+    }
+
+    .team span {
+      color: var(--muted);
+      font-size: 0.98rem;
+    }
+
+    .toc {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+      counter-reset: item;
+    }
+
+    .toc-item {
+      counter-increment: item;
+      display: flex;
+      gap: 14px;
+      align-items: flex-start;
+      padding: 18px;
+      border-radius: 22px;
+      background: rgba(255, 255, 255, 0.68);
+      border: 1px solid var(--line);
+    }
+
+    .toc-item::before {
+      content: counter(item);
+      flex: 0 0 auto;
+      width: 34px;
+      height: 34px;
+      display: grid;
+      place-items: center;
+      border-radius: 12px;
+      color: #fff9ef;
+      background: var(--clay);
+      font-weight: 950;
+    }
+
+    .toc-item strong {
+      display: block;
+      margin-bottom: 4px;
+    }
+
+    .toc-item span {
+      color: var(--muted);
+      line-height: 1.45;
+    }
+
+    @media (max-width: 860px) {
+      .deck {
+        padding: 14px;
+      }
+
+      .slide {
+        width: calc(100vw - 28px);
+        height: calc(100vh - 28px);
+        padding: 28px 22px;
+      }
+
+      .grid-2,
+      .grid-3,
+      .wide-left,
+      .wide-right,
+      .comparison,
+      .toc {
+        grid-template-columns: 1fr;
+      }
+
+      .cover-visual {
+        position: static;
+        width: 100%;
+      }
+
+      .footer {
+        width: calc(100vw - 28px);
+        justify-content: center;
+      }
+
+      .progress {
+        width: 28vw;
+      }
+
+      .code {
+        max-height: 420px;
+      }
+    }
+
+    @media print {
+      html,
+      body {
+        background: white;
+        height: auto;
+        overflow: visible;
+      }
+
+      .deck {
+        height: auto;
+        padding: 0;
+        gap: 0;
+        display: grid;
+        perspective: none;
+      }
+
+      .slide {
+        position: relative;
+        left: auto;
+        top: auto;
+        width: 100%;
+        height: auto;
+        min-height: 100vh;
+        transform: none !important;
+        opacity: 1 !important;
+        filter: none !important;
+        pointer-events: auto;
+        overflow: visible;
+        box-shadow: none;
+        border-radius: 0;
+        page-break-after: always;
+      }
+
+      .footer {
+        display: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="deck">
+    <section class="slide cover" id="slide-1">
+      <div class="slide-head">
+        <span class="eyebrow">Cơ sở trí tuệ nhân tạo</span>
+        <span class="slide-no">01 / 16</span>
+      </div>
+      <div class="content wide-left">
+        <div class="stack" style="align-self:center">
+          <h1>Minimax cho Tic-Tac-Toe</h1>
+          <p class="subtitle">Giải bài toán trò chơi đối kháng với MAX là <strong>X</strong>, MIN là <strong>O</strong>, hàm đánh giá <strong>+1 / -1 / 0</strong>.</p>
+          <div class="team">
+            <strong>Nhóm 9</strong>
+            <span>Nguyễn Đức Trung 24022473; Phạm Sỹ Toàn 24022467; Lê Minh Đức 24022291; Phạm Công Thành 24022455; Trần Công Tuấn 24022485</span>
+            <span>Giảng viên: TS. Nguyễn Bích Vân · Hạn nộp: 04/05/2026</span>
+          </div>
+        </div>
+        <div class="cover-visual">
+          <div class="board">
+            <div class="cell">X</div>
+            <div class="cell o">O</div>
+            <div class="cell empty">3</div>
+            <div class="cell empty">4</div>
+            <div class="cell">X</div>
+            <div class="cell o">O</div>
+            <div class="cell o">O</div>
+            <div class="cell empty">8</div>
+            <div class="cell">X</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide" id="slide-2">
+      <div class="slide-head">
+        <span class="eyebrow">Nội dung</span>
+        <span class="slide-no">02 / 16</span>
+      </div>
+      <div class="content">
+        <h2>Lộ trình trình bày</h2>
+        <div class="toc">
+          <div class="toc-item"><div><strong>Phát biểu bài toán</strong><span>Luật chơi, vai trò MAX/MIN và yêu cầu đầu ra.</span></div></div>
+          <div class="toc-item"><div><strong>Mô hình toán học</strong><span>Trạng thái, nước đi, trạng thái kết thúc và hàm đánh giá.</span></div></div>
+          <div class="toc-item"><div><strong>Thuật toán Minimax</strong><span>Công thức đệ quy, cây trò chơi và cách lan truyền giá trị.</span></div></div>
+          <div class="toc-item"><div><strong>Cài đặt Python</strong><span>Các hàm chính: kiểm tra thắng, đánh giá, Minimax, chọn nước đi.</span></div></div>
+          <div class="toc-item"><div><strong>Kết quả thực nghiệm</strong><span>Nước đi tối ưu, giá trị Minimax và các tình huống minh họa.</span></div></div>
+          <div class="toc-item"><div><strong>Nhận xét</strong><span>Ưu điểm, nhược điểm, độ phức tạp và hướng cải tiến.</span></div></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide" id="slide-3">
+      <div class="slide-head">
+        <span class="eyebrow">Bài toán</span>
+        <span class="slide-no">03 / 16</span>
+      </div>
+      <div class="content grid-2 wide-left">
+        <div class="stack">
+          <h2>Yêu cầu của đề</h2>
+          <ul class="list">
+            <li>Xét trò chơi Tic-Tac-Toe trên bàn cờ <strong>3 × 3</strong>.</li>
+            <li><strong>MAX = X</strong>, người chơi muốn cực đại hóa điểm số.</li>
+            <li><strong>MIN = O</strong>, người chơi muốn cực tiểu hóa điểm số.</li>
+            <li>Viết thuật toán Minimax bằng Python cho phép người chơi đấu với máy.</li>
+            <li>In ra <strong>nước đi tốt nhất</strong> và <strong>giá trị Minimax</strong>.</li>
+          </ul>
+          <div class="pill-row">
+            <span class="pill">Trò chơi đối kháng</span>
+            <span class="pill">Tìm kiếm trong cây</span>
+            <span class="pill">Tối ưu nước đi</span>
+          </div>
+        </div>
+        <div class="card dark stack">
+          <h3>Đầu ra cần có</h3>
+          <div class="terminal">Nước đi tốt nhất từ bàn cờ rỗng cho X: ô 5
+Giá trị Minimax từ bàn cờ rỗng: 0
+
+Nước đi tốt nhất của máy: ô 7
+Giá trị Minimax: -1</div>
+          <p>Giá trị dương có lợi cho X, giá trị âm có lợi cho O, giá trị 0 biểu thị hòa nếu hai bên cùng đi tối ưu.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide" id="slide-4">
+      <div class="slide-head">
+        <span class="eyebrow">Mô hình</span>
+        <span class="slide-no">04 / 16</span>
+      </div>
+      <div class="content grid-2">
+        <div class="stack">
+          <h2>Trạng thái và nước đi</h2>
+          <p>Một trạng thái <strong>s</strong> là cấu hình hiện tại của 9 ô. Mỗi ô nhận một trong ba giá trị: <strong>X</strong>, <strong>O</strong> hoặc rỗng.</p>
+          <div class="formula">
+            <div class="big">s ∈ {X, O, _}<sup>9</sup></div>
+            <div class="big">A(s) = tập các ô còn trống</div>
+            <div class="big">Result(s, a) = trạng thái sau khi đi nước a</div>
+          </div>
+          <ul class="list">
+            <li>Người chơi chỉ được chọn ô rỗng.</li>
+            <li>Sau mỗi nước đi, lượt chơi chuyển sang đối thủ.</li>
+            <li>Trạng thái kết thúc xuất hiện khi có người thắng hoặc bàn cờ đầy.</li>
+          </ul>
+        </div>
+        <div class="stack">
+          <div class="board">
+            <div class="cell">X</div>
+            <div class="cell o">O</div>
+            <div class="cell">X</div>
+            <div class="cell empty">4</div>
+            <div class="cell o">O</div>
+            <div class="cell empty">6</div>
+            <div class="cell empty">7</div>
+            <div class="cell">X</div>
+            <div class="cell empty">9</div>
+          </div>
+          <div class="legend card">
+            <div class="legend-item"><span class="dot"></span><span><strong>X</strong>: quân của MAX</span></div>
+            <div class="legend-item"><span class="dot clay"></span><span><strong>O</strong>: quân của MIN</span></div>
+            <div class="legend-item"><span class="dot gold"></span><span>Ô còn số: vị trí có thể đi tiếp</span></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide" id="slide-5">
+      <div class="slide-head">
+        <span class="eyebrow">Đánh giá</span>
+        <span class="slide-no">05 / 16</span>
+      </div>
+      <div class="content grid-2 wide-right">
+        <div class="card stack">
+          <h3>Các đường thắng</h3>
+          <div class="tree-wrap">
+            <svg viewBox="0 0 520 430" aria-label="Các đường thắng Tic-Tac-Toe">
+              <rect x="85" y="40" width="350" height="350" rx="28" fill="#17201f"/>
+              <g stroke="#fff8ec" stroke-width="10" stroke-linecap="round" opacity="0.88">
+                <line x1="202" y1="54" x2="202" y2="376"/>
+                <line x1="318" y1="54" x2="318" y2="376"/>
+                <line x1="99" y1="157" x2="421" y2="157"/>
+                <line x1="99" y1="273" x2="421" y2="273"/>
+              </g>
+              <g stroke="#e7a92f" stroke-width="13" stroke-linecap="round">
+                <line x1="115" y1="75" x2="405" y2="365"/>
+              </g>
+              <g fill="#0d776b" font-size="74" font-family="Aptos, sans-serif" font-weight="900" text-anchor="middle">
+                <text x="144" y="128">X</text>
+                <text x="260" y="244">X</text>
+                <text x="376" y="360">X</text>
+              </g>
+              <g fill="#c65132" font-size="74" font-family="Aptos, sans-serif" font-weight="900" text-anchor="middle">
+                <text x="260" y="128">O</text>
+                <text x="376" y="128">O</text>
+                <text x="144" y="244">O</text>
+              </g>
+            </svg>
+          </div>
+          <p class="caption">Một người thắng nếu có 3 quân liên tiếp trên hàng, cột hoặc đường chéo.</p>
+        </div>
+        <div class="stack">
+          <h2>Hàm đánh giá trạng thái kết thúc</h2>
+          <div class="formula">
+            <div class="big">Eval(s) =</div>
+            <div class="case">
+              <strong>+1</strong><span>nếu X thắng</span>
+              <strong>-1</strong><span>nếu O thắng</span>
+              <strong>0</strong><span>nếu ván cờ hòa</span>
+            </div>
+          </div>
+          <div class="grid-3">
+            <div class="metric"><span class="value">+1</span><span class="label">MAX đạt mục tiêu</span></div>
+            <div class="metric"><span class="value" style="color:var(--clay)">-1</span><span class="label">MIN đạt mục tiêu</span></div>
+            <div class="metric"><span class="value" style="color:var(--navy)">0</span><span class="label">Hai bên hòa</span></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide" id="slide-6">
+      <div class="slide-head">
+        <span class="eyebrow">Cây trò chơi</span>
+        <span class="slide-no">06 / 16</span>
+      </div>
+      <div class="content grid-2 wide-left">
+        <div class="stack">
+          <h2>Minimax duyệt cây trạng thái</h2>
+          <p>Mỗi nút là một bàn cờ. Mỗi cạnh là một nước đi hợp lệ. Giá trị ở nút lá được lan truyền ngược về nút gốc.</p>
+          <ul class="list">
+            <li>Nút MAX lấy giá trị lớn nhất trong các con.</li>
+            <li>Nút MIN lấy giá trị nhỏ nhất trong các con.</li>
+            <li>Nút gốc chọn nước đi dẫn đến giá trị tối ưu.</li>
+          </ul>
+          <div class="accent-band">
+            <h3>Ý tưởng cốt lõi</h3>
+            <p>Giả sử đối thủ luôn đi tốt nhất, máy phải chọn nước đi tốt nhất trong trường hợp đối thủ phản ứng tối ưu.</p>
+          </div>
+        </div>
+        <div class="tree-wrap">
+          <svg viewBox="0 0 740 520" aria-label="Cây Minimax">
+            <defs>
+              <marker id="arrow" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto">
+                <path d="M2,2 L10,6 L2,10 Z" fill="#5b6762"/>
+              </marker>
+            </defs>
+            <g stroke="#5b6762" stroke-width="3" marker-end="url(#arrow)" opacity="0.75">
+              <line x1="370" y1="92" x2="168" y2="190"/>
+              <line x1="370" y1="92" x2="370" y2="190"/>
+              <line x1="370" y1="92" x2="572" y2="190"/>
+              <line x1="168" y1="248" x2="78" y2="350"/>
+              <line x1="168" y1="248" x2="168" y2="350"/>
+              <line x1="168" y1="248" x2="258" y2="350"/>
+              <line x1="370" y1="248" x2="320" y2="350"/>
+              <line x1="370" y1="248" x2="420" y2="350"/>
+              <line x1="572" y1="248" x2="510" y2="350"/>
+              <line x1="572" y1="248" x2="634" y2="350"/>
+            </g>
+            <g font-family="Aptos, sans-serif" text-anchor="middle">
+              <g>
+                <rect x="282" y="28" width="176" height="64" rx="20" fill="#0d776b"/>
+                <text x="370" y="56" fill="#fff9ef" font-size="18" font-weight="900">MAX: X</text>
+                <text x="370" y="78" fill="#fff9ef" font-size="16">chọn max</text>
+              </g>
+              <g fill="#fff9ef">
+                <rect x="94" y="184" width="148" height="64" rx="18" fill="#c65132"/>
+                <rect x="296" y="184" width="148" height="64" rx="18" fill="#c65132"/>
+                <rect x="498" y="184" width="148" height="64" rx="18" fill="#c65132"/>
+                <text x="168" y="211" font-size="17" font-weight="900">MIN: O</text>
+                <text x="370" y="211" font-size="17" font-weight="900">MIN: O</text>
+                <text x="572" y="211" font-size="17" font-weight="900">MIN: O</text>
+                <text x="168" y="233" font-size="15">chọn min</text>
+                <text x="370" y="233" font-size="15">chọn min</text>
+                <text x="572" y="233" font-size="15">chọn min</text>
+              </g>
+              <g font-size="22" font-weight="950">
+                <circle cx="78" cy="386" r="38" fill="#dceee8"/>
+                <circle cx="168" cy="386" r="38" fill="#f4d8ca"/>
+                <circle cx="258" cy="386" r="38" fill="#dce8ef"/>
+                <circle cx="320" cy="386" r="38" fill="#f4d8ca"/>
+                <circle cx="420" cy="386" r="38" fill="#dce8ef"/>
+                <circle cx="510" cy="386" r="38" fill="#dceee8"/>
+                <circle cx="634" cy="386" r="38" fill="#f4d8ca"/>
+                <text x="78" y="394" fill="#0d776b">+1</text>
+                <text x="168" y="394" fill="#c65132">-1</text>
+                <text x="258" y="394" fill="#1d4059">0</text>
+                <text x="320" y="394" fill="#c65132">-1</text>
+                <text x="420" y="394" fill="#1d4059">0</text>
+                <text x="510" y="394" fill="#0d776b">+1</text>
+                <text x="634" y="394" fill="#c65132">-1</text>
+              </g>
+              <g font-size="16" fill="#5b6762" font-weight="800">
+                <text x="78" y="462">X thắng</text>
+                <text x="168" y="462">O thắng</text>
+                <text x="258" y="462">Hòa</text>
+                <text x="320" y="462">O thắng</text>
+                <text x="420" y="462">Hòa</text>
+                <text x="510" y="462">X thắng</text>
+                <text x="634" y="462">O thắng</text>
+              </g>
+            </g>
+          </svg>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide" id="slide-7">
+      <div class="slide-head">
+        <span class="eyebrow">Công thức</span>
+        <span class="slide-no">07 / 16</span>
+      </div>
+      <div class="content">
+        <h2>Công thức Minimax</h2>
+        <div class="formula">
+          <div class="big">V(s) =</div>
+          <div class="case">
+            <strong>Eval(s)</strong><span>nếu s là trạng thái kết thúc</span>
+            <strong>max<sub>a∈A(s)</sub> V(Result(s,a))</strong><span>nếu đến lượt X</span>
+            <strong>min<sub>a∈A(s)</sub> V(Result(s,a))</strong><span>nếu đến lượt O</span>
+          </div>
+        </div>
+        <div class="grid-2">
+          <div class="card stack">
+            <h3>Nếu máy là X</h3>
+            <div class="formula"><div class="big">a* = arg max<sub>a∈A(s)</sub> V(Result(s,a))</div></div>
+            <p>Máy chọn nước đi làm điểm số lớn nhất vì X là MAX.</p>
+          </div>
+          <div class="card stack">
+            <h3>Nếu máy là O</h3>
+            <div class="formula"><div class="big">a* = arg min<sub>a∈A(s)</sub> V(Result(s,a))</div></div>
+            <p>Máy chọn nước đi làm điểm số nhỏ nhất vì O là MIN.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide" id="slide-8">
+      <div class="slide-head">
+        <span class="eyebrow">Quy trình</span>
+        <span class="slide-no">08 / 16</span>
+      </div>
+      <div class="content grid-2 wide-left">
+        <div class="flow-wrap">
+          <svg viewBox="0 0 760 560" aria-label="Luồng thuật toán Minimax">
+            <defs>
+              <marker id="arrow2" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto">
+                <path d="M2,2 L10,6 L2,10 Z" fill="#5b6762"/>
+              </marker>
+            </defs>
+            <g font-family="Aptos, sans-serif" font-weight="850" text-anchor="middle">
+              <rect x="252" y="24" width="256" height="62" rx="22" fill="#0d776b"/>
+              <text x="380" y="62" fill="#fff9ef" font-size="20">Nhận trạng thái s</text>
+              <path d="M380 88 L380 128" stroke="#5b6762" stroke-width="4" marker-end="url(#arrow2)"/>
+              <rect x="228" y="132" width="304" height="68" rx="22" fill="#fff8ec" stroke="#16201f" stroke-opacity="0.18" stroke-width="2"/>
+              <text x="380" y="172" fill="#16201f" font-size="20">s kết thúc?</text>
+              <path d="M380 202 L250 254" stroke="#5b6762" stroke-width="4" marker-end="url(#arrow2)"/>
+              <path d="M380 202 L510 254" stroke="#5b6762" stroke-width="4" marker-end="url(#arrow2)"/>
+              <rect x="78" y="260" width="260" height="70" rx="22" fill="#dceee8"/>
+              <text x="208" y="300" fill="#0d776b" font-size="19">Có: trả Eval(s)</text>
+              <rect x="422" y="260" width="260" height="70" rx="22" fill="#f4d8ca"/>
+              <text x="552" y="300" fill="#c65132" font-size="19">Không: sinh A(s)</text>
+              <path d="M552 332 L552 382" stroke="#5b6762" stroke-width="4" marker-end="url(#arrow2)"/>
+              <rect x="396" y="386" width="312" height="74" rx="22" fill="#dce8ef"/>
+              <text x="552" y="416" fill="#1d4059" font-size="19">Tính V cho từng</text>
+              <text x="552" y="440" fill="#1d4059" font-size="19">trạng thái con</text>
+              <path d="M396 422 L284 422" stroke="#5b6762" stroke-width="4" marker-end="url(#arrow2)"/>
+              <rect x="54" y="386" width="230" height="74" rx="22" fill="#fff8ec" stroke="#16201f" stroke-opacity="0.18" stroke-width="2"/>
+              <text x="169" y="416" fill="#16201f" font-size="19">MAX lấy max</text>
+              <text x="169" y="440" fill="#16201f" font-size="19">MIN lấy min</text>
+              <path d="M169 462 L169 508 L380 508" stroke="#5b6762" stroke-width="4" marker-end="url(#arrow2)"/>
+              <rect x="380" y="480" width="284" height="58" rx="21" fill="#c65132"/>
+              <text x="522" y="516" fill="#fff9ef" font-size="19">Trả nước đi tốt nhất</text>
+            </g>
+          </svg>
+        </div>
+        <div class="stack">
+          <h2>Các bước thực hiện</h2>
+          <ul class="list">
+            <li>Kiểm tra bàn cờ hiện tại có kết thúc chưa.</li>
+            <li>Nếu kết thúc, trả về giá trị <strong>+1</strong>, <strong>-1</strong> hoặc <strong>0</strong>.</li>
+            <li>Nếu chưa kết thúc, sinh toàn bộ nước đi hợp lệ.</li>
+            <li>Gọi đệ quy Minimax cho từng trạng thái con.</li>
+            <li>Chọn max nếu lượt X, chọn min nếu lượt O.</li>
+          </ul>
+          <div class="card">
+            <p><strong>Ghi nhớ:</strong> Minimax không chọn nước đi chỉ tốt ở lượt hiện tại; nó chọn nước đi tốt nhất sau khi đã xét phản ứng tối ưu của đối thủ.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide" id="slide-9">
+      <div class="slide-head">
+        <span class="eyebrow">Code 1</span>
+        <span class="slide-no">09 / 16</span>
+      </div>
+      <div class="content grid-2 wide-left">
+        <div class="stack">
+          <h2>Cấu trúc dữ liệu</h2>
+          <p>Bàn cờ được biểu diễn bằng tuple 9 phần tử. Cách này giúp trạng thái có thể dùng làm khóa cache cho hàm Minimax.</p>
+          <ul class="list">
+            <li><strong>X</strong> và <strong>O</strong> là hai quân cờ.</li>
+            <li><strong>EMPTY</strong> biểu diễn ô trống.</li>
+            <li><strong>WIN_LINES</strong> chứa 8 đường thắng.</li>
+            <li><strong>MOVE_ORDER</strong> ưu tiên trung tâm, góc, cạnh để nước đi đẹp hơn.</li>
+          </ul>
+        </div>
+        <pre class="code"><code>from functools import lru_cache
+
+X = "X"
+O = "O"
+EMPTY = " "
+
+WIN_LINES = (
+    (0, 1, 2),
+    (3, 4, 5),
+    (6, 7, 8),
+    (0, 3, 6),
+    (1, 4, 7),
+    (2, 5, 8),
+    (0, 4, 8),
+    (2, 4, 6),
+)
+
+MOVE_ORDER = (4, 0, 2, 6, 8, 1, 3, 5, 7)</code></pre>
+      </div>
+    </section>
+
+    <section class="slide" id="slide-10">
+      <div class="slide-head">
+        <span class="eyebrow">Code 2</span>
+        <span class="slide-no">10 / 16</span>
+      </div>
+      <div class="content grid-2">
+        <div class="stack">
+          <h2>Kiểm tra thắng và đánh giá</h2>
+          <p>Hàm <strong>winner</strong> quét 8 đường thắng. Hàm <strong>terminal_value</strong> trả về đúng hàm đánh giá của đề bài.</p>
+          <div class="comparison">
+            <div class="metric"><span class="value">+1</span><span class="label">winner = X</span></div>
+            <div class="metric"><span class="value" style="color:var(--clay)">-1</span><span class="label">winner = O</span></div>
+            <div class="metric"><span class="value" style="color:var(--navy)">0</span><span class="label">bàn cờ đầy</span></div>
+          </div>
+        </div>
+        <pre class="code"><code>def winner(board):
+    for a, b, c in WIN_LINES:
+        if board[a] != EMPTY and board[a] == board[b] == board[c]:
+            return board[a]
+    return None
+
+
+def terminal_value(board):
+    result = winner(board)
+    if result == X:
+        return 1
+    if result == O:
+        return -1
+    if EMPTY not in board:
+        return 0
+    return None</code></pre>
+      </div>
+    </section>
+
+    <section class="slide" id="slide-11">
+      <div class="slide-head">
+        <span class="eyebrow">Code 3</span>
+        <span class="slide-no">11 / 16</span>
+      </div>
+      <div class="content grid-2 wide-right">
+        <pre class="code"><code>def legal_moves(board):
+    return [move for move in MOVE_ORDER if board[move] == EMPTY]
+
+
+def make_move(board, move, player):
+    new_board = list(board)
+    new_board[move] = player
+    return tuple(new_board)
+
+
+@lru_cache(maxsize=None)
+def minimax(board, turn):
+    value = terminal_value(board)
+    if value is not None:
+        return value
+
+    next_turn = opponent(turn)
+    scores = [
+        minimax(make_move(board, move, turn), next_turn)
+        for move in legal_moves(board)
+    ]
+
+    if turn == X:
+        return max(scores)
+    return min(scores)</code></pre>
+        <div class="stack">
+          <h2>Hàm Minimax</h2>
+          <ul class="list">
+            <li>Nếu trạng thái đã kết thúc, trả về giá trị đánh giá.</li>
+            <li>Nếu chưa kết thúc, tính điểm cho tất cả trạng thái con.</li>
+            <li>Lượt X trả về <strong>max(scores)</strong>.</li>
+            <li>Lượt O trả về <strong>min(scores)</strong>.</li>
+            <li><strong>lru_cache</strong> giúp tránh tính lại các trạng thái đã gặp.</li>
+          </ul>
+          <div class="formula">
+            <div class="big">Minimax = đệ quy + max/min + đánh giá trạng thái kết thúc</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide" id="slide-12">
+      <div class="slide-head">
+        <span class="eyebrow">Code 4</span>
+        <span class="slide-no">12 / 16</span>
+      </div>
+      <div class="content grid-2 wide-left">
+        <div class="stack">
+          <h2>Chọn nước đi tốt nhất</h2>
+          <p>Hàm <strong>best_move</strong> thử từng nước đi hợp lệ, tính giá trị Minimax của trạng thái sau nước đó, rồi chọn nước tốt nhất theo vai trò của người chơi.</p>
+          <div class="formula">
+            <div class="big">X chọn điểm lớn nhất</div>
+            <div class="big">O chọn điểm nhỏ nhất</div>
+          </div>
+          <ul class="list">
+            <li>Đầu ra gồm vị trí ô và giá trị Minimax.</li>
+            <li>Vị trí trong code dùng chỉ số 0 đến 8.</li>
+            <li>Khi in cho người chơi, chuyển sang ô 1 đến 9.</li>
+          </ul>
+        </div>
+        <pre class="code"><code>def best_move(board, player):
+    moves = legal_moves(board)
+    next_turn = opponent(player)
+    choices = [
+        (move, minimax(make_move(board, move, player), next_turn))
+        for move in moves
+    ]
+
+    if player == X:
+        return max(choices, key=lambda item: item[1])
+    return min(choices, key=lambda item: item[1])</code></pre>
+      </div>
+    </section>
+
+    <section class="slide" id="slide-13">
+      <div class="slide-head">
+        <span class="eyebrow">Code 5</span>
+        <span class="slide-no">13 / 16</span>
+      </div>
+      <div class="content grid-2">
+        <pre class="code small"><code>def run_game():
+    board = tuple([EMPTY] * 9)
+    human = choose_symbol()
+    computer = opponent(human)
+    turn = X
+
+    print(f"Bạn là {human}. Máy là {computer}.")
+    print("X là MAX, O là MIN.")
+
+    empty_best_move, empty_value = best_move(board, X)
+    print(f"Nước đi tốt nhất từ bàn cờ rỗng cho X: ô {empty_best_move + 1}")
+    print(f"Giá trị Minimax từ bàn cờ rỗng: {empty_value}")
+
+    while terminal_value(board) is None:
+        print_board(board)
+
+        if turn == human:
+            move = read_human_move(board)
+            board = make_move(board, move, human)
+        else:
+            move, value = best_move(board, computer)
+            print(f"Nước đi tốt nhất của máy: ô {move + 1}")
+            print(f"Giá trị Minimax: {value}")
+            board = make_move(board, move, computer)
+
+        turn = opponent(turn)</code></pre>
+        <div class="stack">
+          <h2>Luồng người chơi đấu với máy</h2>
+          <ul class="list">
+            <li>Người dùng chọn quân X hoặc O.</li>
+            <li>X luôn đi trước theo luật Tic-Tac-Toe.</li>
+            <li>Đến lượt người dùng thì nhập ô từ 1 đến 9.</li>
+            <li>Đến lượt máy thì gọi <strong>best_move</strong>.</li>
+            <li>Sau mỗi lượt, chương trình in bàn cờ và kiểm tra kết thúc.</li>
+          </ul>
+          <div class="card dark">
+            <h3>Điểm cần báo cáo</h3>
+            <p>Chương trình luôn in nước đi tốt nhất và giá trị Minimax của máy tại trạng thái hiện tại.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide" id="slide-14">
+      <div class="slide-head">
+        <span class="eyebrow">Thực nghiệm</span>
+        <span class="slide-no">14 / 16</span>
+      </div>
+      <div class="content grid-2 wide-left">
+        <div class="stack">
+          <h2>Kết quả từ bàn cờ rỗng</h2>
+          <p>Với bàn cờ ban đầu, nếu cả hai bên đều chơi tối ưu thì Tic-Tac-Toe kết thúc hòa.</p>
+          <div class="formula">
+            <div class="big">a* = ô 5 = vị trí trung tâm = (2, 2)</div>
+            <div class="big">V(s<sub>0</sub>) = 0</div>
+          </div>
+          <div class="terminal">Bạn là X. Máy là O.
+X là MAX, O là MIN.
+Nước đi tốt nhất từ bàn cờ rỗng cho X: ô 5
+Giá trị Minimax từ bàn cờ rỗng: 0</div>
+        </div>
+        <div class="stack">
+          <div class="board">
+            <div class="cell empty">1</div>
+            <div class="cell empty">2</div>
+            <div class="cell empty">3</div>
+            <div class="cell empty">4</div>
+            <div class="cell">X</div>
+            <div class="cell empty">6</div>
+            <div class="cell empty">7</div>
+            <div class="cell empty">8</div>
+            <div class="cell empty">9</div>
+          </div>
+          <div class="card">
+            <p><strong>Giải thích:</strong> ô trung tâm kiểm soát nhiều đường thắng nhất. Tuy nhiên, đối thủ O vẫn có chiến lược phòng thủ tối ưu, nên giá trị cuối cùng là hòa.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide" id="slide-15">
+      <div class="slide-head">
+        <span class="eyebrow">Ví dụ</span>
+        <span class="slide-no">15 / 16</span>
+      </div>
+      <div class="content">
+        <h2>Hai tình huống quan trọng</h2>
+        <div class="grid-2">
+          <div class="card stack">
+            <h3>MAX có nước thắng ngay</h3>
+            <div class="comparison">
+              <div class="mini-board">
+                <span>X</span><span>X</span><span class="empty">3</span>
+                <span class="o">O</span><span class="o">O</span><span class="empty">6</span>
+                <span class="empty">7</span><span class="empty">8</span><span class="empty">9</span>
+              </div>
+              <div class="metric"><span class="value">→</span><span class="label">đi ô 3</span></div>
+              <div class="mini-board">
+                <span>X</span><span>X</span><span>X</span>
+                <span class="o">O</span><span class="o">O</span><span class="empty">6</span>
+                <span class="empty">7</span><span class="empty">8</span><span class="empty">9</span>
+              </div>
+            </div>
+            <div class="formula"><div class="big">V = +1</div></div>
+            <p>X hoàn thành hàng đầu tiên, vì vậy Minimax chọn ngay nước thắng.</p>
+          </div>
+          <div class="card stack">
+            <h3>MAX cần chặn MIN</h3>
+            <div class="comparison">
+              <div class="mini-board">
+                <span class="o">O</span><span class="o">O</span><span class="empty">3</span>
+                <span>X</span><span class="empty">5</span><span class="empty">6</span>
+                <span>X</span><span class="empty">8</span><span class="empty">9</span>
+              </div>
+              <div class="metric"><span class="value">→</span><span class="label">chặn ô 3</span></div>
+              <div class="mini-board">
+                <span class="o">O</span><span class="o">O</span><span>X</span>
+                <span>X</span><span class="empty">5</span><span class="empty">6</span>
+                <span>X</span><span class="empty">8</span><span class="empty">9</span>
+              </div>
+            </div>
+            <div class="formula"><div class="big">Tránh nhánh có V = -1</div></div>
+            <p>Nếu không chặn, O sẽ thắng ở lượt tiếp theo. Minimax nhìn trước nên chọn nước phòng thủ.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide" id="slide-16">
+      <div class="slide-head">
+        <span class="eyebrow">Kết luận</span>
+        <span class="slide-no">16 / 16</span>
+      </div>
+      <div class="content grid-2 wide-left">
+        <div class="stack">
+          <h2>Độ phức tạp và nhận xét</h2>
+          <div class="grid-3">
+            <div class="metric"><span class="value">9!</span><span class="label">chặn trên số trạng thái cần xét</span></div>
+            <div class="metric"><span class="value">O(b<sup>d</sup>)</span><span class="label">độ phức tạp thời gian tổng quát</span></div>
+            <div class="metric"><span class="value">O(d)</span><span class="label">bộ nhớ khi duyệt sâu đệ quy</span></div>
+          </div>
+          <ul class="list">
+            <li>Minimax cho lời giải chính xác vì Tic-Tac-Toe có không gian trạng thái nhỏ.</li>
+            <li>Nếu hai người chơi đều tối ưu, trạng thái ban đầu có giá trị <strong>0</strong>, tức là hòa.</li>
+            <li>Thuật toán có thể mở rộng bằng cắt tỉa Alpha-Beta để giảm số nhánh cần duyệt.</li>
+            <li>Với trò chơi lớn hơn, cần thêm giới hạn độ sâu và hàm đánh giá xấp xỉ.</li>
+          </ul>
+        </div>
+        <div class="accent-band" style="align-self:center">
+          <h2 style="color:#fff9ef">Thông điệp chính</h2>
+          <p>Minimax biến bài toán chọn nước đi thành bài toán tối ưu trên cây trò chơi: X cực đại hóa, O cực tiểu hóa, và mỗi quyết định đều xét đến phản ứng tốt nhất của đối thủ.</p>
+          <div class="pill-row">
+            <span class="pill">Chính xác</span>
+            <span class="pill">Dễ cài đặt</span>
+            <span class="pill">Phù hợp Tic-Tac-Toe</span>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <nav class="footer" aria-label="Điều hướng slide">
+    <button type="button" id="prev">←</button>
+    <div class="progress"><div class="bar" id="bar"></div></div>
+    <div class="counter" id="counter">1/16</div>
+    <button type="button" id="next">→</button>
+  </nav>
+
+  <script>
+    const slides = [...document.querySelectorAll(".slide")];
+    const bar = document.getElementById("bar");
+    const counter = document.getElementById("counter");
+    let current = 0;
+    let wheelLocked = false;
+    let touchStartX = 0;
+    let touchStartY = 0;
+
+    function update(index) {
+      current = Math.max(0, Math.min(slides.length - 1, index));
+      slides.forEach((slide, slideIndex) => {
+        slide.classList.toggle("is-active", slideIndex === current);
+        slide.classList.toggle("is-prev", slideIndex < current);
+        slide.classList.toggle("is-next", slideIndex > current);
+        slide.setAttribute("aria-hidden", slideIndex === current ? "false" : "true");
+      });
+      slides[current].scrollTop = 0;
+      bar.style.width = `${((current + 1) / slides.length) * 100}%`;
+      counter.textContent = `${current + 1}/${slides.length}`;
+      history.replaceState(null, "", `#slide-${current + 1}`);
+    }
+
+    document.getElementById("prev").addEventListener("click", () => update(current - 1));
+    document.getElementById("next").addEventListener("click", () => update(current + 1));
+
+    document.addEventListener("keydown", (event) => {
+      if (event.key === "ArrowRight" || event.key === "PageDown" || event.key === " ") {
+        event.preventDefault();
+        update(current + 1);
+      }
+      if (event.key === "ArrowLeft" || event.key === "PageUp") {
+        event.preventDefault();
+        update(current - 1);
+      }
+      if (event.key === "Home") {
+        event.preventDefault();
+        update(0);
+      }
+      if (event.key === "End") {
+        event.preventDefault();
+        update(slides.length - 1);
+      }
+    });
+
+    document.addEventListener("wheel", (event) => {
+      if (wheelLocked) return;
+
+      const activeSlide = slides[current];
+      const canScrollDown = activeSlide.scrollTop + activeSlide.clientHeight < activeSlide.scrollHeight - 4;
+      const canScrollUp = activeSlide.scrollTop > 4;
+      const movingDown = event.deltaY > 28 || event.deltaX > 28;
+      const movingUp = event.deltaY < -28 || event.deltaX < -28;
+
+      if (movingDown && canScrollDown) return;
+      if (movingUp && canScrollUp) return;
+      if (!movingDown && !movingUp) return;
+
+      event.preventDefault();
+      wheelLocked = true;
+      update(current + (movingDown ? 1 : -1));
+      setTimeout(() => {
+        wheelLocked = false;
+      }, 720);
+    }, { passive: false });
+
+    document.addEventListener("touchstart", (event) => {
+      touchStartX = event.changedTouches[0].clientX;
+      touchStartY = event.changedTouches[0].clientY;
+    }, { passive: true });
+
+    document.addEventListener("touchend", (event) => {
+      const dx = event.changedTouches[0].clientX - touchStartX;
+      const dy = event.changedTouches[0].clientY - touchStartY;
+      if (Math.abs(dx) < 46 || Math.abs(dx) < Math.abs(dy)) return;
+      update(current + (dx < 0 ? 1 : -1));
+    }, { passive: true });
+
+    const initial = Number(location.hash.replace("#slide-", ""));
+    update(Number.isInteger(initial) && initial > 0 ? initial - 1 : 0);
+  </script>
+</body>
+</html>

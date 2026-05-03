@@ -1,0 +1,310 @@
+\documentclass[12pt,a4paper]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T5]{fontenc}
+\usepackage[vietnamese]{babel}
+\usepackage{amsmath,amssymb}
+\usepackage{array}
+\usepackage{booktabs}
+\usepackage{geometry}
+\usepackage{enumitem}
+\usepackage{fancyhdr}
+\usepackage{hyperref}
+
+\geometry{
+    left=2.8cm,
+    right=2.2cm,
+    top=2.5cm,
+    bottom=2.5cm
+}
+
+\hypersetup{
+    unicode=true,
+    colorlinks=true,
+    linkcolor=black,
+    citecolor=black,
+    urlcolor=black
+}
+
+\pagestyle{fancy}
+\fancyhf{}
+\lhead{Cơ sở trí tuệ nhân tạo}
+\rhead{Minimax cho Tic-Tac-Toe}
+\cfoot{\thepage}
+
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{6pt}
+
+\newcommand{\blank}{\_}
+\newcommand{\board}[9]{
+\[
+\begin{array}{c|c|c}
+#1 & #2 & #3\\ \hline
+#4 & #5 & #6\\ \hline
+#7 & #8 & #9
+\end{array}
+\]
+}
+
+\begin{document}
+
+\begin{titlepage}
+    \centering
+    {\Large \textbf{Bài tập nhóm giữa kỳ môn Cơ sở trí tuệ nhân tạo}\par}
+    \vspace{1.2cm}
+
+    {\large Giảng viên: TS. Nguyễn Bích Vân\par}
+    \vspace{0.4cm}
+    {\large Hạn nộp bài: 04/05/2026\par}
+
+    \vspace{1.8cm}
+    {\large \textbf{Đề tài: Giải bài toán Tic-Tac-Toe bằng thuật toán Minimax}\par}
+
+    \vspace{1.5cm}
+    \begin{tabular}{ll}
+        \textbf{Nhóm 9} & \\
+        Nguyễn Đức Trung & 24022473\\
+        Phạm Sỹ Toàn & 24022467\\
+        Lê Minh Đức & 24022291\\
+        Phạm Công Thành & 24022455\\
+        Trần Công Tuấn & 24022485
+    \end{tabular}
+
+    \vfill
+    {\large 2026\par}
+\end{titlepage}
+
+\tableofcontents
+\newpage
+
+\section{Tóm tắt}
+
+Báo cáo trình bày cách giải trò chơi Tic-Tac-Toe bằng thuật toán Minimax.
+Trong trò chơi này, người chơi MAX là $X$, người chơi MIN là $O$.
+Hàm đánh giá nhận giá trị $+1$ nếu $X$ thắng, $-1$ nếu $O$ thắng và $0$ nếu ván cờ hòa.
+Mục tiêu của thuật toán là xác định nước đi tốt nhất tại mỗi trạng thái bàn cờ và tính giá trị Minimax tương ứng.
+
+\section{Phát biểu bài toán}
+
+Xét trò chơi Tic-Tac-Toe trên bàn cờ $3 \times 3$.
+Hai người chơi lần lượt đánh dấu vào các ô trống.
+Người chơi $X$ đi theo chiến lược cực đại hóa điểm số, còn người chơi $O$ đi theo chiến lược cực tiểu hóa điểm số.
+
+Bài toán yêu cầu:
+\begin{enumerate}[label=\arabic*.]
+    \item Mô tả thuật toán Minimax cho phép người chơi đấu với máy.
+    \item In ra nước đi tốt nhất và giá trị Minimax.
+    \item Nhận xét về kết quả và đặc điểm của thuật toán.
+\end{enumerate}
+
+\section{Mô hình hóa trò chơi}
+
+\subsection{Trạng thái bàn cờ}
+
+Một trạng thái bàn cờ được ký hiệu là $s$.
+Mỗi ô trên bàn cờ có thể nhận một trong ba giá trị:
+\[
+\{X, O, \blank\},
+\]
+trong đó $\blank$ biểu diễn ô trống.
+
+Ví dụ, một trạng thái bàn cờ có thể được biểu diễn như sau:
+\board{X}{O}{X}{\blank}{O}{\blank}{\blank}{X}{\blank}
+
+\subsection{Tập nước đi hợp lệ}
+
+Với một trạng thái $s$, ký hiệu $A(s)$ là tập tất cả các nước đi hợp lệ.
+Một nước đi hợp lệ là một ô còn trống trên bàn cờ.
+Nếu người chơi chọn nước đi $a \in A(s)$, trạng thái mới thu được được ký hiệu là:
+\[
+Result(s,a).
+\]
+
+\subsection{Trạng thái kết thúc}
+
+Một trạng thái được gọi là trạng thái kết thúc nếu xảy ra một trong các trường hợp:
+\begin{enumerate}[label=\arabic*.]
+    \item Người chơi $X$ có ba quân liên tiếp trên một hàng, một cột hoặc một đường chéo.
+    \item Người chơi $O$ có ba quân liên tiếp trên một hàng, một cột hoặc một đường chéo.
+    \item Không còn ô trống nào trên bàn cờ và không người chơi nào thắng.
+\end{enumerate}
+
+Các đường thắng cần kiểm tra gồm:
+\[
+\begin{aligned}
+&(1,1),(1,2),(1,3),\\
+&(2,1),(2,2),(2,3),\\
+&(3,1),(3,2),(3,3),\\
+&(1,1),(2,1),(3,1),\\
+&(1,2),(2,2),(3,2),\\
+&(1,3),(2,3),(3,3),\\
+&(1,1),(2,2),(3,3),\\
+&(1,3),(2,2),(3,1).
+\end{aligned}
+\]
+
+\section{Hàm đánh giá}
+
+Hàm đánh giá trạng thái kết thúc được định nghĩa như sau:
+\[
+Eval(s)=
+\begin{cases}
++1, & \text{nếu } X \text{ thắng},\\
+-1, & \text{nếu } O \text{ thắng},\\
+0, & \text{nếu ván cờ hòa}.
+\end{cases}
+\]
+
+Vì $X$ là người chơi MAX nên $X$ luôn cố gắng chọn nước đi làm giá trị đánh giá lớn nhất.
+Ngược lại, $O$ là người chơi MIN nên $O$ luôn cố gắng chọn nước đi làm giá trị đánh giá nhỏ nhất.
+
+\section{Thuật toán Minimax}
+
+Thuật toán Minimax xây dựng cây trò chơi từ trạng thái hiện tại.
+Mỗi đỉnh của cây là một trạng thái bàn cờ.
+Mỗi cạnh ứng với một nước đi hợp lệ.
+Các nút lá là những trạng thái kết thúc và được gán giá trị bởi hàm $Eval(s)$.
+
+Giá trị Minimax của một trạng thái $s$, ký hiệu $V(s)$, được định nghĩa đệ quy như sau:
+\[
+V(s)=
+\begin{cases}
+Eval(s), & \text{nếu } s \text{ là trạng thái kết thúc},\\
+\max\limits_{a \in A(s)} V(Result(s,a)), & \text{nếu đến lượt } X,\\
+\min\limits_{a \in A(s)} V(Result(s,a)), & \text{nếu đến lượt } O.
+\end{cases}
+\]
+
+Ý nghĩa của công thức trên là:
+\begin{itemize}
+    \item Nếu trò chơi đã kết thúc, giá trị của trạng thái chính là giá trị đánh giá.
+    \item Nếu đến lượt $X$, thuật toán chọn giá trị lớn nhất trong các trạng thái con.
+    \item Nếu đến lượt $O$, thuật toán chọn giá trị nhỏ nhất trong các trạng thái con.
+\end{itemize}
+
+\subsection{Quy tắc chọn nước đi tốt nhất}
+
+Nếu máy đóng vai $X$, nước đi tốt nhất tại trạng thái $s$ là:
+\[
+a^*=\arg\max_{a \in A(s)} V(Result(s,a)).
+\]
+
+Nếu máy đóng vai $O$, nước đi tốt nhất tại trạng thái $s$ là:
+\[
+a^*=\arg\min_{a \in A(s)} V(Result(s,a)).
+\]
+
+Trong đó $a^*$ là nước đi tối ưu mà máy cần chọn.
+
+\subsection{Các bước thực hiện}
+
+Quá trình tìm nước đi tốt nhất bằng Minimax có thể mô tả như sau:
+\begin{enumerate}[label=\textbf{Bước \arabic*:}]
+    \item Kiểm tra trạng thái hiện tại có phải là trạng thái kết thúc hay không.
+    \item Nếu là trạng thái kết thúc, trả về giá trị $Eval(s)$.
+    \item Nếu đến lượt $X$, xét toàn bộ nước đi hợp lệ và chọn giá trị lớn nhất.
+    \item Nếu đến lượt $O$, xét toàn bộ nước đi hợp lệ và chọn giá trị nhỏ nhất.
+    \item Trả về nước đi có giá trị Minimax tốt nhất đối với người chơi hiện tại.
+\end{enumerate}
+
+\section{Kết quả thực nghiệm}
+
+\subsection{Trạng thái ban đầu}
+
+Xét bàn cờ ban đầu rỗng:
+\board{\blank}{\blank}{\blank}{\blank}{\blank}{\blank}{\blank}{\blank}{\blank}
+
+Với trạng thái ban đầu $s_0$, nếu cả hai người chơi đều đi tối ưu thì trò chơi Tic-Tac-Toe sẽ kết thúc với kết quả hòa.
+Do đó:
+\[
+V(s_0)=0.
+\]
+
+Một nước đi tối ưu cho $X$ là ô trung tâm:
+\[
+a^*=(2,2).
+\]
+
+Sau khi $X$ đi vào ô trung tâm, bàn cờ trở thành:
+\board{\blank}{\blank}{\blank}{\blank}{X}{\blank}{\blank}{\blank}{\blank}
+
+Giá trị Minimax của trạng thái sau nước đi này là:
+\[
+V(Result(s_0,a^*))=0.
+\]
+
+Điều này cho thấy $X$ không thể đảm bảo chiến thắng nếu $O$ cũng đi tối ưu, nhưng $X$ có thể đảm bảo không thua.
+
+\subsection{Ví dụ trạng thái có nước thắng ngay cho MAX}
+
+Xét trạng thái:
+\board{X}{X}{\blank}{O}{O}{\blank}{\blank}{\blank}{\blank}
+
+Đến lượt $X$, nước đi tốt nhất là đặt $X$ vào ô $(1,3)$:
+\[
+a^*=(1,3).
+\]
+
+Khi đó bàn cờ trở thành:
+\board{X}{X}{X}{O}{O}{\blank}{\blank}{\blank}{\blank}
+
+Vì $X$ thắng trên hàng thứ nhất nên:
+\[
+V=+1.
+\]
+
+\subsection{Ví dụ trạng thái cần chặn MIN}
+
+Xét trạng thái:
+\board{O}{O}{\blank}{X}{\blank}{\blank}{X}{\blank}{\blank}
+
+Đến lượt $X$, nếu không chặn ô $(1,3)$ thì $O$ sẽ thắng ở lượt tiếp theo.
+Vì vậy nước đi tốt nhất của $X$ là:
+\[
+a^*=(1,3).
+\]
+
+Sau nước đi này:
+\board{O}{O}{X}{X}{\blank}{\blank}{X}{\blank}{\blank}
+
+Nước đi này không tạo ra chiến thắng ngay cho $X$, nhưng ngăn $O$ đạt giá trị $-1$ ở lượt kế tiếp.
+Theo quan điểm Minimax, đây là nước đi tối ưu vì nó tránh trạng thái thua chắc chắn.
+
+\section{Đánh giá độ phức tạp}
+
+Trong Tic-Tac-Toe, số ô tối đa là $9$.
+Ở lượt đầu tiên có tối đa $9$ nước đi, lượt tiếp theo có tối đa $8$ nước đi, sau đó là $7$ nước đi, và cứ tiếp tục như vậy.
+Do đó số trạng thái tối đa cần xét bị chặn bởi:
+\[
+9! = 362880.
+\]
+
+Về tổng quát, nếu $b$ là hệ số phân nhánh trung bình và $d$ là độ sâu tối đa của cây trò chơi, độ phức tạp thời gian của Minimax là:
+\[
+O(b^d).
+\]
+
+Độ phức tạp bộ nhớ phụ thuộc vào cách cài đặt.
+Nếu dùng đệ quy theo chiều sâu, bộ nhớ cần dùng xấp xỉ:
+\[
+O(d).
+\]
+
+\section{Nhận xét}
+
+Thuật toán Minimax phù hợp để giải Tic-Tac-Toe vì không gian trạng thái của trò chơi nhỏ.
+Thuật toán có thể duyệt toàn bộ cây trò chơi để tìm ra nước đi tối ưu.
+Nếu cả hai người chơi đều áp dụng chiến lược tối ưu, kết quả của trò chơi từ trạng thái ban đầu là hòa.
+
+Ưu điểm chính của Minimax là cho lời giải chính xác và đảm bảo chọn được nước đi tốt nhất theo mô hình trò chơi đối kháng.
+Tuy nhiên, nhược điểm của thuật toán là số trạng thái tăng rất nhanh khi kích thước trò chơi lớn hơn.
+Với các trò chơi phức tạp như cờ vua hoặc cờ vây, việc duyệt toàn bộ cây trò chơi là không khả thi.
+Khi đó cần dùng thêm các kỹ thuật như cắt tỉa Alpha--Beta, giới hạn độ sâu tìm kiếm hoặc hàm đánh giá xấp xỉ.
+
+\section{Kết luận}
+
+Bài toán Tic-Tac-Toe có thể được giải hiệu quả bằng thuật toán Minimax.
+Bằng cách mô hình hóa $X$ là người chơi MAX và $O$ là người chơi MIN, thuật toán xét tất cả các nước đi hợp lệ, đánh giá các trạng thái kết thúc và lan truyền giá trị ngược lên cây trò chơi.
+Kết quả cho thấy nước đi tối ưu từ bàn cờ ban đầu có giá trị Minimax bằng $0$, tức là hai bên đi tối ưu sẽ hòa.
+
+\end{document}

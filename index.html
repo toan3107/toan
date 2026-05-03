@@ -3,29 +3,284 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta http-equiv="refresh" content="0; url=./face-recognition-btl-slides.html?v=20260430" />
-  <title>BTL AI - Face Recognition Slides</title>
+  <title>Nhóm 9 - Cơ sở trí tuệ nhân tạo</title>
   <style>
+    :root {
+      --ink: #16201f;
+      --muted: #5c6763;
+      --paper: #fff9ef;
+      --green: #0d776b;
+      --clay: #c65132;
+      --gold: #e7a92f;
+      --line: rgba(22, 32, 31, 0.13);
+      --shadow: 0 24px 70px rgba(22, 32, 31, 0.16);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
     body {
       min-height: 100vh;
-      display: grid;
-      place-items: center;
       margin: 0;
-      color: #172026;
-      background: #f7f3ea;
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color: var(--ink);
+      font-family: "Aptos", "Bahnschrift", "Segoe UI", sans-serif;
+      background:
+        radial-gradient(circle at 8% 8%, rgba(231, 169, 47, 0.34), transparent 28%),
+        radial-gradient(circle at 92% 12%, rgba(13, 119, 107, 0.24), transparent 28%),
+        radial-gradient(circle at 72% 92%, rgba(198, 81, 50, 0.18), transparent 30%),
+        linear-gradient(135deg, #f6ecda 0%, #e5eee6 48%, #eef4f7 100%);
+    }
+
+    main {
+      width: min(1120px, calc(100vw - 36px));
+      min-height: 100vh;
+      margin: 0 auto;
+      padding: 54px 0;
+      display: grid;
+      align-content: center;
+      gap: 26px;
+    }
+
+    .hero {
+      padding: clamp(28px, 5vw, 54px);
+      border-radius: 34px;
+      background: rgba(255, 249, 239, 0.82);
+      border: 1px solid rgba(255, 255, 255, 0.72);
+      box-shadow: var(--shadow);
+      display: grid;
+      grid-template-columns: 1.15fr 0.85fr;
+      gap: 30px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .hero::after {
+      content: "";
+      position: absolute;
+      width: 360px;
+      height: 360px;
+      right: -130px;
+      bottom: -170px;
+      border-radius: 999px;
+      background: radial-gradient(circle, rgba(13, 119, 107, 0.18), transparent 68%);
+      pointer-events: none;
+    }
+
+    .stack {
+      display: grid;
+      gap: 18px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .eyebrow {
+      width: max-content;
+      padding: 9px 13px;
+      border-radius: 999px;
+      color: var(--green);
+      background: rgba(220, 238, 232, 0.86);
+      border: 1px solid rgba(13, 119, 107, 0.18);
+      font-size: 0.78rem;
+      font-weight: 900;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+    }
+
+    h1 {
+      margin: 0;
+      max-width: 780px;
+      font-family: "Palatino Linotype", "Book Antiqua", Georgia, serif;
+      font-size: clamp(2.8rem, 7vw, 6.4rem);
+      line-height: 0.98;
+      letter-spacing: -0.06em;
+    }
+
+    p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 1.08rem;
+      line-height: 1.62;
+    }
+
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 8px;
     }
 
     a {
-      color: #007c7a;
-      font-weight: 700;
+      color: inherit;
+      text-decoration: none;
+    }
+
+    .button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 48px;
+      padding: 13px 18px;
+      border-radius: 999px;
+      font-weight: 900;
+      background: var(--green);
+      color: #fff9ef;
+      box-shadow: 0 14px 30px rgba(13, 119, 107, 0.2);
+      transition: transform 0.18s ease, background 0.18s ease;
+    }
+
+    .button:hover {
+      transform: translateY(-2px);
+      background: var(--clay);
+    }
+
+    .button.secondary {
+      color: var(--ink);
+      background: rgba(255, 255, 255, 0.72);
+      border: 1px solid var(--line);
+      box-shadow: none;
+    }
+
+    .board {
+      align-self: center;
+      width: min(100%, 330px);
+      aspect-ratio: 1;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      padding: 12px;
+      border-radius: 28px;
+      background: linear-gradient(145deg, #17201f, #274b4a);
+      box-shadow: 0 20px 42px rgba(22, 32, 31, 0.18);
+      z-index: 1;
+    }
+
+    .cell {
+      display: grid;
+      place-items: center;
+      border-radius: 18px;
+      background: linear-gradient(145deg, rgba(255, 249, 239, 0.98), rgba(234, 243, 238, 0.95));
+      color: var(--green);
+      font-size: clamp(2.2rem, 5.2vw, 4rem);
+      font-weight: 950;
+    }
+
+    .cell.o {
+      color: var(--clay);
+    }
+
+    .cell.empty {
+      color: rgba(22, 32, 31, 0.22);
+      font-size: 1.45rem;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 16px;
+    }
+
+    .card {
+      min-height: 160px;
+      padding: 22px;
+      border-radius: 26px;
+      background: rgba(255, 249, 239, 0.78);
+      border: 1px solid rgba(255, 255, 255, 0.72);
+      box-shadow: 0 16px 42px rgba(22, 32, 31, 0.1);
+      display: grid;
+      align-content: space-between;
+      gap: 14px;
+    }
+
+    .card strong {
+      display: block;
+      font-size: 1.12rem;
+    }
+
+    .card span {
+      color: var(--muted);
+      line-height: 1.5;
+    }
+
+    .tag {
+      width: max-content;
+      padding: 7px 11px;
+      border-radius: 999px;
+      background: rgba(231, 169, 47, 0.18);
+      color: #7a4f00;
+      font-size: 0.82rem;
+      font-weight: 900;
+    }
+
+    @media (max-width: 860px) {
+      .hero,
+      .grid {
+        grid-template-columns: 1fr;
+      }
+
+      .board {
+        justify-self: center;
+      }
     }
   </style>
 </head>
 <body>
-  <p>Dang mo slide... <a href="./face-recognition-btl-slides.html?v=20260430">Bam vao day neu trinh duyet khong tu chuyen.</a></p>
-  <script>
-    window.location.replace("./face-recognition-btl-slides.html?v=20260430");
-  </script>
+  <main>
+    <section class="hero">
+      <div class="stack">
+        <span class="eyebrow">Nhóm 9 · Cơ sở trí tuệ nhân tạo</span>
+        <h1>Minimax cho Tic-Tac-Toe</h1>
+        <p>Trang web tổng hợp slide trình bày, code Google Colab và file LaTeX báo cáo cho bài toán Tic-Tac-Toe với MAX là X, MIN là O.</p>
+        <div class="actions">
+          <a class="button" href="./tictactoe_minimax_slides.html?v=20260503">Mở slide trình chiếu</a>
+          <a class="button secondary" href="./tictactoe_minimax_colab.ipynb">Notebook Colab</a>
+          <a class="button secondary" href="./tictactoe_minimax_colab.py">Code Python</a>
+          <a class="button secondary" href="./bai_giai_minimax_tictactoe.tex">File LaTeX</a>
+        </div>
+      </div>
+      <div class="board" aria-label="Tic-Tac-Toe board">
+        <div class="cell">X</div>
+        <div class="cell o">O</div>
+        <div class="cell empty">3</div>
+        <div class="cell empty">4</div>
+        <div class="cell">X</div>
+        <div class="cell o">O</div>
+        <div class="cell o">O</div>
+        <div class="cell empty">8</div>
+        <div class="cell">X</div>
+      </div>
+    </section>
+
+    <section class="grid">
+      <a class="card" href="./tictactoe_minimax_slides.html?v=20260503">
+        <span class="tag">Mới</span>
+        <div>
+          <strong>Slide Tic-Tac-Toe</strong>
+          <span>16 slide dạng trình chiếu, có công thức, hình minh họa và code.</span>
+        </div>
+      </a>
+      <a class="card" href="./tictactoe_minimax_colab.ipynb">
+        <span class="tag">Colab</span>
+        <div>
+          <strong>Notebook</strong>
+          <span>File notebook một cell, chạy trực tiếp trên Google Colab.</span>
+        </div>
+      </a>
+      <a class="card" href="./face-recognition-btl-slides.html?v=20260430">
+        <span class="tag">Khác</span>
+        <div>
+          <strong>Face Recognition</strong>
+          <span>Slide bài nhận diện khuôn mặt đã có trong repo.</span>
+        </div>
+      </a>
+      <a class="card" href="./backdoor_attack_slides.html">
+        <span class="tag">Khác</span>
+        <div>
+          <strong>Backdoor Attack</strong>
+          <span>Slide bài backdoor attack đã có trong repo.</span>
+        </div>
+      </a>
+    </section>
+  </main>
 </body>
 </html>
