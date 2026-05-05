@@ -1,0 +1,1097 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Wi-Fi CSI 3D Pose: Visual Scenario Deck</title>
+  <style>
+    :root {
+      --bg: #f7f5f0;
+      --ink: #151c24;
+      --muted: #69737f;
+      --line: #d7d1c6;
+      --panel: #ffffff;
+      --rx: #2563eb;
+      --tx: #dc2626;
+      --cam: #0f8b5f;
+      --switch: #d97706;
+      --p1: #111827;
+      --p2: #0f766e;
+      --p3: #7c3aed;
+      --p4: #c2410c;
+      --p5: #be123c;
+      --path: #0891b2;
+      --zone: rgba(37, 99, 235, 0.08);
+      --zone-line: rgba(37, 99, 235, 0.42);
+      --shadow: 0 22px 55px rgba(21, 28, 36, 0.14);
+      --radius: 8px;
+    }
+
+    * { box-sizing: border-box; }
+
+    html,
+    body {
+      margin: 0;
+      height: 100%;
+      color: var(--ink);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background:
+        linear-gradient(135deg, rgba(37, 99, 235, 0.08), transparent 36%),
+        linear-gradient(315deg, rgba(15, 139, 95, 0.08), transparent 38%),
+        var(--bg);
+    }
+
+    body { overflow: hidden; }
+
+    .deck {
+      width: 100vw;
+      height: 100vh;
+      position: relative;
+    }
+
+    .slide {
+      position: absolute;
+      inset: 0;
+      padding: 42px 56px 76px;
+      display: none;
+    }
+
+    .slide.active { display: grid; }
+
+    .frame {
+      width: min(1480px, 100%);
+      height: min(840px, calc(100vh - 118px));
+      margin: auto;
+      display: grid;
+      grid-template-rows: auto 1fr;
+      gap: 18px;
+    }
+
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: start;
+      gap: 20px;
+    }
+
+    .kicker {
+      color: #2563eb;
+      font-size: 12px;
+      font-weight: 850;
+      text-transform: uppercase;
+    }
+
+    h1,
+    h2,
+    p {
+      margin: 0;
+    }
+
+    h1 {
+      max-width: 1040px;
+      font-size: 66px;
+      line-height: 1.02;
+      letter-spacing: -0.03em;
+    }
+
+    h2 {
+      font-size: 38px;
+      line-height: 1.1;
+      letter-spacing: -0.02em;
+    }
+
+    .sub {
+      margin-top: 8px;
+      color: var(--muted);
+      font-size: 18px;
+      line-height: 1.42;
+    }
+
+    .count {
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+
+    .content {
+      display: grid;
+      gap: 18px;
+      min-height: 0;
+    }
+
+    .content.two {
+      grid-template-columns: 1.22fr 0.78fr;
+    }
+
+    .panel {
+      background: rgba(255, 255, 255, 0.95);
+      border: 1px solid rgba(21, 28, 36, 0.1);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 20px;
+      min-height: 0;
+    }
+
+    .room-wrap {
+      min-height: 0;
+      display: grid;
+    }
+
+    svg {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
+    .notes {
+      display: grid;
+      grid-template-rows: auto repeat(4, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .person-note {
+      border: 2px solid rgba(37, 99, 235, 0.18);
+      border-radius: var(--radius);
+      background: #ffffff;
+      padding: 13px 14px;
+      box-shadow: 0 12px 26px rgba(21, 28, 36, 0.08);
+    }
+
+    .person-note-title {
+      color: #2563eb;
+      font-size: 12px;
+      font-weight: 900;
+      text-transform: uppercase;
+      margin-bottom: 9px;
+    }
+
+    .person-list {
+      display: grid;
+      gap: 7px;
+    }
+
+    .person-line {
+      display: grid;
+      grid-template-columns: 42px 1fr;
+      align-items: center;
+      gap: 9px;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.25;
+    }
+
+    .person-badge {
+      border-radius: 999px;
+      padding: 4px 0;
+      color: #ffffff;
+      text-align: center;
+      font-size: 12px;
+      font-weight: 900;
+    }
+
+    .note {
+      display: grid;
+      align-content: center;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: #fbfaf7;
+      padding: 16px;
+    }
+
+    .note strong {
+      display: block;
+      margin-bottom: 5px;
+      font-size: 18px;
+    }
+
+    .note span {
+      color: var(--muted);
+      font-size: 15px;
+      line-height: 1.35;
+    }
+
+    .big-title {
+      display: grid;
+      grid-template-columns: 1fr 420px;
+      gap: 34px;
+      align-items: center;
+    }
+
+    .stat-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .stat {
+      background: #ffffff;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 18px;
+    }
+
+    .stat strong {
+      display: block;
+      font-size: 34px;
+      line-height: 1;
+      margin-bottom: 8px;
+    }
+
+    .stat span {
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.32;
+    }
+
+    .scenario-strip {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 12px;
+    }
+
+    .tile {
+      min-height: 130px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 14px;
+      background: #fbfaf7;
+    }
+
+    .tile strong {
+      display: block;
+      margin-bottom: 6px;
+      font-size: 24px;
+    }
+
+    .tile span {
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.35;
+    }
+
+    .controls {
+      position: fixed;
+      right: 28px;
+      bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.9);
+      border: 1px solid rgba(21, 28, 36, 0.12);
+      box-shadow: 0 12px 34px rgba(21, 28, 36, 0.13);
+      z-index: 4;
+    }
+
+    button {
+      width: 38px;
+      height: 38px;
+      border: 0;
+      border-radius: 50%;
+      background: var(--ink);
+      color: #fff;
+      font-size: 20px;
+      cursor: pointer;
+    }
+
+    #counter {
+      min-width: 76px;
+      text-align: center;
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 850;
+    }
+
+    @media (max-width: 1100px) {
+      body { overflow: auto; }
+      .deck { height: auto; }
+      .slide {
+        position: relative;
+        min-height: 100vh;
+        padding: 28px 20px 76px;
+      }
+      .frame { height: auto; }
+      .content.two,
+      .big-title {
+        grid-template-columns: 1fr;
+      }
+      h1 { font-size: 42px; }
+      h2 { font-size: 30px; }
+      .panel.room-wrap { min-height: 560px; }
+      .scenario-strip { grid-template-columns: 1fr 1fr; }
+      .controls {
+        left: 50%;
+        right: auto;
+        transform: translateX(-50%);
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="deck" id="deck"></main>
+
+  <nav class="controls">
+    <button id="prev" type="button" aria-label="previous slide">‹</button>
+    <div id="counter">1 / 37</div>
+    <button id="next" type="button" aria-label="next slide">›</button>
+  </nav>
+
+  <script>
+    const colors = {
+      rx: getCss("--rx"),
+      tx: getCss("--tx"),
+      cam: getCss("--cam"),
+      sw: getCss("--switch"),
+      p: ["#111827", "#0f766e", "#7c3aed", "#c2410c", "#be123c"],
+      path: getCss("--path")
+    };
+
+    const baseZones = {
+      A: [260, 180],
+      B: [540, 180],
+      C: [400, 320],
+      D: [260, 460],
+      E: [540, 460],
+      L: [160, 320],
+      R: [640, 320],
+      T: [400, 120],
+      BTM: [400, 520],
+      OUT: [770, 320],
+      MID: [400, 320],
+      CL: [335, 292],
+      CR: [465, 348]
+    };
+
+    const offsets = [[-20, -8], [18, -8], [0, 16], [-18, 30], [18, 30]];
+
+    const scenarioSlides = [
+      setupTitle(),
+      setupRoom(),
+      setupNetwork(),
+      setupLabeling(),
+      setupZones(),
+      scenario("EMPTY", "Phòng trống / baseline", "Không người trong vùng hoạt động", [], [], ["40s baseline", "Quạt/cửa cố định", "Kiểm tra timestamp", "Thu trước mỗi session"]),
+
+      scenario("P1-S01", "1 người: đứng theo zone", "A → B → C → D → E", [person(1, "A")], [], ["Đứng 8s/zone", "5 repeat", "Đổi người", "Không đổi thiết bị"]),
+      scenario("P1-S02", "1 người: đi thẳng", "Trái → phải", [person(1, "L")], [path("L", "R")], ["Walking", "Tốc độ chậm", "Không chạy", "40s/clip"]),
+      scenario("P1-S03", "1 người: đi chéo", "A → E và B → D", [person(1, "A")], [path("A", "E"), path("B", "D", true)], ["Đường chéo", "Đổi hướng", "5 repeat", "Camera thấy full body"]),
+      scenario("P1-S04", "1 người: action tại chỗ", "Giơ tay / cúi / xoay", [person(1, "C", "raise")], [], ["Raising hands", "Bending", "Turning", "Stretching"]),
+      scenario("P1-S05", "1 người: ngồi-đứng", "Sitting down → standing", [person(1, "C", "sit")], [], ["Sitting", "Standing up", "Giữ trong zone C", "Pose label rõ"]),
+
+      scenario("P2-S01", "2 người: đứng xa nhau", "A và E", [person(1, "A"), person(2, "E")], [], ["Static pair", "Ít che khuất", "Baseline 2 người", "5 repeat"]),
+      scenario("P2-S02", "2 người: đi song song", "A→D và B→E", [person(1, "A"), person(2, "B")], [path("A", "D"), path("B", "E")], ["Parallel walk", "Không cắt nhau", "Tracking dễ", "40s"]),
+      scenario("P2-S03", "2 người: crossing", "A→E và E→A", [person(1, "A"), person(2, "E")], [path("A", "E"), path("E", "A", true)], ["Cắt nhau giữa phòng", "Occlusion nhẹ", "Đổi người dẫn", "5 repeat"]),
+      scenario("P2-S04", "2 người: 1 động 1 tĩnh", "P1 đi, P2 đứng", [person(1, "L"), person(2, "C")], [path("L", "R")], ["Moving/static", "Tách động-tĩnh", "Đổi vai", "5 repeat"]),
+      scenario("P2-S05", "2 người: action đối xứng", "Một người giơ tay, một người cúi", [person(1, "B", "raise"), person(2, "D", "bend")], [], ["Pose khác nhau", "Không di chuyển", "Label sạch", "40s"]),
+
+      scenario("P3-S01", "3 người: tam giác tĩnh", "A, B, C", [person(1, "A"), person(2, "B"), person(3, "C")], [], ["Triangle", "Baseline 3 người", "Đổi vị trí", "5 repeat"]),
+      scenario("P3-S02", "3 người: 2 động 1 tĩnh", "Hai người đi, một người đứng", [person(1, "L"), person(2, "R"), person(3, "C")], [path("L", "R"), path("R", "L", true)], ["2 moving", "1 static", "Medium", "40s"]),
+      scenario("P3-S03", "3 người: crossing giữa phòng", "A/E/T cùng cắt qua C", [person(1, "A"), person(2, "E"), person(3, "T")], [path("A", "E"), path("E", "A", true), path("T", "BTM")], ["Multi-crossing", "Occlusion trung bình", "Giữ tốc độ chậm", "5 repeat"]),
+      scenario("P3-S04", "3 người: hàng sâu", "Trước-sau theo hướng camera", [person(1, "T"), person(2, "C"), person(3, "BTM")], [], ["Depth occlusion", "Camera xa vẫn thấy", "Wi-Fi nhạy", "40s"]),
+      scenario("P3-S05", "3 người: tụ rồi tách", "Cụm giữa → A/B/E", [person(1, "CL"), person(2, "MID"), person(3, "CR")], [path("C", "A"), path("C", "B", true), path("C", "E")], ["Cluster/spread", "Tracking ID", "Pose label check", "5 repeat"]),
+
+      scenario("P4-S01", "4 người: 4 góc vùng hoạt động", "A, B, D, E", [person(1, "A"), person(2, "B"), person(3, "D"), person(4, "E")], [], ["Baseline 4 người", "Static", "Không chen nhau", "5 repeat"]),
+      scenario("P4-S02", "4 người: 2 cặp crossing", "Hai đường chéo", [person(1, "A"), person(2, "E"), person(3, "B"), person(4, "D")], [path("A", "E"), path("E", "A", true), path("B", "D"), path("D", "B", true)], ["2 pair crossing", "Occlusion mạnh", "Đi chậm", "40s"]),
+      scenario("P4-S03", "4 người: 3 tĩnh 1 động", "Một người đi quanh nhóm", [person(1, "A"), person(2, "B"), person(3, "E"), person(4, "L")], [path("L", "R")], ["1 moving", "3 static", "Đổi vai", "5 repeat"]),
+      scenario("P4-S04", "4 người: hàng trước-sau", "Che khuất theo chiều sâu", [person(1, "T"), person(2, "C"), person(3, "BTM"), person(4, "E")], [], ["Depth line", "Hard for camera", "Có Wi-Fi support", "40s"]),
+      scenario("P4-S05", "4 người: cụm rồi chia 2 cặp", "Cluster → 2 groups", [person(1, "CL"), person(2, "MID"), person(3, "CR"), person(4, "C")], [path("C", "A"), path("C", "B", true), path("C", "D"), path("C", "E", true)], ["Cluster/split", "Tracking ID", "Occlusion", "5 repeat"]),
+
+      scenario("P5-S01", "5 người: 5 zone tĩnh", "A, B, C, D, E", [person(1, "A"), person(2, "B"), person(3, "C"), person(4, "D"), person(5, "E")], [], ["Baseline 5 người", "Static", "Bắt buộc có", "5 repeat"]),
+      scenario("P5-S02", "5 người: đổi pose tại chỗ", "Mỗi người một action", [person(1, "A", "raise"), person(2, "B", "bend"), person(3, "C", "turn"), person(4, "D", "sit"), person(5, "E", "stand")], [], ["Raise", "Bend", "Turn", "Sit/stand"]),
+      scenario("P5-S03", "5 người: 1 động 4 tĩnh", "P1 đi ngang qua nhóm", [person(1, "L"), person(2, "A"), person(3, "B"), person(4, "D"), person(5, "E")], [path("L", "R")], ["Easy P5", "Đổi người đi", "5 repeat", "40s"]),
+      scenario("P5-S04", "5 người: 2 động 3 tĩnh", "Hai người đi ngược chiều", [person(1, "L"), person(2, "R"), person(3, "A"), person(4, "C"), person(5, "E")], [path("L", "R"), path("R", "L", true)], ["Medium P5", "2 moving", "3 static", "Đổi vai"]),
+      scenario("P5-S05", "5 người: 3 động 2 tĩnh", "Ba đường đi qua C", [person(1, "A"), person(2, "B"), person(3, "T"), person(4, "D"), person(5, "E")], [path("A", "E"), path("B", "D", true), path("T", "BTM")], ["Hard P5", "3 moving", "2 static", "Đi chậm"]),
+      scenario("P5-S06", "5 người: cùng đi chậm", "Tự do trong vùng hoạt động", [person(1, "A"), person(2, "B"), person(3, "C"), person(4, "D"), person(5, "E")], [path("A", "D"), path("B", "A", true), path("C", "E"), path("D", "B", true), path("E", "C")], ["Free walking", "Không chạy", "Hard case", "40s"]),
+      scenario("P5-S07", "5 người: crossing trung tâm", "Tất cả cắt qua C", [person(1, "A"), person(2, "B"), person(3, "D"), person(4, "E"), person(5, "T")], [path("A", "E"), path("B", "D", true), path("D", "B"), path("E", "A", true), path("T", "BTM")], ["Occlusion max", "Bài khó nhất", "Cần camera xa", "5 repeat"]),
+      scenario("P5-S08", "5 người: hàng trước-sau", "Depth occlusion", [person(1, "T"), person(2, "C"), person(3, "BTM"), person(4, "CL"), person(5, "CR")], [], ["Che khuất sâu", "Camera khó", "CSI quan trọng", "40s"]),
+      scenario("P5-S09", "5 người: tụ cụm rồi tản ra", "Cluster → 5 zone", [person(1, "CL"), person(2, "MID"), person(3, "CR"), person(4, "C"), person(5, "C")], [path("C", "A"), path("C", "B", true), path("C", "C"), path("C", "D", true), path("C", "E")], ["Cluster", "Tracking ID", "Tách người", "5 repeat"]),
+      scenario("P5-S10", "5 người: vào/ra phòng", "Count thay đổi theo thời gian", [person(1, "OUT"), person(2, "A"), person(3, "B"), person(4, "D"), person(5, "E")], [path("OUT", "C"), path("C", "OUT", true)], ["Entry/exit", "1→5→1", "Đếm người", "40s"]),
+
+      closingSlide()
+    ];
+
+    scenarioSlides.length = 0;
+    scenarioSlides.push(...buildScenarioSlides());
+
+    const deck = document.getElementById("deck");
+    const slideParam = Number(new URLSearchParams(window.location.search).get("slide"));
+    const initialIndex = Number.isFinite(slideParam)
+      ? Math.min(Math.max(Math.trunc(slideParam) - 1, 0), scenarioSlides.length - 1)
+      : 0;
+
+    scenarioSlides.forEach((slide, i) => {
+      const section = document.createElement("section");
+      section.className = "slide" + (i === initialIndex ? " active" : "");
+      section.innerHTML = slide;
+      deck.appendChild(section);
+    });
+
+    const slides = Array.from(document.querySelectorAll(".slide"));
+    const counter = document.getElementById("counter");
+    let index = initialIndex;
+    updateCounter();
+
+    document.getElementById("prev").addEventListener("click", () => show(index - 1));
+    document.getElementById("next").addEventListener("click", () => show(index + 1));
+    window.addEventListener("keydown", (event) => {
+      if (event.key === "ArrowRight" || event.key === "PageDown" || event.key === " ") show(index + 1);
+      if (event.key === "ArrowLeft" || event.key === "PageUp") show(index - 1);
+      if (event.key === "Home") show(0);
+      if (event.key === "End") show(slides.length - 1);
+    });
+
+    function show(next) {
+      slides[index].classList.remove("active");
+      index = (next + slides.length) % slides.length;
+      slides[index].classList.add("active");
+      updateCounter();
+    }
+
+    function updateCounter() {
+      counter.textContent = `${index + 1} / ${scenarioSlides.length}`;
+      const active = slides[index];
+      if (!active) return;
+      const count = active.querySelector(".count");
+      if (count) count.textContent = `${index + 1} / ${scenarioSlides.length}`;
+    }
+
+    function buildScenarioSlides() {
+      const slides = [
+        setupTitle(),
+        setupRoom(),
+        setupNetwork(),
+        setupLabeling(),
+        setupZones(),
+        protocolSection("Protocol map", "Bộ scenario mở rộng cho 1-5 người", "Có baseline, RSSI/control, tăng độ khó dần, và stress test", [
+          ["CTRL", "Phòng trống, sync, ngoài vùng"],
+          ["RSSI", "Ablation RSSI theo zone, người, công suất"],
+          ["P1-P2", "Single/pair pose, walking, crossing"],
+          ["P3-P5", "Occlusion, cluster, entry/exit"],
+          ["Stress", "Case khó để chứng minh robustness"],
+          ["Repeat", "40s/clip, 5 repeat, đổi người"]
+        ])
+      ];
+
+      slides.push(...baselineControlScenarios());
+      slides.push(...rssiScenarios());
+      slides.push(...singlePersonScenarios());
+      slides.push(...twoPersonScenarios());
+      slides.push(...threePersonScenarios());
+      slides.push(...fourPersonScenarios());
+      slides.push(...fivePersonScenarios());
+      slides.push(...stressTestScenarios());
+      slides.push(closingSlide());
+      return slides;
+    }
+
+    function protocolSection(kicker, title, subtitle, tiles) {
+      return frame(kicker, title, subtitle, `
+        <div class="content">
+          <div class="panel room-wrap">${roomSvg([person(1, "A"), person(2, "B"), person(3, "C"), person(4, "D"), person(5, "E")], [path("A", "E"), path("B", "D", true), path("T", "BTM")], true)}</div>
+          <div class="scenario-strip">
+            ${tiles.map(([label, text]) => `<div class="tile"><strong>${label}</strong><span>${text}</span></div>`).join("")}
+          </div>
+        </div>
+      `);
+    }
+
+    function sc(id, title, subtitle, zones, paths = [], notes = defaultNotes("40s/clip")) {
+      return scenario(id, title, subtitle, toPeople(zones), paths, notes);
+    }
+
+    function toPeople(zones) {
+      return zones.map((entry, index) => {
+        if (typeof entry === "string") return person(index + 1, entry);
+        return person(entry.id || index + 1, entry.zone, entry.pose || "stand");
+      });
+    }
+
+    function defaultNotes(duration, repeat = "5 repeat", control = "Giữ Tx/Rx/camera cố định") {
+      return ["Thu CSI + video", duration, repeat, control];
+    }
+
+    function baselineControlScenarios() {
+      return [
+        scenario("CTRL-00", "0 người: baseline phòng trống", "Thu trước và sau mỗi block người", [], [], ["Empty room", "60s/clip", "Trước/sau mỗi session", "Cửa/quạt/ánh sáng cố định"]),
+        sc("CTRL-01", "1 người ngoài vùng", "Người đứng ngoài cửa để đo false positive", ["OUT"], [], ["Out-of-zone", "40s/clip", "5 repeat", "Không đi vào vùng A-E"]),
+        sc("CTRL-02", "Camera sync clap", "Một người vỗ tay tại C để đồng bộ video/CSI", [{zone: "C", pose: "raise"}], [], ["Sync event", "10 lần/session", "Log timestamp", "Dùng trước block RSSI"]),
+        scenario("CTRL-03", "0 người: thay đổi ánh sáng", "Kiểm tra label camera khi ánh sáng đổi nhẹ", [], [], ["Lighting control", "30s/sáng, 30s/tối", "Không người", "Không đổi vị trí thiết bị"]),
+        scenario("CTRL-04", "0 người: nhiễu môi trường nhẹ", "Quạt/cửa ở trạng thái cố định từng clip", [], [], ["Environment control", "60s/clip", "Ghi metadata", "Không trộn nhiều biến cùng lúc"])
+      ];
+    }
+
+    function rssiScenarios() {
+      const slides = [
+        scenario("RSSI-00", "RSSI: phòng trống", "Baseline RSSI của 4 receiver", [], [], ["Log RSSI + CSI", "60s/clip", "Mỗi đầu buổi", "Dùng làm normalization"]),
+        scenario("RSSI-01", "RSSI: Tx power thấp", "Nếu router cho phép đổi Tx power", [], [], ["Low power", "60s/clip", "Không người", "Ghi cấu hình router"]),
+        scenario("RSSI-02", "RSSI: Tx power trung bình", "Mức công suất chính dùng trong dataset", [], [], ["Main power", "60s/clip", "Không người", "So với RSSI-01/03"]),
+        scenario("RSSI-03", "RSSI: Tx power cao", "Kiểm tra saturation hoặc mất nhạy", [], [], ["High power", "60s/clip", "Không người", "Chỉ dùng nếu hợp luật/phần cứng"])
+      ];
+
+      ["A", "B", "C", "D", "E"].forEach((zone) => {
+        slides.push(sc(`RSSI-Z${zone}`, `RSSI: 1 người đứng ở zone ${zone}`, `Đo suy hao RSSI tại ${zone}`, [zone], [], ["RSSI zone map", "45s/zone", "5 repeat", "Người quay 4 hướng"]));
+      });
+
+      [
+        ["RSSI-P2-DIAG", "RSSI: 2 người che đường chéo", "A và E", ["A", "E"]],
+        ["RSSI-P2-LR", "RSSI: 2 người che ngang", "L và R", ["L", "R"]],
+        ["RSSI-P3-TRI", "RSSI: 3 người tam giác", "A, B, C", ["A", "B", "C"]],
+        ["RSSI-P4-CORN", "RSSI: 4 người bốn góc", "A, B, D, E", ["A", "B", "D", "E"]],
+        ["RSSI-P5-FULL", "RSSI: 5 người full zone", "A, B, C, D, E", ["A", "B", "C", "D", "E"]]
+      ].forEach(([id, title, sub, zones]) => {
+        slides.push(sc(id, title, sub, zones, [], ["RSSI ablation", "45s/clip", "5 repeat", "So sánh với amplitude/phase CSI"]));
+      });
+
+      return slides;
+    }
+
+    function singlePersonScenarios() {
+      const slides = [];
+      ["A", "B", "C", "D", "E"].forEach((zone) => {
+        slides.push(sc(`P1-STATIC-${zone}`, `1 người: đứng yên zone ${zone}`, `Static calibration tại ${zone}`, [zone], [], ["Static pose", "40s/clip", "5 repeat", "Quay mặt 4 hướng"]));
+      });
+
+      [
+        ["P1-WALK-LR", "1 người: đi ngang trái → phải", "L → R", ["L"], [path("L", "R")]],
+        ["P1-WALK-RL", "1 người: đi ngang phải → trái", "R → L", ["R"], [path("R", "L")]],
+        ["P1-WALK-TB", "1 người: đi theo chiều sâu", "Camera → dưới phòng", ["T"], [path("T", "BTM")]],
+        ["P1-WALK-BT", "1 người: đi ngược chiều sâu", "Dưới phòng → camera", ["BTM"], [path("BTM", "T")]],
+        ["P1-WALK-AE", "1 người: đi chéo A → E", "Đường chéo chính", ["A"], [path("A", "E")]],
+        ["P1-WALK-BD", "1 người: đi chéo B → D", "Đường chéo phụ", ["B"], [path("B", "D", true)]],
+        ["P1-WALK-SLOW", "1 người: đi chậm qua C", "L → R tốc độ chậm", ["L"], [path("L", "R")]],
+        ["P1-WALK-FAST", "1 người: đi nhanh vừa phải", "L → R tốc độ cao hơn", ["L"], [path("L", "R")]]
+      ].forEach(([id, title, sub, zones, paths]) => {
+        slides.push(sc(id, title, sub, zones, paths, ["Walking", "40s/clip", "5 repeat", "Không chạy, không đổi thiết bị"]));
+      });
+
+      [
+        ["P1-ACT-RAISE", "1 người: giơ tay", [{zone: "C", pose: "raise"}]],
+        ["P1-ACT-BEND", "1 người: cúi người", [{zone: "C", pose: "bend"}]],
+        ["P1-ACT-SIT", "1 người: ngồi/đứng", [{zone: "C", pose: "sit"}]],
+        ["P1-ACT-TURN", "1 người: xoay thân", [{zone: "C", pose: "turn"}]],
+        ["P1-ACT-MIX", "1 người: chuỗi action tại chỗ", [{zone: "C", pose: "raise"}]]
+      ].forEach(([id, title, zones]) => {
+        slides.push(sc(id, title, "Action tại zone C", zones, [], ["Pose action", "40s/clip", "5 repeat", "Label keypoint phải rõ"]));
+      });
+
+      return slides;
+    }
+
+    function twoPersonScenarios() {
+      const slides = [];
+      [["A","B"],["A","C"],["A","D"],["A","E"],["B","C"],["B","D"],["B","E"],["C","D"],["C","E"],["D","E"]].forEach((zones, i) => {
+        slides.push(sc(`P2-STATIC-${String(i + 1).padStart(2, "0")}`, `2 người: static ${zones.join("-")}`, `${zones[0]} và ${zones[1]}`, zones, [], ["Static pair", "40s/clip", "5 repeat", "Đổi vị trí P1/P2"]));
+      });
+
+      [
+        ["P2-PAR-AD-BE", "2 người: đi song song dọc", ["A", "B"], [path("A", "D"), path("B", "E")]],
+        ["P2-PAR-DA-EB", "2 người: song song ngược lại", ["D", "E"], [path("D", "A"), path("E", "B")]],
+        ["P2-CROSS-AE", "2 người: crossing A↔E", ["A", "E"], [path("A", "E"), path("E", "A", true)]],
+        ["P2-CROSS-BD", "2 người: crossing B↔D", ["B", "D"], [path("B", "D"), path("D", "B", true)]],
+        ["P2-CROSS-LR", "2 người: crossing ngang", ["L", "R"], [path("L", "R"), path("R", "L", true)]],
+        ["P2-CROSS-TB", "2 người: crossing chiều sâu", ["T", "BTM"], [path("T", "BTM"), path("BTM", "T", true)]]
+      ].forEach(([id, title, zones, paths]) => {
+        slides.push(sc(id, title, "Hai người cùng di chuyển có kiểm soát", zones, paths, ["Moving pair", "40s/clip", "5 repeat", "Đi chậm để label ổn"]));
+      });
+
+      [
+        ["P2-1M-C", "2 người: 1 động 1 tĩnh tại C", ["L", "C"], [path("L", "R")]],
+        ["P2-1M-A", "2 người: 1 động 1 tĩnh tại A", ["R", "A"], [path("R", "L")]],
+        ["P2-1M-E", "2 người: 1 động 1 tĩnh tại E", ["L", "E"], [path("L", "R")]],
+        ["P2-1M-DEPTH", "2 người: 1 đi sâu 1 đứng", ["T", "C"], [path("T", "BTM")]]
+      ].forEach(([id, title, zones, paths]) => {
+        slides.push(sc(id, title, "Tách động/tĩnh", zones, paths, ["Moving/static", "40s/clip", "5 repeat", "Đổi vai người đi"]));
+      });
+
+      [
+        ["P2-ACT-RB", "2 người: giơ tay + cúi", [{zone: "B", pose: "raise"}, {zone: "D", pose: "bend"}]],
+        ["P2-ACT-SS", "2 người: ngồi/đứng + đứng", [{zone: "A", pose: "sit"}, {zone: "E", pose: "stand"}]],
+        ["P2-ACT-TURN", "2 người: xoay thân khác hướng", [{zone: "A", pose: "turn"}, {zone: "E", pose: "turn"}]]
+      ].forEach(([id, title, zones]) => {
+        slides.push(sc(id, title, "Pose khác nhau trên hai người", zones, [], ["Pose pair", "40s/clip", "5 repeat", "Không che nhau quá lâu"]));
+      });
+
+      return slides;
+    }
+
+    function threePersonScenarios() {
+      const slides = [];
+      [["A","B","C"],["A","B","D"],["A","B","E"],["A","C","E"],["A","D","E"],["B","C","D"],["B","C","E"],["B","D","E"],["A","C","D"],["C","D","E"]].forEach((zones, i) => {
+        slides.push(sc(`P3-STATIC-${String(i + 1).padStart(2, "0")}`, `3 người: static ${zones.join("-")}`, "Tam giác/line khác nhau", zones, [], ["Static 3-person", "40s/clip", "5 repeat", "Đổi ID và vị trí"]));
+      });
+
+      [
+        ["P3-2M-1S-C", "3 người: 2 động 1 tĩnh giữa", ["L", "R", "C"], [path("L", "R"), path("R", "L", true)]],
+        ["P3-2M-1S-A", "3 người: 2 động 1 tĩnh góc A", ["L", "R", "A"], [path("L", "R"), path("R", "L", true)]],
+        ["P3-3CROSS", "3 người: crossing qua C", ["A", "E", "T"], [path("A", "E"), path("E", "A", true), path("T", "BTM")]],
+        ["P3-DEPTH", "3 người: hàng chiều sâu", ["T", "C", "BTM"], []],
+        ["P3-CLUSTER-SPLIT", "3 người: tụ rồi tách", ["CL", "MID", "CR"], [path("C", "A"), path("C", "B", true), path("C", "E")]],
+        ["P3-RING", "3 người: đi vòng quanh C", ["A", "B", "D"], [path("A", "B"), path("B", "E", true), path("D", "A")]]
+      ].forEach(([id, title, zones, paths]) => {
+        slides.push(sc(id, title, "Occlusion mức trung bình", zones, paths, ["3-person motion", "40s/clip", "5 repeat", "Camera xa phải thấy full body"]));
+      });
+
+      [
+        ["P3-ACT-MIX", "3 người: 3 action khác nhau", [{zone: "A", pose: "raise"}, {zone: "C", pose: "bend"}, {zone: "E", pose: "sit"}]],
+        ["P3-ACT-LINE", "3 người: action theo hàng sâu", [{zone: "T", pose: "raise"}, {zone: "C", pose: "turn"}, {zone: "BTM", pose: "bend"}]]
+      ].forEach(([id, title, zones]) => {
+        slides.push(sc(id, title, "Pose đa người", zones, [], ["Pose 3-person", "40s/clip", "5 repeat", "Kiểm tra tracking ID"]));
+      });
+
+      return slides;
+    }
+
+    function fourPersonScenarios() {
+      const slides = [];
+      [["A","B","D","E"],["A","B","C","D"],["A","B","C","E"],["A","C","D","E"],["B","C","D","E"],["L","A","E","R"]].forEach((zones, i) => {
+        slides.push(sc(`P4-STATIC-${String(i + 1).padStart(2, "0")}`, `4 người: static ${zones.join("-")}`, "Mật độ cao nhưng còn tách được", zones, [], ["Static 4-person", "40s/clip", "5 repeat", "Đổi vị trí theo vòng"]));
+      });
+
+      [
+        ["P4-1M-3S", "4 người: 1 động 3 tĩnh", ["L", "A", "B", "E"], [path("L", "R")]],
+        ["P4-2PAIR-CROSS", "4 người: 2 cặp crossing", ["A", "E", "B", "D"], [path("A", "E"), path("E", "A", true), path("B", "D"), path("D", "B", true)]],
+        ["P4-DEPTH", "4 người: hàng trước-sau", ["T", "C", "BTM", "E"], []],
+        ["P4-CLUSTER-SPLIT", "4 người: cụm rồi chia 2 cặp", ["CL", "MID", "CR", "C"], [path("C", "A"), path("C", "B", true), path("C", "D"), path("C", "E", true)]],
+        ["P4-RING", "4 người: đổi vị trí vòng", ["A", "B", "D", "E"], [path("A", "B"), path("B", "E", true), path("E", "D"), path("D", "A", true)]],
+        ["P4-3M-1S", "4 người: 3 động 1 tĩnh", ["A", "B", "T", "C"], [path("A", "E"), path("B", "D", true), path("T", "BTM")]]
+      ].forEach(([id, title, zones, paths]) => {
+        slides.push(sc(id, title, "High density motion", zones, paths, ["4-person motion", "40s/clip", "5 repeat", "Bắt đầu có occlusion mạnh"]));
+      });
+
+      [
+        ["P4-ACT-MIX", "4 người: 4 action khác nhau", [{zone: "A", pose: "raise"}, {zone: "B", pose: "bend"}, {zone: "D", pose: "sit"}, {zone: "E", pose: "turn"}]],
+        ["P4-ACT-PAIR", "4 người: hai người pose, hai người đứng", [{zone: "A", pose: "raise"}, {zone: "B", pose: "stand"}, {zone: "D", pose: "bend"}, {zone: "E", pose: "stand"}]]
+      ].forEach(([id, title, zones]) => {
+        slides.push(sc(id, title, "Pose 4 người", zones, [], ["Pose 4-person", "40s/clip", "5 repeat", "Ưu tiên label sạch hơn tốc độ"]));
+      });
+
+      return slides;
+    }
+
+    function fivePersonScenarios() {
+      const slides = [
+        sc("P5-STATIC-FULL", "5 người: 5 zone tĩnh", "A, B, C, D, E", ["A", "B", "C", "D", "E"], [], ["Baseline 5-person", "40s/clip", "5 repeat", "Bắt buộc có cho paper"]),
+        sc("P5-ACT-MIX", "5 người: mỗi người một action", "Pose đa người cùng lúc", [{zone: "A", pose: "raise"}, {zone: "B", pose: "bend"}, {zone: "C", pose: "turn"}, {zone: "D", pose: "sit"}, {zone: "E", pose: "stand"}], [], ["Pose 5-person", "40s/clip", "5 repeat", "Label ID cẩn thận"]),
+        sc("P5-1M-4S", "5 người: 1 động 4 tĩnh", "P1 đi ngang qua nhóm", ["L", "A", "B", "D", "E"], [path("L", "R")], ["Easy P5", "40s/clip", "5 repeat", "Đổi người đi"]),
+        sc("P5-2M-3S", "5 người: 2 động 3 tĩnh", "Hai người đi ngược chiều", ["L", "R", "A", "C", "E"], [path("L", "R"), path("R", "L", true)], ["Medium P5", "40s/clip", "5 repeat", "Đổi vai"]),
+        sc("P5-3M-2S", "5 người: 3 động 2 tĩnh", "Ba đường đi qua C", ["A", "B", "T", "D", "E"], [path("A", "E"), path("B", "D", true), path("T", "BTM")], ["Hard P5", "40s/clip", "5 repeat", "Đi chậm"]),
+        sc("P5-ALL-WALK", "5 người: cùng đi chậm", "Tự do có kiểm soát trong vùng A-E", ["A", "B", "C", "D", "E"], [path("A", "D"), path("B", "A", true), path("C", "E"), path("D", "B", true), path("E", "C")], ["Free walking", "40s/clip", "5 repeat", "Không chạy"]),
+        sc("P5-CENTER-CROSS", "5 người: crossing trung tâm", "Tất cả cắt qua C", ["A", "B", "D", "E", "T"], [path("A", "E"), path("B", "D", true), path("D", "B"), path("E", "A", true), path("T", "BTM")], ["Occlusion max", "40s/clip", "5 repeat", "Case khó nhất"]),
+        sc("P5-DEPTH-LINE", "5 người: hàng trước-sau", "Depth occlusion", ["T", "C", "BTM", "CL", "CR"], [], ["Depth line", "40s/clip", "5 repeat", "Camera khó, CSI quan trọng"]),
+        sc("P5-CLUSTER-SPLIT", "5 người: tụ cụm rồi tản ra", "Cluster → 5 zone", ["CL", "MID", "CR", "C", "C"], [path("C", "A"), path("C", "B", true), path("C", "C"), path("C", "D", true), path("C", "E")], ["Cluster/split", "40s/clip", "5 repeat", "Tracking ID quan trọng"]),
+        sc("P5-ENTRY-EXIT", "5 người: vào/ra phòng", "Count thay đổi theo thời gian", ["OUT", "A", "B", "D", "E"], [path("OUT", "C"), path("C", "OUT", true)], ["Entry/exit", "60s/clip", "5 repeat", "Đánh nhãn số người theo thời gian"]),
+        sc("P5-RING", "5 người: đổi vị trí vòng", "A→B→E→D→A, C giữ giữa", ["A", "B", "E", "D", "C"], [path("A", "B"), path("B", "E", true), path("E", "D"), path("D", "A", true)], ["Ring exchange", "50s/clip", "5 repeat", "Không chen lấn"]),
+        sc("P5-FRONT-BLOCK", "5 người: che khuất gần camera", "Một người gần camera, bốn người trong zone", ["T", "A", "B", "D", "E"], [], ["Camera occlusion", "40s/clip", "5 repeat", "Kiểm tra label failure"]),
+        sc("P5-DENSE-CENTER", "5 người: mật độ cao giữa phòng", "Tất cả gần C", ["CL", "MID", "CR", "C", "C"], [], ["Dense cluster", "40s/clip", "5 repeat", "Case khó nhưng cần cho robustness"])
+      ];
+
+      return slides;
+    }
+
+    function stressTestScenarios() {
+      return [
+        sc("STRESS-01", "Stress: 5 người đi chậm trong vùng hẹp", "Giữ trong A-B-C-D-E", ["A", "B", "C", "D", "E"], [path("A", "C"), path("B", "C", true), path("D", "C"), path("E", "C", true)], ["Stress test", "40s/clip", "3 repeat", "Không dùng làm train chính nếu label xấu"]),
+        sc("STRESS-02", "Stress: 4 người che nhau theo chiều sâu", "Camera khó thấy chân/tay", ["T", "C", "BTM", "MID"], [], ["Occlusion stress", "40s/clip", "3 repeat", "Đánh dấu label confidence"]),
+        sc("STRESS-03", "Stress: 3 người crossing nhanh vừa", "Không chạy, nhưng nhanh hơn bình thường", ["A", "E", "T"], [path("A", "E"), path("E", "A", true), path("T", "BTM")], ["Speed stress", "30s/clip", "3 repeat", "Tách riêng test set"]),
+        sc("STRESS-04", "Stress: 2 người action khi crossing", "Vừa đi vừa giơ tay/cúi", [{zone: "A", pose: "raise"}, {zone: "E", pose: "bend"}], [path("A", "E"), path("E", "A", true)], ["Motion + pose", "40s/clip", "3 repeat", "Label có thể nhiễu"]),
+        scenario("STRESS-05", "Stress: không người nhưng có nhiễu RSSI", "Kiểm tra false positive của model", [], [], ["No-person stress", "60s/clip", "3 repeat", "Có thể bật/tắt quạt theo metadata", "Không dùng nếu môi trường quá thay đổi"])
+      ];
+    }
+
+    function scenario(id, title, subtitle, people, paths, notes) {
+      return frame("Scenario", title, subtitle, `
+        <div class="content two">
+          <div class="panel room-wrap">${roomSvg(people, paths, true)}</div>
+          <div class="notes">
+            ${personNote(people, paths)}
+            ${notes.map((n, i) => `<div class="note"><strong>${i === 0 ? id : stepLabel(i)}</strong><span>${n}</span></div>`).join("")}
+          </div>
+        </div>
+      `);
+    }
+
+    function personNote(people, paths) {
+      if (!people.length) {
+        return `
+          <div class="person-note">
+            <div class="person-note-title">Assignment</div>
+            <div class="person-list">
+              <div class="person-line">
+                <span class="person-badge" style="background:#6b7280">0</span>
+                <span>Không có người, thu baseline phòng trống.</span>
+              </div>
+            </div>
+          </div>
+        `;
+      }
+
+      const assignedPaths = assignPaths(people, paths);
+      return `
+        <div class="person-note">
+          <div class="person-note-title">Người trong hình làm gì</div>
+          <div class="person-list">
+            ${people.map((item) => personLine(item, assignedPaths.get(item.id))).join("")}
+          </div>
+        </div>
+      `;
+    }
+
+    function personLine(item, move) {
+      const color = colors.p[item.id - 1] || "#111827";
+      const task = move ? moveTask(move, item.pose) : poseTask(item.pose, item.zone);
+      return `
+        <div class="person-line">
+          <span class="person-badge" style="background:${color}">P${item.id}</span>
+          <span>${task}</span>
+        </div>
+      `;
+    }
+
+    function assignPaths(people, paths) {
+      const assigned = new Map();
+      paths.forEach((move) => {
+        let target = people.find((item) => !assigned.has(item.id) && sameStartZone(item.zone, move.from));
+        if (!target) target = people.find((item) => !assigned.has(item.id));
+        if (target) assigned.set(target.id, move);
+      });
+      return assigned;
+    }
+
+    function sameStartZone(personZone, pathZone) {
+      if (personZone === pathZone) return true;
+      const centerZones = new Set(["C", "MID", "CL", "CR"]);
+      return pathZone === "C" && centerZones.has(personZone);
+    }
+
+    function moveTask(move, pose) {
+      if (move.from === move.to) return `giữ ở ${zoneName(move.from)}, ${poseVerb(pose)}`;
+      return `di chuyển ${zoneName(move.from)} → ${zoneName(move.to)}`;
+    }
+
+    function poseTask(pose, zone) {
+      return `${poseVerb(pose)} tại ${zoneName(zone)}`;
+    }
+
+    function poseVerb(pose) {
+      return {
+        raise: "giơ tay",
+        bend: "cúi người",
+        sit: "ngồi/đứng",
+        turn: "xoay thân",
+        stand: "đứng yên"
+      }[pose] || "đứng yên";
+    }
+
+    function zoneName(zone) {
+      return {
+        L: "mép trái",
+        R: "mép phải",
+        T: "phía camera",
+        BTM: "phía dưới",
+        OUT: "ngoài phòng",
+        MID: "giữa phòng",
+        CL: "cụm giữa-trái",
+        CR: "cụm giữa-phải"
+      }[zone] || `zone ${zone}`;
+    }
+
+    function setupTitle() {
+      return frame("Visual protocol", "Wi-Fi CSI 3D Pose Dataset", "4 receiver, 1 transmitter, 1 camera xa, 117 slide control/RSSI/1-5 người", `
+        <div class="big-title">
+          <div class="panel room-wrap">${roomSvg([person(1, "A"), person(2, "B"), person(3, "C"), person(4, "D"), person(5, "E")], [], true)}</div>
+          <div class="stat-grid">
+            <div class="stat"><strong>4 Rx</strong><span>Router thu CSI ở 4 góc</span></div>
+            <div class="stat"><strong>1 Tx</strong><span>Router phát Wi-Fi cố định</span></div>
+            <div class="stat"><strong>1 Cam</strong><span>Camera đặt xa, nhìn full room</span></div>
+            <div class="stat"><strong>5 người</strong><span>Thu từ dễ đến khó</span></div>
+          </div>
+        </div>
+      `);
+    }
+
+    function setupRoom() {
+      return frame("Setup", "Camera đặt xa, không cần 3 camera", "Một camera RGB wide view đặt xa/cao để lấy full body trong toàn phòng", `
+        <div class="content two">
+          <div class="panel room-wrap">${roomSvg([person(1, "A"), person(2, "B"), person(3, "C"), person(4, "D"), person(5, "E")], [], true)}</div>
+          <div class="notes">
+            <div class="note"><strong>Camera</strong><span>Đặt ngoài mép phòng hoặc góc cao, dùng wide lens nếu có.</span></div>
+            <div class="note"><strong>Rx</strong><span>4 receiver ở 4 góc để tạo nhiều đường CSI qua vùng người.</span></div>
+            <div class="note"><strong>Tx</strong><span>1 transmitter cố định ở một cạnh phòng.</span></div>
+            <div class="note"><strong>Zone</strong><span>Đánh dấu A-B-C-D-E trên sàn để lặp scenario.</span></div>
+          </div>
+        </div>
+      `);
+    }
+
+    function setupNetwork() {
+      return frame("Network", "1 laptop thu qua switch LAN", "Laptop cắm vào switch; switch cắm 4 router receiver", `
+        <div class="content two">
+          <div class="panel room-wrap">${networkSvg()}</div>
+          <div class="notes">
+            <div class="note"><strong>Laptop</strong><span>Chạy tcpdump/logger, lưu PCAP từ 4 receiver.</span></div>
+            <div class="note"><strong>Switch</strong><span>Gigabit 8-port, nên có port mirroring để debug.</span></div>
+            <div class="note"><strong>IP tĩnh</strong><span>Rx1-Rx4 dùng IP riêng để phân biệt luồng.</span></div>
+            <div class="note"><strong>Dây LAN</strong><span>Cat5e/Cat6 là đủ cho UDP CSI port 5500.</span></div>
+          </div>
+        </div>
+      `);
+    }
+
+    function setupLabeling() {
+      return frame("Labeling", "Camera + deep learning model", "Camera chỉ để sinh label; CSI vẫn là input chính", `
+        <div class="content two">
+          <div class="panel room-wrap">${pipelineSvg()}</div>
+          <div class="notes">
+            <div class="note"><strong>Video</strong><span>1 camera xa ghi toàn bộ vùng hoạt động.</span></div>
+            <div class="note"><strong>Pose model</strong><span>Detect 2D pose, track ID từng người.</span></div>
+            <div class="note"><strong>3D label</strong><span>Dùng lifting/estimation model để tạo nhãn 3D.</span></div>
+            <div class="note"><strong>Sync</strong><span>Ghép label theo timestamp với CSI window.</span></div>
+          </div>
+        </div>
+      `);
+    }
+
+    function setupZones() {
+      return frame("Protocol", "Thu liên tục, không thiếu mức người nào", "0 người baseline, sau đó 1 → 2 → 3 → 4 → 5 người", `
+        <div class="content">
+          <div class="panel room-wrap">${roomSvg([], [], true, true)}</div>
+          <div class="scenario-strip">
+            <div class="tile"><strong>0</strong><span>Empty room baseline</span></div>
+            <div class="tile"><strong>1</strong><span>Single person pose + walking</span></div>
+            <div class="tile"><strong>2</strong><span>Pair static / moving / crossing</span></div>
+            <div class="tile"><strong>3</strong><span>Triangle / crossing / depth</span></div>
+            <div class="tile"><strong>4</strong><span>Two pairs / cluster / occlusion</span></div>
+            <div class="tile"><strong>5</strong><span>Full hard scenarios</span></div>
+          </div>
+        </div>
+      `);
+    }
+
+    function closingSlide() {
+      return frame("Checklist", "Quy tắc thu cho tất cả scenario", "40s/clip, 5 repeat, giữ cố định thiết bị", `
+        <div class="content">
+          <div class="scenario-strip">
+            <div class="tile"><strong>File</strong><span>P5_S07_R03_roomA_timestamp</span></div>
+            <div class="tile"><strong>CSI</strong><span>4 Rx PCAP, tách bằng IP/MAC</span></div>
+            <div class="tile"><strong>Video</strong><span>Camera xa, thấy full body</span></div>
+            <div class="tile"><strong>Label</strong><span>Pose + tracking ID + timestamp</span></div>
+            <div class="tile"><strong>Meta</strong><span>num_people, action, formation</span></div>
+            <div class="tile"><strong>Repeat</strong><span>Đổi người, đổi vị trí, đổi hướng</span></div>
+          </div>
+          <div class="panel room-wrap">${roomSvg([person(1, "A"), person(2, "B"), person(3, "C"), person(4, "D"), person(5, "E")], [path("A", "E"), path("B", "D", true), path("T", "BTM")], true)}</div>
+        </div>
+      `);
+    }
+
+    function frame(kicker, title, subtitle, content) {
+      return `
+        <div class="frame">
+          <div class="header">
+            <div>
+              <div class="kicker">${kicker}</div>
+              <h2>${title}</h2>
+              <p class="sub">${subtitle}</p>
+            </div>
+            <div class="count"></div>
+          </div>
+          ${content}
+        </div>
+      `;
+    }
+
+    function roomSvg(people = [], paths = [], showCamera = true, showZonesOnly = false) {
+      const peopleSvg = people.map(drawPerson).join("");
+      const pathSvg = paths.map(drawPath).join("");
+      const zoneLabels = Object.entries({A: baseZones.A, B: baseZones.B, C: baseZones.C, D: baseZones.D, E: baseZones.E})
+        .map(([name, [x, y]]) => `<text x="${x}" y="${y + 72}" text-anchor="middle" font-size="22" font-weight="850" fill="#2563eb">${name}</text>`)
+        .join("");
+      return `
+        <svg viewBox="0 0 900 620" role="img">
+          <defs>
+            <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto">
+              <path d="M0,0 L0,6 L9,3 z" fill="${colors.path}"></path>
+            </marker>
+            <marker id="arrow2" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto">
+              <path d="M0,0 L0,6 L9,3 z" fill="#7c3aed"></path>
+            </marker>
+          </defs>
+          <rect x="88" y="68" width="624" height="484" rx="8" fill="#fbfaf7" stroke="#17212b" stroke-width="4"></rect>
+          <rect x="180" y="135" width="440" height="350" rx="8" fill="var(--zone)" stroke="var(--zone-line)" stroke-width="2" stroke-dasharray="10 8"></rect>
+          <line x1="400" y1="135" x2="400" y2="485" stroke="rgba(37,99,235,.22)" stroke-dasharray="8 8"></line>
+          <line x1="180" y1="310" x2="620" y2="310" stroke="rgba(37,99,235,.22)" stroke-dasharray="8 8"></line>
+          ${zoneLabels}
+          ${pathSvg}
+          ${showZonesOnly ? "" : peopleSvg}
+          ${device(110, 90, "Rx1", "rx")}
+          ${device(628, 90, "Rx2", "rx")}
+          ${device(110, 502, "Rx3", "rx")}
+          ${device(628, 502, "Rx4", "rx")}
+          ${device(352, 506, "Tx", "tx")}
+          ${showCamera ? cameraSvg() : ""}
+        </svg>
+      `;
+    }
+
+    function cameraSvg() {
+      return `
+        <path d="M400 12 L180 135 L620 135 Z" fill="rgba(15,139,95,.11)" stroke="rgba(15,139,95,.35)" stroke-width="2"></path>
+        <rect x="338" y="10" width="124" height="48" rx="8" fill="${colors.cam}"></rect>
+        <text x="400" y="40" text-anchor="middle" font-size="19" font-weight="850" fill="#fff">Camera xa</text>
+      `;
+    }
+
+    function device(x, y, label, type) {
+      const color = type === "rx" ? colors.rx : colors.tx;
+      return `
+        <rect x="${x}" y="${y}" width="64" height="42" rx="7" fill="${color}"></rect>
+        <text x="${x + 32}" y="${y + 27}" text-anchor="middle" font-size="18" font-weight="850" fill="#fff">${label}</text>
+      `;
+    }
+
+    function drawPath(item) {
+      const [x1, y1] = baseZones[item.from];
+      const [x2, y2] = baseZones[item.to];
+      const marker = item.alt ? "arrow2" : "arrow";
+      const stroke = item.alt ? "#7c3aed" : colors.path;
+      const dx = item.alt ? 26 : -26;
+      return `<path d="M${x1 + dx} ${y1} C ${x1 + dx} ${(y1 + y2) / 2}, ${x2 + dx} ${(y1 + y2) / 2}, ${x2 + dx} ${y2}" fill="none" stroke="${stroke}" stroke-width="5" stroke-linecap="round" marker-end="url(#${marker})"></path>`;
+    }
+
+    function drawPerson(item) {
+      const [x, y] = baseZones[item.zone];
+      const color = colors.p[item.id - 1] || "#111827";
+      const off = offsets[item.id - 1] || [0, 0];
+      const px = x + off[0];
+      const py = y + off[1];
+      const arms = armPath(item.pose, px, py);
+      const labelY = py + 76;
+      return `
+        <g>
+          <circle cx="${px}" cy="${py - 26}" r="15" fill="${color}"></circle>
+          <line x1="${px}" y1="${py - 10}" x2="${px}" y2="${py + 24}" stroke="${color}" stroke-width="10" stroke-linecap="round"></line>
+          ${arms}
+          <line x1="${px}" y1="${py + 24}" x2="${px - 18}" y2="${py + 52}" stroke="${color}" stroke-width="8" stroke-linecap="round"></line>
+          <line x1="${px}" y1="${py + 24}" x2="${px + 18}" y2="${py + 52}" stroke="${color}" stroke-width="8" stroke-linecap="round"></line>
+          <circle cx="${px + 28}" cy="${py - 34}" r="14" fill="#fff" stroke="${color}" stroke-width="3"></circle>
+          <text x="${px + 28}" y="${py - 29}" text-anchor="middle" font-size="14" font-weight="850" fill="${color}">P${item.id}</text>
+          <text x="${px}" y="${labelY}" text-anchor="middle" font-size="12" font-weight="800" fill="${color}">${poseLabel(item.pose)}</text>
+        </g>
+      `;
+    }
+
+    function armPath(pose, x, y) {
+      if (pose === "raise") {
+        return `
+          <line x1="${x}" y1="${y}" x2="${x - 20}" y2="${y - 36}" stroke="#111827" stroke-width="7" stroke-linecap="round"></line>
+          <line x1="${x}" y1="${y}" x2="${x + 20}" y2="${y - 36}" stroke="#111827" stroke-width="7" stroke-linecap="round"></line>
+        `;
+      }
+      if (pose === "bend") {
+        return `
+          <line x1="${x}" y1="${y}" x2="${x - 26}" y2="${y + 18}" stroke="#111827" stroke-width="7" stroke-linecap="round"></line>
+          <line x1="${x}" y1="${y}" x2="${x + 26}" y2="${y + 18}" stroke="#111827" stroke-width="7" stroke-linecap="round"></line>
+        `;
+      }
+      if (pose === "sit") {
+        return `
+          <line x1="${x}" y1="${y}" x2="${x - 26}" y2="${y + 8}" stroke="#111827" stroke-width="7" stroke-linecap="round"></line>
+          <line x1="${x}" y1="${y}" x2="${x + 26}" y2="${y + 8}" stroke="#111827" stroke-width="7" stroke-linecap="round"></line>
+          <rect x="${x - 28}" y="${y + 42}" width="56" height="10" rx="4" fill="#6b7280"></rect>
+        `;
+      }
+      return `
+        <line x1="${x}" y1="${y}" x2="${x - 25}" y2="${y + 2}" stroke="#111827" stroke-width="7" stroke-linecap="round"></line>
+        <line x1="${x}" y1="${y}" x2="${x + 25}" y2="${y + 2}" stroke="#111827" stroke-width="7" stroke-linecap="round"></line>
+      `;
+    }
+
+    function person(id, zone, pose = "stand") {
+      return { id, zone, pose };
+    }
+
+    function path(from, to, alt = false) {
+      return { from, to, alt };
+    }
+
+    function poseLabel(pose) {
+      return { raise: "raise", bend: "bend", sit: "sit", turn: "turn", stand: "stand" }[pose] || "stand";
+    }
+
+    function stepLabel(i) {
+      return ["", "Duration", "Repeat", "Control"][i] || "Note";
+    }
+
+    function networkSvg() {
+      return `
+        <svg viewBox="0 0 900 620" role="img">
+          <line x1="205" y1="310" x2="395" y2="310" stroke="#17212b" stroke-width="5"></line>
+          <line x1="505" y1="294" x2="730" y2="132" stroke="#17212b" stroke-width="4"></line>
+          <line x1="505" y1="310" x2="760" y2="250" stroke="#17212b" stroke-width="4"></line>
+          <line x1="505" y1="326" x2="760" y2="370" stroke="#17212b" stroke-width="4"></line>
+          <line x1="505" y1="342" x2="730" y2="488" stroke="#17212b" stroke-width="4"></line>
+          <rect x="70" y="260" width="135" height="100" rx="8" fill="#111827"></rect>
+          <text x="138" y="306" text-anchor="middle" font-size="20" font-weight="850" fill="#fff">Laptop</text>
+          <text x="138" y="332" text-anchor="middle" font-size="14" fill="#d1d5db">tcpdump</text>
+          <rect x="395" y="260" width="120" height="100" rx="8" fill="${colors.sw}"></rect>
+          <text x="455" y="306" text-anchor="middle" font-size="20" font-weight="850" fill="#fff">Switch</text>
+          <text x="455" y="332" text-anchor="middle" font-size="14" fill="#fff">LAN</text>
+          ${router(724, 92, "Rx1")}
+          ${router(760, 212, "Rx2")}
+          ${router(760, 332, "Rx3")}
+          ${router(724, 452, "Rx4")}
+          <text x="450" y="430" text-anchor="middle" font-size="22" font-weight="850" fill="#17212b">1 laptop thu 4 luồng CSI</text>
+        </svg>
+      `;
+    }
+
+    function router(x, y, label) {
+      return `
+        <rect x="${x}" y="${y}" width="92" height="72" rx="8" fill="${colors.rx}"></rect>
+        <text x="${x + 46}" y="${y + 34}" text-anchor="middle" font-size="20" font-weight="850" fill="#fff">${label}</text>
+        <text x="${x + 46}" y="${y + 54}" text-anchor="middle" font-size="12" fill="#dbeafe">UDP 5500</text>
+      `;
+    }
+
+    function pipelineSvg() {
+      return `
+        <svg viewBox="0 0 900 620" role="img">
+          <defs>
+            <marker id="pipeArrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto">
+              <path d="M0,0 L0,6 L9,3 z" fill="#17212b"></path>
+            </marker>
+          </defs>
+          ${flowBox(50, 90, "Camera xa", "Full-room RGB video", colors.cam)}
+          ${flowBox(280, 90, "Pose model", "2D keypoints + ID", "#2563eb")}
+          ${flowBox(510, 90, "3D label", "lifting / estimation", "#7c3aed")}
+          ${flowBox(280, 360, "CSI PCAP", "4 receiver streams", "#dc2626")}
+          ${flowBox(510, 360, "Sync", "CSI window + label", "#d97706")}
+          ${flowBox(710, 225, "Dataset", "CSI + 3D pose", "#111827")}
+          ${flowArrow(220, 150, 280, 150)}
+          ${flowArrow(450, 150, 510, 150)}
+          ${flowArrow(640, 150, 710, 255)}
+          ${flowArrow(410, 420, 510, 420)}
+          ${flowArrow(640, 420, 710, 315)}
+        </svg>
+      `;
+    }
+
+    function flowBox(x, y, title, sub, color) {
+      return `
+        <rect x="${x}" y="${y}" width="170" height="120" rx="8" fill="${color}"></rect>
+        <text x="${x + 85}" y="${y + 54}" text-anchor="middle" font-size="20" font-weight="850" fill="#fff">${title}</text>
+        <text x="${x + 85}" y="${y + 82}" text-anchor="middle" font-size="13" fill="#fff">${sub}</text>
+      `;
+    }
+
+    function flowArrow(x1, y1, x2, y2) {
+      return `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="#17212b" stroke-width="5" marker-end="url(#pipeArrow)"></line>`;
+    }
+
+    function getCss(name) {
+      return getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+    }
+  </script>
+</body>
+</html>
