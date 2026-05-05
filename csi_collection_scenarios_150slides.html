@@ -1,0 +1,727 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>CSI Collection Scenarios 1-5 People</title>
+  <style>
+    :root {
+      --bg: #f7f5f0;
+      --ink: #151c24;
+      --muted: #66717d;
+      --line: #d8d1c5;
+      --panel: #ffffff;
+      --rx: #2563eb;
+      --tx: #dc2626;
+      --cam: #0f8b5f;
+      --path: #0891b2;
+      --shadow: 0 22px 55px rgba(21, 28, 36, 0.14);
+      --radius: 8px;
+    }
+
+    * { box-sizing: border-box; }
+
+    html,
+    body {
+      margin: 0;
+      height: 100%;
+      color: var(--ink);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background:
+        linear-gradient(135deg, rgba(37, 99, 235, 0.08), transparent 36%),
+        linear-gradient(315deg, rgba(15, 139, 95, 0.08), transparent 38%),
+        var(--bg);
+    }
+
+    body { overflow: hidden; }
+
+    .deck {
+      width: 100vw;
+      height: 100vh;
+      position: relative;
+    }
+
+    .slide {
+      position: absolute;
+      inset: 0;
+      display: none;
+      padding: 42px 56px 72px;
+    }
+
+    .slide.active { display: grid; }
+
+    .frame {
+      width: min(1500px, 100%);
+      height: min(842px, calc(100vh - 114px));
+      margin: auto;
+      display: grid;
+      grid-template-rows: auto 1fr;
+      gap: 18px;
+    }
+
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: start;
+      gap: 20px;
+    }
+
+    .kicker {
+      color: var(--rx);
+      font-size: 12px;
+      font-weight: 900;
+      text-transform: uppercase;
+    }
+
+    h1,
+    h2,
+    p { margin: 0; }
+
+    h2 {
+      font-size: 38px;
+      line-height: 1.08;
+      letter-spacing: -0.02em;
+    }
+
+    .sub {
+      margin-top: 8px;
+      color: var(--muted);
+      font-size: 18px;
+      line-height: 1.35;
+    }
+
+    .count {
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 850;
+      white-space: nowrap;
+    }
+
+    .content {
+      min-height: 0;
+      display: grid;
+      grid-template-columns: 1.18fr 0.82fr;
+      gap: 18px;
+    }
+
+    .panel {
+      min-height: 0;
+      border: 1px solid rgba(21, 28, 36, 0.1);
+      border-radius: var(--radius);
+      background: rgba(255, 255, 255, 0.96);
+      box-shadow: var(--shadow);
+    }
+
+    .room-panel {
+      padding: 20px;
+      display: grid;
+    }
+
+    svg {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
+    .side {
+      min-height: 0;
+      display: grid;
+      grid-template-rows: auto 1fr;
+      gap: 12px;
+    }
+
+    .assignment {
+      padding: 14px;
+      border: 2px solid rgba(37, 99, 235, 0.2);
+      border-radius: var(--radius);
+      background: #ffffff;
+      box-shadow: 0 12px 26px rgba(21, 28, 36, 0.08);
+    }
+
+    .side-title {
+      margin-bottom: 10px;
+      color: var(--rx);
+      font-size: 12px;
+      font-weight: 900;
+      text-transform: uppercase;
+    }
+
+    .person-list {
+      display: grid;
+      gap: 7px;
+    }
+
+    .person-line {
+      display: grid;
+      grid-template-columns: 42px 1fr;
+      gap: 9px;
+      align-items: center;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.26;
+    }
+
+    .badge {
+      border-radius: 999px;
+      padding: 4px 0;
+      color: #fff;
+      text-align: center;
+      font-size: 12px;
+      font-weight: 900;
+    }
+
+    .meta {
+      min-height: 0;
+      display: grid;
+      grid-template-rows: repeat(4, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .note {
+      display: grid;
+      align-content: center;
+      padding: 16px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: #fbfaf7;
+    }
+
+    .note strong {
+      display: block;
+      margin-bottom: 6px;
+      font-size: 18px;
+    }
+
+    .note span {
+      color: var(--muted);
+      font-size: 15px;
+      line-height: 1.34;
+    }
+
+    .controls {
+      position: fixed;
+      right: 28px;
+      bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.92);
+      border: 1px solid rgba(21, 28, 36, 0.12);
+      box-shadow: 0 12px 34px rgba(21, 28, 36, 0.13);
+      z-index: 4;
+    }
+
+    button {
+      width: 38px;
+      height: 38px;
+      border: 0;
+      border-radius: 50%;
+      background: var(--ink);
+      color: #fff;
+      font-size: 20px;
+      cursor: pointer;
+    }
+
+    #counter {
+      min-width: 78px;
+      text-align: center;
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 850;
+    }
+
+    @media (max-width: 1100px) {
+      body { overflow: auto; }
+      .deck { height: auto; }
+      .slide {
+        position: relative;
+        min-height: 100vh;
+        padding: 28px 18px 76px;
+      }
+      .frame { height: auto; }
+      .content { grid-template-columns: 1fr; }
+      .room-panel { min-height: 560px; }
+      h2 { font-size: 30px; }
+      .controls {
+        left: 50%;
+        right: auto;
+        transform: translateX(-50%);
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="deck" id="deck"></main>
+
+  <nav class="controls">
+    <button id="prev" type="button" aria-label="previous slide">‹</button>
+    <div id="counter">1 / 150</div>
+    <button id="next" type="button" aria-label="next slide">›</button>
+  </nav>
+
+  <script>
+    const peopleColors = ["#111827", "#0f766e", "#7c3aed", "#c2410c", "#be123c"];
+    const offsets = [[-20, -8], [18, -8], [0, 16], [-18, 30], [18, 30]];
+    const zones = {
+      A: [260, 180],
+      B: [540, 180],
+      C: [400, 320],
+      D: [260, 460],
+      E: [540, 460],
+      L: [160, 320],
+      R: [640, 320],
+      T: [400, 120],
+      BTM: [400, 520],
+      OUT: [770, 320],
+      MID: [400, 320],
+      CL: [335, 292],
+      CR: [465, 348]
+    };
+
+    const slidesData = buildScenarios();
+    const deck = document.getElementById("deck");
+    const slideParam = Number(new URLSearchParams(window.location.search).get("slide"));
+    const initialIndex = Number.isFinite(slideParam)
+      ? Math.min(Math.max(Math.trunc(slideParam) - 1, 0), slidesData.length - 1)
+      : 0;
+
+    slidesData.forEach((slide, index) => {
+      const section = document.createElement("section");
+      section.className = "slide" + (index === initialIndex ? " active" : "");
+      section.innerHTML = renderSlide(slide, index);
+      deck.appendChild(section);
+    });
+
+    const slides = Array.from(document.querySelectorAll(".slide"));
+    const counter = document.getElementById("counter");
+    let index = initialIndex;
+    updateCounter();
+
+    document.getElementById("prev").addEventListener("click", () => show(index - 1));
+    document.getElementById("next").addEventListener("click", () => show(index + 1));
+    window.addEventListener("keydown", (event) => {
+      if (event.key === "ArrowRight" || event.key === "PageDown" || event.key === " ") show(index + 1);
+      if (event.key === "ArrowLeft" || event.key === "PageUp") show(index - 1);
+      if (event.key === "Home") show(0);
+      if (event.key === "End") show(slides.length - 1);
+    });
+
+    function show(next) {
+      slides[index].classList.remove("active");
+      index = (next + slides.length) % slides.length;
+      slides[index].classList.add("active");
+      updateCounter();
+    }
+
+    function updateCounter() {
+      counter.textContent = `${index + 1} / ${slidesData.length}`;
+      const active = slides[index];
+      if (!active) return;
+      const count = active.querySelector(".count");
+      if (count) count.textContent = `${index + 1} / ${slidesData.length}`;
+    }
+
+    function renderSlide(s, idx) {
+      return `
+        <div class="frame">
+          <div class="header">
+            <div>
+              <div class="kicker">CSI collection scenario · ${s.id}</div>
+              <h2>${s.title}</h2>
+              <p class="sub">${s.subtitle}</p>
+            </div>
+            <div class="count">${idx + 1} / ${slidesData.length}</div>
+          </div>
+          <div class="content">
+            <div class="panel room-panel">${roomSvg(s)}</div>
+            <div class="side">
+              <div class="assignment">
+                <div class="side-title">Người trong hình làm gì</div>
+                <div class="person-list">${s.people.map((p) => personLine(p, s.moves.find((m) => m.id === p.id))).join("")}</div>
+              </div>
+              <div class="meta">
+                <div class="note"><strong>Mục tiêu CSI</strong><span>${s.purpose}</span></div>
+                <div class="note"><strong>Thời lượng</strong><span>${s.duration}</span></div>
+                <div class="note"><strong>Lặp lại</strong><span>${s.repeat}</span></div>
+                <div class="note"><strong>Mức khó</strong><span>${s.difficulty}</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function buildScenarios() {
+      return [
+        ...numberGroup(1, p1Specs()),
+        ...numberGroup(2, p2Specs()),
+        ...numberGroup(3, p3Specs()),
+        ...numberGroup(4, p4Specs()),
+        ...numberGroup(5, p5Specs())
+      ];
+    }
+
+    function numberGroup(count, specs) {
+      return specs.map((spec, i) => ({
+        id: `P${count}-${String(i + 1).padStart(3, "0")}`,
+        title: `${count} người: ${spec.title}`,
+        subtitle: spec.subtitle,
+        people: spec.people,
+        moves: spec.moves || [],
+        purpose: spec.purpose || "Thu CSI amplitude/phase cho model pose.",
+        duration: spec.duration || "40s/clip",
+        repeat: spec.repeat || "5 repeat, đổi người và đổi vị trí ID",
+        difficulty: spec.difficulty || difficultyByIndex(i)
+      }));
+    }
+
+    function p1Specs() {
+      const out = [];
+      ["A", "B", "C", "D", "E"].forEach((z) => out.push(S(`đứng yên tại zone ${z}`, `P1 đứng ở ${z}`, [P(1, z)], [], "Baseline CSI theo vị trí một người.", "Dễ")));
+      ["A", "B", "C", "D", "E"].forEach((z) => out.push(S(`xoay 4 hướng tại zone ${z}`, `P1 đứng và quay mặt 4 hướng`, [P(1, z, "turn")], [], "Đo ảnh hưởng hướng cơ thể lên CSI.", "Dễ")));
+      [
+        ["giơ tay tại C", P(1, "C", "raise")],
+        ["cúi người tại C", P(1, "C", "bend")],
+        ["ngồi/đứng tại C", P(1, "C", "sit")],
+        ["xoay thân tại C", P(1, "C", "turn")],
+        ["giơ tay tại A", P(1, "A", "raise")],
+        ["cúi người tại E", P(1, "E", "bend")],
+        ["ngồi/đứng tại D", P(1, "D", "sit")],
+        ["xoay thân tại B", P(1, "B", "turn")]
+      ].forEach(([title, p]) => out.push(S(title, "Action tại chỗ", [p], [], "Thu CSI cho pose/action đơn người.", "Dễ → Vừa")));
+      [
+        ["đi ngang trái → phải", "L", "R"],
+        ["đi ngang phải → trái", "R", "L"],
+        ["đi theo chiều sâu camera → dưới", "T", "BTM"],
+        ["đi ngược chiều sâu dưới → camera", "BTM", "T"],
+        ["đi chéo A → E", "A", "E"],
+        ["đi chéo E → A", "E", "A"],
+        ["đi chéo B → D", "B", "D"],
+        ["đi chéo D → B", "D", "B"]
+      ].forEach(([title, from, to], i) => out.push(S(title, `${from} → ${to}`, [P(1, from)], [M(1, from, to, i % 2)], "Thu CSI khi một người di chuyển.", "Vừa")));
+      [
+        ["vừa đi vừa giơ tay", P(1, "L", "raise"), M(1, "L", "R")],
+        ["vừa đi vừa cúi nhẹ", P(1, "R", "bend"), M(1, "R", "L", true)],
+        ["đi chậm qua trung tâm", P(1, "A"), M(1, "A", "E")],
+        ["đi nhanh vừa qua trung tâm", P(1, "B"), M(1, "B", "D", true)]
+      ].forEach(([title, p, m]) => out.push(S(title, "Motion + action", [p], [m], "Single-person hard motion CSI.", "Khó")));
+      return out.slice(0, 30);
+    }
+
+    function p2Specs() {
+      const out = [];
+      [["A","B"],["A","C"],["A","D"],["A","E"],["B","C"],["B","D"],["B","E"],["C","D"],["C","E"],["D","E"]]
+        .forEach((zs) => out.push(S(`static ${zs[0]}-${zs[1]}`, `${zs[0]} và ${zs[1]}`, [P(1, zs[0]), P(2, zs[1])], [], "Baseline CSI hai người theo khoảng cách.", "Dễ")));
+      [
+        ["P1 đi ngang, P2 đứng C", [P(1, "L"), P(2, "C")], [M(1, "L", "R")]],
+        ["P1 đi ngang, P2 đứng A", [P(1, "R"), P(2, "A")], [M(1, "R", "L")]],
+        ["P1 đi sâu, P2 đứng E", [P(1, "T"), P(2, "E")], [M(1, "T", "BTM")]],
+        ["P2 đi ngang, P1 đứng C", [P(1, "C"), P(2, "L")], [M(2, "L", "R")]],
+        ["P2 đi chéo, P1 đứng A", [P(1, "A"), P(2, "E")], [M(2, "E", "A", true)]]
+      ].forEach(([title, people, moves]) => out.push(S(title, "1 động 1 tĩnh", people, moves, "Tách CSI của người động và người tĩnh.", "Vừa")));
+      [
+        ["đi song song A→D và B→E", [P(1, "A"), P(2, "B")], [M(1, "A", "D"), M(2, "B", "E", true)]],
+        ["đi song song D→A và E→B", [P(1, "D"), P(2, "E")], [M(1, "D", "A"), M(2, "E", "B", true)]],
+        ["crossing A↔E", [P(1, "A"), P(2, "E")], [M(1, "A", "E"), M(2, "E", "A", true)]],
+        ["crossing B↔D", [P(1, "B"), P(2, "D")], [M(1, "B", "D"), M(2, "D", "B", true)]],
+        ["crossing ngang L↔R", [P(1, "L"), P(2, "R")], [M(1, "L", "R"), M(2, "R", "L", true)]],
+        ["crossing chiều sâu T↔dưới", [P(1, "T"), P(2, "BTM")], [M(1, "T", "BTM"), M(2, "BTM", "T", true)]],
+        ["một người vào, một người ra", [P(1, "OUT"), P(2, "C")], [M(1, "OUT", "C"), M(2, "C", "OUT", true)]],
+        ["đổi chỗ quanh C", [P(1, "A"), P(2, "B")], [M(1, "A", "B"), M(2, "B", "A", true)]]
+      ].forEach(([title, people, moves]) => out.push(S(title, "Hai người cùng di chuyển", people, moves, "Pair motion CSI.", "Khó")));
+      [
+        ["giơ tay + cúi người", [P(1, "B", "raise"), P(2, "D", "bend")]],
+        ["ngồi/đứng + đứng yên", [P(1, "A", "sit"), P(2, "E")]],
+        ["hai người cùng xoay", [P(1, "A", "turn"), P(2, "E", "turn")]],
+        ["một người giơ tay khi người kia đi", [P(1, "C", "raise"), P(2, "L")], [M(2, "L", "R")]],
+        ["một người cúi khi người kia đi", [P(1, "C", "bend"), P(2, "R")], [M(2, "R", "L", true)]],
+        ["che khuất nhẹ giữa phòng", [P(1, "CL"), P(2, "CR")], [M(1, "C", "A"), M(2, "C", "E", true)]],
+        ["đứng hàng trước-sau", [P(1, "T"), P(2, "BTM")]],
+      ].forEach(([title, people, moves = []]) => out.push(S(title, "Action/occlusion hai người", people, moves, "Pose/action pair CSI.", "Khó")));
+      return out.slice(0, 30);
+    }
+
+    function p3Specs() {
+      const out = [];
+      [["A","B","C"],["A","B","D"],["A","B","E"],["A","C","E"],["A","D","E"],["B","C","D"],["B","C","E"],["C","D","E"]]
+        .forEach((zs) => out.push(S(`static ${zs.join("-")}`, "Ba người đứng yên", [P(1,zs[0]), P(2,zs[1]), P(3,zs[2])], [], "Baseline CSI ba người.", "Dễ")));
+      [
+        ["P1 đi, P2/P3 đứng", [P(1,"L"), P(2,"A"), P(3,"E")], [M(1,"L","R")]],
+        ["P2 đi, P1/P3 đứng", [P(1,"A"), P(2,"R"), P(3,"E")], [M(2,"R","L", true)]],
+        ["P3 đi sâu, P1/P2 đứng", [P(1,"A"), P(2,"E"), P(3,"T")], [M(3,"T","BTM")]],
+        ["một người đi chéo qua cặp tĩnh", [P(1,"A"), P(2,"E"), P(3,"B")], [M(3,"B","D")]],
+        ["một người vào vùng, hai người tĩnh", [P(1,"OUT"), P(2,"A"), P(3,"E")], [M(1,"OUT","C")]]
+      ].forEach(([title, people, moves]) => out.push(S(title, "1 động 2 tĩnh", people, moves, "Tăng số người nhưng còn dễ tách.", "Vừa")));
+      [
+        ["2 động ngược chiều, 1 tĩnh C", [P(1,"L"), P(2,"R"), P(3,"C")], [M(1,"L","R"), M(2,"R","L", true)]],
+        ["2 động chéo, 1 tĩnh A", [P(1,"B"), P(2,"D"), P(3,"A")], [M(1,"B","D"), M(2,"D","B", true)]],
+        ["2 động chiều sâu, 1 tĩnh E", [P(1,"T"), P(2,"BTM"), P(3,"E")], [M(1,"T","BTM"), M(2,"BTM","T", true)]],
+        ["2 động quanh người giữa", [P(1,"A"), P(2,"E"), P(3,"C")], [M(1,"A","E"), M(2,"E","A", true)]],
+        ["2 người đổi chỗ, 1 người action", [P(1,"A"), P(2,"E"), P(3,"C","raise")], [M(1,"A","E"), M(2,"E","A", true)]],
+        ["2 người đi song song, 1 đứng D", [P(1,"A"), P(2,"B"), P(3,"D")], [M(1,"A","D"), M(2,"B","E", true)]]
+      ].forEach(([title, people, moves]) => out.push(S(title, "2 động 1 tĩnh", people, moves, "CSI ba người mức trung bình.", "Vừa → Khó")));
+      [
+        ["3 người crossing qua C", [P(1,"A"), P(2,"E"), P(3,"T")], [M(1,"A","E"), M(2,"E","A", true), M(3,"T","BTM")]],
+        ["3 người đi vòng", [P(1,"A"), P(2,"B"), P(3,"D")], [M(1,"A","B"), M(2,"B","E", true), M(3,"D","A")]],
+        ["tụ giữa rồi tách 3 hướng", [P(1,"CL"), P(2,"MID"), P(3,"CR")], [M(1,"C","A"), M(2,"C","B", true), M(3,"C","E")]],
+        ["hàng trước-sau", [P(1,"T"), P(2,"C"), P(3,"BTM")]],
+        ["3 action khác nhau", [P(1,"A","raise"), P(2,"C","bend"), P(3,"E","sit")]],
+        ["action theo chiều sâu", [P(1,"T","raise"), P(2,"C","turn"), P(3,"BTM","bend")]],
+        ["entry/exit với 3 người", [P(1,"OUT"), P(2,"A"), P(3,"E")], [M(1,"OUT","C"), M(2,"C","OUT", true)]],
+        ["dense center 3 người", [P(1,"CL"), P(2,"MID"), P(3,"CR")]],
+        ["crossing nhanh vừa", [P(1,"A"), P(2,"E"), P(3,"B")], [M(1,"A","E"), M(2,"E","A", true), M(3,"B","D")]],
+        ["motion + pose hỗn hợp", [P(1,"A","raise"), P(2,"E","bend"), P(3,"T")], [M(3,"T","BTM")]],
+        ["đổi đội hình tam giác", [P(1,"A"), P(2,"B"), P(3,"C")], [M(1,"A","D"), M(2,"B","E", true), M(3,"C","A")]]
+      ].forEach(([title, people, moves = []]) => out.push(S(title, "Hard case ba người", people, moves, "Occlusion/action CSI ba người.", "Khó")));
+      return out.slice(0, 30);
+    }
+
+    function p4Specs() {
+      const out = [];
+      [["A","B","D","E"],["A","B","C","D"],["A","B","C","E"],["A","C","D","E"],["B","C","D","E"],["L","A","E","R"]]
+        .forEach((zs) => out.push(S(`static ${zs.join("-")}`, "Bốn người đứng yên", [P(1,zs[0]), P(2,zs[1]), P(3,zs[2]), P(4,zs[3])], [], "Baseline CSI bốn người.", "Dễ")));
+      [
+        ["1 động 3 tĩnh: đi ngang", [P(1,"L"), P(2,"A"), P(3,"B"), P(4,"E")], [M(1,"L","R")]],
+        ["1 động 3 tĩnh: đi chéo", [P(1,"A"), P(2,"B"), P(3,"D"), P(4,"E")], [M(1,"A","E")]],
+        ["1 động 3 tĩnh: đi sâu", [P(1,"T"), P(2,"A"), P(3,"D"), P(4,"E")], [M(1,"T","BTM")]],
+        ["1 động quanh nhóm", [P(1,"L"), P(2,"A"), P(3,"C"), P(4,"E")], [M(1,"L","R")]],
+        ["1 người vào phòng", [P(1,"OUT"), P(2,"A"), P(3,"D"), P(4,"E")], [M(1,"OUT","C")]]
+      ].forEach(([title, people, moves]) => out.push(S(title, "1 động 3 tĩnh", people, moves, "Bốn người nhưng chuyển động còn đơn giản.", "Vừa")));
+      [
+        ["2 cặp đi song song", [P(1,"A"), P(2,"B"), P(3,"D"), P(4,"E")], [M(1,"A","D"), M(2,"B","E", true)]],
+        ["2 cặp crossing chéo", [P(1,"A"), P(2,"E"), P(3,"B"), P(4,"D")], [M(1,"A","E"), M(2,"E","A", true), M(3,"B","D"), M(4,"D","B", true)]],
+        ["2 động ngang, 2 tĩnh", [P(1,"L"), P(2,"R"), P(3,"A"), P(4,"E")], [M(1,"L","R"), M(2,"R","L", true)]],
+        ["2 động sâu, 2 tĩnh", [P(1,"T"), P(2,"BTM"), P(3,"A"), P(4,"E")], [M(1,"T","BTM"), M(2,"BTM","T", true)]],
+        ["2 người đổi chỗ, 2 người action", [P(1,"A"), P(2,"E"), P(3,"B","raise"), P(4,"D","bend")], [M(1,"A","E"), M(2,"E","A", true)]],
+        ["2 người vào/ra, 2 người tĩnh", [P(1,"OUT"), P(2,"C"), P(3,"A"), P(4,"E")], [M(1,"OUT","C"), M(2,"C","OUT", true)]]
+      ].forEach(([title, people, moves]) => out.push(S(title, "2 động 2 tĩnh", people, moves, "Bốn người mức trung bình-khó.", "Khó")));
+      [
+        ["3 động 1 tĩnh", [P(1,"A"), P(2,"B"), P(3,"T"), P(4,"C")], [M(1,"A","E"), M(2,"B","D", true), M(3,"T","BTM")]],
+        ["3 người crossing, 1 người đứng", [P(1,"A"), P(2,"E"), P(3,"T"), P(4,"C")], [M(1,"A","E"), M(2,"E","A", true), M(3,"T","BTM")]],
+        ["đổi vị trí vòng", [P(1,"A"), P(2,"B"), P(3,"D"), P(4,"E")], [M(1,"A","B"), M(2,"B","E", true), M(3,"D","A"), M(4,"E","D", true)]],
+        ["cụm rồi chia 2 cặp", [P(1,"CL"), P(2,"MID"), P(3,"CR"), P(4,"C")], [M(1,"C","A"), M(2,"C","B", true), M(3,"C","D"), M(4,"C","E", true)]],
+        ["hàng trước-sau 4 người", [P(1,"T"), P(2,"C"), P(3,"BTM"), P(4,"E")]],
+        ["4 action khác nhau", [P(1,"A","raise"), P(2,"B","bend"), P(3,"D","sit"), P(4,"E","turn")]],
+        ["hai action hai đứng", [P(1,"A","raise"), P(2,"B"), P(3,"D","bend"), P(4,"E")]],
+        ["dense center 4 người", [P(1,"CL"), P(2,"MID"), P(3,"CR"), P(4,"C")]],
+        ["camera occlusion 4 người", [P(1,"T"), P(2,"A"), P(3,"B"), P(4,"E")]],
+        ["stress crossing 4 người", [P(1,"A"), P(2,"B"), P(3,"D"), P(4,"E")], [M(1,"A","E"), M(2,"B","D", true), M(3,"D","B"), M(4,"E","A", true)]],
+        ["free walking có kiểm soát", [P(1,"A"), P(2,"B"), P(3,"D"), P(4,"E")], [M(1,"A","D"), M(2,"B","A", true), M(3,"D","E"), M(4,"E","C", true)]],
+        ["motion + action hỗn hợp", [P(1,"A","raise"), P(2,"E","bend"), P(3,"L"), P(4,"R")], [M(3,"L","R"), M(4,"R","L", true)]],
+        ["entry/exit bốn người", [P(1,"OUT"), P(2,"A"), P(3,"B"), P(4,"E")], [M(1,"OUT","C"), M(4,"E","OUT", true)]]
+      ].forEach(([title, people, moves = []]) => out.push(S(title, "Hard case bốn người", people, moves, "Occlusion/action CSI bốn người.", "Khó")));
+      return out.slice(0, 30);
+    }
+
+    function p5Specs() {
+      const out = [];
+      [
+        ["5 zone tĩnh A-B-C-D-E", ["A","B","C","D","E"]],
+        ["4 góc + giữa", ["A","B","C","D","E"]],
+        ["hàng ngang 5 người", ["L","A","C","E","R"]],
+        ["hàng sâu 5 người", ["T","A","C","E","BTM"]],
+        ["dense center static", ["CL","MID","CR","C","C"]]
+      ].forEach(([title, zs]) => out.push(S(title, "Baseline năm người", [P(1,zs[0]), P(2,zs[1]), P(3,zs[2]), P(4,zs[3]), P(5,zs[4])], [], "Baseline CSI năm người.", "Dễ → Vừa")));
+      [
+        ["mỗi người một action", [P(1,"A","raise"), P(2,"B","bend"), P(3,"C","turn"), P(4,"D","sit"), P(5,"E")]],
+        ["hai người giơ tay", [P(1,"A","raise"), P(2,"B","raise"), P(3,"C"), P(4,"D"), P(5,"E")]],
+        ["hai người cúi", [P(1,"A"), P(2,"B","bend"), P(3,"C"), P(4,"D","bend"), P(5,"E")]],
+        ["ngồi/đứng ở hai góc", [P(1,"A","sit"), P(2,"B"), P(3,"C"), P(4,"D"), P(5,"E","sit")]],
+        ["xoay thân đồng thời", [P(1,"A","turn"), P(2,"B","turn"), P(3,"C"), P(4,"D","turn"), P(5,"E")]]
+      ].forEach(([title, people]) => out.push(S(title, "Action năm người tại chỗ", people, [], "Thu CSI pose/action khi đông người.", "Vừa")));
+      [
+        ["1 động 4 tĩnh: ngang", [P(1,"L"), P(2,"A"), P(3,"B"), P(4,"D"), P(5,"E")], [M(1,"L","R")]],
+        ["1 động 4 tĩnh: chéo", [P(1,"A"), P(2,"B"), P(3,"C"), P(4,"D"), P(5,"E")], [M(1,"A","E")]],
+        ["1 động 4 tĩnh: sâu", [P(1,"T"), P(2,"A"), P(3,"B"), P(4,"D"), P(5,"E")], [M(1,"T","BTM")]],
+        ["1 người vào phòng", [P(1,"OUT"), P(2,"A"), P(3,"B"), P(4,"D"), P(5,"E")], [M(1,"OUT","C")]],
+        ["1 người đi quanh nhóm", [P(1,"L"), P(2,"A"), P(3,"C"), P(4,"D"), P(5,"E")], [M(1,"L","R")]]
+      ].forEach(([title, people, moves]) => out.push(S(title, "1 động 4 tĩnh", people, moves, "Năm người nhưng chỉ một người di chuyển.", "Vừa")));
+      [
+        ["2 động 3 tĩnh: ngang", [P(1,"L"), P(2,"R"), P(3,"A"), P(4,"C"), P(5,"E")], [M(1,"L","R"), M(2,"R","L", true)]],
+        ["2 động 3 tĩnh: chéo", [P(1,"A"), P(2,"E"), P(3,"B"), P(4,"C"), P(5,"D")], [M(1,"A","E"), M(2,"E","A", true)]],
+        ["2 động 3 tĩnh: sâu", [P(1,"T"), P(2,"BTM"), P(3,"A"), P(4,"C"), P(5,"E")], [M(1,"T","BTM"), M(2,"BTM","T", true)]],
+        ["2 người đổi chỗ qua C", [P(1,"A"), P(2,"E"), P(3,"B"), P(4,"C"), P(5,"D")], [M(1,"A","E"), M(2,"E","A", true)]],
+        ["2 động + 3 action nhẹ", [P(1,"L"), P(2,"R"), P(3,"A","raise"), P(4,"C","turn"), P(5,"E","bend")], [M(1,"L","R"), M(2,"R","L", true)]]
+      ].forEach(([title, people, moves]) => out.push(S(title, "2 động 3 tĩnh", people, moves, "Bắt đầu có occlusion mạnh.", "Khó")));
+      [
+        ["3 động 2 tĩnh", [P(1,"A"), P(2,"B"), P(3,"T"), P(4,"D"), P(5,"E")], [M(1,"A","E"), M(2,"B","D", true), M(3,"T","BTM")]],
+        ["5 người cùng đi chậm", [P(1,"A"), P(2,"B"), P(3,"C"), P(4,"D"), P(5,"E")], [M(1,"A","D"), M(2,"B","A", true), M(3,"C","E"), M(4,"D","B", true), M(5,"E","C")]],
+        ["tất cả crossing trung tâm", [P(1,"A"), P(2,"B"), P(3,"D"), P(4,"E"), P(5,"T")], [M(1,"A","E"), M(2,"B","D", true), M(3,"D","B"), M(4,"E","A", true), M(5,"T","BTM")]],
+        ["tụ cụm rồi tản ra", [P(1,"CL"), P(2,"MID"), P(3,"CR"), P(4,"C"), P(5,"C")], [M(1,"C","A"), M(2,"C","B", true), M(3,"C","C"), M(4,"C","D", true), M(5,"C","E")]],
+        ["vào/ra phòng theo thời gian", [P(1,"OUT"), P(2,"A"), P(3,"B"), P(4,"D"), P(5,"E")], [M(1,"OUT","C"), M(5,"E","OUT", true)]],
+        ["đổi vị trí vòng", [P(1,"A"), P(2,"B"), P(3,"C"), P(4,"D"), P(5,"E")], [M(1,"A","B"), M(2,"B","E", true), M(3,"C","A"), M(4,"D","C", true), M(5,"E","D")]],
+        ["che khuất gần camera", [P(1,"T"), P(2,"A"), P(3,"B"), P(4,"D"), P(5,"E")]],
+        ["hàng trước-sau 5 người", [P(1,"T"), P(2,"A"), P(3,"C"), P(4,"E"), P(5,"BTM")]],
+        ["dense center 5 người", [P(1,"CL"), P(2,"MID"), P(3,"CR"), P(4,"C"), P(5,"C")]],
+        ["motion + action hỗn hợp", [P(1,"A","raise"), P(2,"E","bend"), P(3,"L"), P(4,"R"), P(5,"C","turn")], [M(3,"L","R"), M(4,"R","L", true)]],
+        ["stress crossing 5 người", [P(1,"A"), P(2,"B"), P(3,"D"), P(4,"E"), P(5,"C")], [M(1,"A","E"), M(2,"B","D", true), M(3,"D","B"), M(4,"E","A", true), M(5,"C","OUT")]],
+        ["all moving có kiểm soát", [P(1,"A"), P(2,"B"), P(3,"C"), P(4,"D"), P(5,"E")], [M(1,"A","B"), M(2,"B","C", true), M(3,"C","D"), M(4,"D","E", true), M(5,"E","A")]],
+        ["occlusion tối đa", [P(1,"CL"), P(2,"MID"), P(3,"CR"), P(4,"T"), P(5,"BTM")], [M(4,"T","BTM"), M(5,"BTM","T", true)]],
+        ["hard pose + motion", [P(1,"A","raise"), P(2,"B","bend"), P(3,"C","sit"), P(4,"D"), P(5,"E")], [M(4,"D","B"), M(5,"E","A", true)]],
+        ["count thay đổi 1→5→1", [P(1,"OUT"), P(2,"A"), P(3,"B"), P(4,"D"), P(5,"E")], [M(1,"OUT","C"), M(2,"A","OUT", true), M(3,"B","OUT")]]
+      ].forEach(([title, people, moves = []]) => out.push(S(title, "Hard/stress năm người", people, moves, "CSI năm người cho test khó.", "Khó → Stress")));
+      return out.slice(0, 30);
+    }
+
+    function S(title, subtitle, people, moves = [], purpose, difficulty, duration, repeat) {
+      return { title, subtitle, people, moves, purpose, difficulty, duration, repeat };
+    }
+
+    function P(id, zone, pose = "stand") {
+      return { id, zone, pose };
+    }
+
+    function M(id, from, to, alt = false) {
+      return { id, from, to, alt };
+    }
+
+    function difficultyByIndex(i) {
+      if (i < 10) return "Dễ";
+      if (i < 20) return "Vừa";
+      if (i < 27) return "Khó";
+      return "Stress";
+    }
+
+    function personLine(p, move) {
+      const color = peopleColors[p.id - 1] || "#111827";
+      return `
+        <div class="person-line">
+          <span class="badge" style="background:${color}">P${p.id}</span>
+          <span>${move ? moveText(move, p.pose) : poseText(p.pose, p.zone)}</span>
+        </div>
+      `;
+    }
+
+    function moveText(move, pose) {
+      const motion = move.from === move.to
+        ? `giữ tại ${zoneName(move.from)}`
+        : `di chuyển ${zoneName(move.from)} → ${zoneName(move.to)}`;
+      return pose === "stand" ? motion : `${motion}, ${poseVerb(pose)}`;
+    }
+
+    function poseText(pose, zone) {
+      return `${poseVerb(pose)} tại ${zoneName(zone)}`;
+    }
+
+    function poseVerb(pose) {
+      return {
+        stand: "đứng yên",
+        raise: "giơ tay",
+        bend: "cúi người",
+        sit: "ngồi/đứng",
+        turn: "xoay thân"
+      }[pose] || "đứng yên";
+    }
+
+    function zoneName(zone) {
+      return {
+        A: "zone A",
+        B: "zone B",
+        C: "zone C",
+        D: "zone D",
+        E: "zone E",
+        L: "mép trái",
+        R: "mép phải",
+        T: "phía camera",
+        BTM: "phía dưới",
+        OUT: "ngoài phòng",
+        MID: "giữa phòng",
+        CL: "cụm giữa-trái",
+        CR: "cụm giữa-phải"
+      }[zone] || zone;
+    }
+
+    function roomSvg(s) {
+      return `
+        <svg viewBox="0 0 900 620" role="img">
+          <defs>
+            <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto">
+              <path d="M0,0 L0,6 L9,3 z" fill="var(--path)"></path>
+            </marker>
+            <marker id="arrowAlt" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto">
+              <path d="M0,0 L0,6 L9,3 z" fill="#7c3aed"></path>
+            </marker>
+          </defs>
+          <rect x="88" y="68" width="624" height="484" rx="8" fill="#fbfaf7" stroke="#17212b" stroke-width="4"></rect>
+          <rect x="180" y="135" width="440" height="350" rx="8" fill="rgba(37,99,235,.08)" stroke="rgba(37,99,235,.42)" stroke-width="2" stroke-dasharray="10 8"></rect>
+          <line x1="400" y1="135" x2="400" y2="485" stroke="rgba(37,99,235,.22)" stroke-dasharray="8 8"></line>
+          <line x1="180" y1="310" x2="620" y2="310" stroke="rgba(37,99,235,.22)" stroke-dasharray="8 8"></line>
+          ${zoneLabels()}
+          ${s.moves.map(drawMove).join("")}
+          ${s.people.map(drawPerson).join("")}
+          ${device(110, 90, "Rx1", "rx")}
+          ${device(628, 90, "Rx2", "rx")}
+          ${device(110, 502, "Rx3", "rx")}
+          ${device(628, 502, "Rx4", "rx")}
+          ${device(352, 506, "Tx", "tx")}
+          ${cameraSvg()}
+        </svg>
+      `;
+    }
+
+    function zoneLabels() {
+      return ["A", "B", "C", "D", "E"].map((name) => {
+        const [x, y] = zones[name];
+        return `<text x="${x}" y="${y + 72}" text-anchor="middle" font-size="22" font-weight="900" fill="#2563eb">${name}</text>`;
+      }).join("");
+    }
+
+    function drawMove(move) {
+      const [x1, y1] = zones[move.from];
+      const [x2, y2] = zones[move.to];
+      const dx = move.alt ? 26 : -26;
+      const stroke = move.alt ? "#7c3aed" : "var(--path)";
+      const marker = move.alt ? "arrowAlt" : "arrow";
+      return `<path d="M${x1 + dx} ${y1} C ${x1 + dx} ${(y1 + y2) / 2}, ${x2 + dx} ${(y1 + y2) / 2}, ${x2 + dx} ${y2}" fill="none" stroke="${stroke}" stroke-width="5" stroke-linecap="round" marker-end="url(#${marker})"></path>`;
+    }
+
+    function drawPerson(p) {
+      const [x, y] = zones[p.zone];
+      const color = peopleColors[p.id - 1] || "#111827";
+      const off = offsets[p.id - 1] || [0, 0];
+      const px = x + off[0];
+      const py = y + off[1];
+      return `
+        <g>
+          <circle cx="${px}" cy="${py - 26}" r="15" fill="${color}"></circle>
+          <line x1="${px}" y1="${py - 10}" x2="${px}" y2="${py + 24}" stroke="${color}" stroke-width="10" stroke-linecap="round"></line>
+          ${arms(p.pose, px, py, color)}
+          <line x1="${px}" y1="${py + 24}" x2="${px - 18}" y2="${py + 52}" stroke="${color}" stroke-width="8" stroke-linecap="round"></line>
+          <line x1="${px}" y1="${py + 24}" x2="${px + 18}" y2="${py + 52}" stroke="${color}" stroke-width="8" stroke-linecap="round"></line>
+          <circle cx="${px + 28}" cy="${py - 34}" r="14" fill="#fff" stroke="${color}" stroke-width="3"></circle>
+          <text x="${px + 28}" y="${py - 29}" text-anchor="middle" font-size="14" font-weight="900" fill="${color}">P${p.id}</text>
+          <text x="${px}" y="${py + 76}" text-anchor="middle" font-size="12" font-weight="850" fill="${color}">${shortPose(p.pose)}</text>
+        </g>
+      `;
+    }
+
+    function arms(pose, x, y, color) {
+      if (pose === "raise") {
+        return `<line x1="${x}" y1="${y}" x2="${x - 20}" y2="${y - 36}" stroke="${color}" stroke-width="7" stroke-linecap="round"></line><line x1="${x}" y1="${y}" x2="${x + 20}" y2="${y - 36}" stroke="${color}" stroke-width="7" stroke-linecap="round"></line>`;
+      }
+      if (pose === "bend") {
+        return `<line x1="${x}" y1="${y}" x2="${x - 26}" y2="${y + 18}" stroke="${color}" stroke-width="7" stroke-linecap="round"></line><line x1="${x}" y1="${y}" x2="${x + 26}" y2="${y + 18}" stroke="${color}" stroke-width="7" stroke-linecap="round"></line>`;
+      }
+      if (pose === "sit") {
+        return `<line x1="${x}" y1="${y}" x2="${x - 26}" y2="${y + 8}" stroke="${color}" stroke-width="7" stroke-linecap="round"></line><line x1="${x}" y1="${y}" x2="${x + 26}" y2="${y + 8}" stroke="${color}" stroke-width="7" stroke-linecap="round"></line><rect x="${x - 28}" y="${y + 42}" width="56" height="10" rx="4" fill="#6b7280"></rect>`;
+      }
+      return `<line x1="${x}" y1="${y}" x2="${x - 25}" y2="${y + 2}" stroke="${color}" stroke-width="7" stroke-linecap="round"></line><line x1="${x}" y1="${y}" x2="${x + 25}" y2="${y + 2}" stroke="${color}" stroke-width="7" stroke-linecap="round"></line>`;
+    }
+
+    function shortPose(pose) {
+      return { stand: "stand", raise: "raise", bend: "bend", sit: "sit", turn: "turn" }[pose] || "stand";
+    }
+
+    function device(x, y, label, type) {
+      const color = type === "rx" ? "var(--rx)" : "var(--tx)";
+      return `<rect x="${x}" y="${y}" width="64" height="42" rx="7" fill="${color}"></rect><text x="${x + 32}" y="${y + 27}" text-anchor="middle" font-size="18" font-weight="900" fill="#fff">${label}</text>`;
+    }
+
+    function cameraSvg() {
+      return `<path d="M400 12 L180 135 L620 135 Z" fill="rgba(15,139,95,.11)" stroke="rgba(15,139,95,.35)" stroke-width="2"></path><rect x="338" y="10" width="124" height="48" rx="8" fill="var(--cam)"></rect><text x="400" y="40" text-anchor="middle" font-size="19" font-weight="900" fill="#fff">Camera</text>`;
+    }
+  </script>
+</body>
+</html>
