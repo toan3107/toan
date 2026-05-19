@@ -601,6 +601,22 @@
       <div class="note">
         Mục tiêu ban đầu: tạo khoảng 300 sequence/s sạch. Với video MediaPipe 30 FPS, nếu đạt 300 sequence/s thì mỗi frame video có khoảng 10 CSI timestep.
       </div>
+      <table class="table" style="margin-top:16px;font-size:15px">
+        <thead>
+          <tr>
+            <th>Mục tiêu</th>
+            <th>Packet/s</th>
+            <th>Timestep/frame với 30 FPS</th>
+            <th>Lệnh iperf3 gần đúng</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>Test hệ thống</td><td>150</td><td>5</td><td>iperf3 -c IP_SERVER -u -b 1.5M -l 1200 -t 120</td></tr>
+          <tr><td><strong>Khuyến nghị ban đầu</strong></td><td><strong>300</strong></td><td><strong>10</strong></td><td><strong>iperf3 -c IP_SERVER -u -b 3M -l 1200 -t 120</strong></td></tr>
+          <tr><td>Thử T = 20</td><td>600</td><td>20</td><td>iperf3 -c IP_SERVER -u -b 6M -l 1200 -t 120</td></tr>
+          <tr><td>Rất cao</td><td>1000</td><td>33</td><td>iperf3 -c IP_SERVER -u -b 10M -l 1200 -t 120</td></tr>
+        </tbody>
+      </table>
       <div class="source">Tham chiếu: Person-in-WiFi 3D, CVPR 2024, dùng 300 packets/s và đồng bộ CSI với video frame.</div>
       <div class="foot"><span>Đề xuất xử lý</span><span>7 / 7</span></div>
     </section>
