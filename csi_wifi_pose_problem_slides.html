@@ -436,7 +436,7 @@
         <div class="panel red"><h3>2. Dữ liệu của mình</h3><p>Nhiều receiver/subcarrier hơn, nhưng timestep chưa ổn.</p></div>
         <div class="panel orange"><h3>3. Cách sửa</h3><p>Tạo traffic đều bằng iperf3 và lọc window CSI.</p></div>
       </div>
-      <div class="foot"><span>VISI AI ACADEMY</span><span>1 / 10</span></div>
+      <div class="foot"><span>VISI AI ACADEMY</span><span>1 / 9</span></div>
     </section>
 
     <section class="slide">
@@ -482,7 +482,7 @@
         </div>
       </div>
       <div class="source">Nguồn: Person-in-WiFi 3D, CVPR 2024.</div>
-      <div class="foot"><span>Dữ liệu của họ</span><span>2 / 10</span></div>
+      <div class="foot"><span>Dữ liệu của họ</span><span>2 / 9</span></div>
     </section>
 
     <section class="slide">
@@ -514,7 +514,7 @@
         </div>
       </div>
       <div class="note">Điểm mạnh của họ không chỉ là model, mà là CSI được phát đều và nhãn pose được đồng bộ theo frame video.</div>
-      <div class="foot"><span>Nhãn dữ liệu của họ</span><span>3 / 10</span></div>
+      <div class="foot"><span>Nhãn dữ liệu của họ</span><span>3 / 9</span></div>
     </section>
 
     <section class="slide">
@@ -548,7 +548,7 @@
         <div class="node purple">CSI window<br/>quanh t = 3.333s</div>
       </div>
       <div class="note">Một sample train của mình sẽ là: X = nhiều sequence CSI quanh timestamp của một frame; y = pose MediaPipe của đúng frame đó.</div>
-      <div class="foot"><span>Cách label dữ liệu</span><span>4 / 10</span></div>
+      <div class="foot"><span>Cách label dữ liệu</span><span>4 / 9</span></div>
     </section>
 
     <section class="slide">
@@ -573,53 +573,47 @@
         </tbody>
       </table>
       <div class="note">Nếu MediaPipe 30 FPS và CSI đạt 300 sequence/s, khớp 1 video frame sẽ là T = 10. Nếu muốn thêm ngữ cảnh chuyển động có thể thử T = 20.</div>
-      <div class="foot"><span>Dữ liệu của mình</span><span>5 / 10</span></div>
+      <div class="foot"><span>Dữ liệu của mình</span><span>5 / 9</span></div>
     </section>
 
     <section class="slide">
       <div class="kicker">Ghép CSI với video frame</div>
-      <h2>Packet, sequence và frame video liên hệ với nhau như thế nào?</h2>
-      <div class="grid-2">
-        <div class="panel soft">
-          <h3>Không phải 1 sequence = 300 packet</h3>
-          <div class="calc">
-            <div><strong>1 packet Wi-Fi</strong> tạo ra <strong>1 sequence CSI</strong>.</div>
-            <div><strong>300 packet/s</strong> nghĩa là khoảng <strong>300 sequence/s</strong>.</div>
-            <div><strong>MediaPipe 30 FPS</strong> nghĩa là <strong>30 video frame/s</strong>.</div>
-            <div><strong>300 / 30 = 10</strong> sequence CSI cho 1 frame video.</div>
-          </div>
-        </div>
-        <div class="panel green">
-          <h3>Với setup 4 receiver của mình</h3>
-          <ul>
-            <li>1 sequence clean = cùng 1 packet được cả 4 receiver nghe thấy.</li>
-            <li>Mỗi receiver phải đủ core 0, 1, 2, 3.</li>
-            <li>1 sequence clean có 4 receiver × 4 core = 16 CSI block.</li>
-            <li>Mỗi CSI block có 256 subcarrier.</li>
-          </ul>
-        </div>
-      </div>
-      <div class="pipeline" style="grid-template-columns:1fr 46px 1fr 46px 1fr 46px 1fr;margin-top:24px">
-        <div class="node orange">Wi-Fi packet<br/>phát qua không khí</div>
-        <div class="arrow"></div>
-        <div class="node">CSI sequence<br/>4 RX × 4 core</div>
-        <div class="arrow"></div>
-        <div class="node purple">10 sequence<br/>liên tiếp</div>
-        <div class="arrow"></div>
-        <div class="node green">1 frame MediaPipe<br/>1 pose label</div>
-      </div>
-      <div class="grid-2" style="margin-top:16px">
+      <h2>Từ packet Wi-Fi đến một sample train</h2>
+      <div class="grid-3">
         <div class="panel orange">
-          <h3>Vì sao frame video cách nhau 33.3 ms?</h3>
-          <p style="font-size:17px">MediaPipe chạy từ video/camera 30 FPS, nghĩa là 1 giây có 30 frame. Vì vậy khoảng cách giữa 2 frame liên tiếp là 1 / 30 giây = 0.0333 giây = 33.3 ms.</p>
+          <h3>1. Router phát packet</h3>
+          <p>iperf3 làm router phát nhiều packet Wi-Fi đều qua không khí. Mỗi packet là một lần tín hiệu đi qua phòng.</p>
         </div>
         <div class="panel green">
-          <h3>Vì sao 300 packet/s thành 10 CSI/frame?</h3>
-          <p style="font-size:17px">Nếu CSI được tạo đều 300 packet/s thì 1 packet cách nhau 1 / 300 giây = 3.33 ms. Trong 33.3 ms của 1 frame video sẽ có khoảng 33.3 / 3.33 = 10 CSI sequence.</p>
+          <h3>2. Người làm tín hiệu đổi</h3>
+          <p>Tay, chân, thân người, tường và đồ vật làm tín hiệu phản xạ/che khuất khác nhau ở từng thời điểm.</p>
+        </div>
+        <div class="panel purple">
+          <h3>3. Receiver nhả CSI</h3>
+          <p>4 router Nexmon nghe cùng packet đó và biến nó thành CSI: 4 receiver × 4 core × 256 subcarrier.</p>
         </div>
       </div>
-      <div class="note">Ý nghĩa chính: để train pose, ta không ghép 1 packet với 1 frame. Ta ghép một cửa sổ nhiều sequence CSI quanh timestamp của frame MediaPipe.</div>
-      <div class="foot"><span>Ghép CSI và frame</span><span>6 / 10</span></div>
+      <div class="pipeline" style="grid-template-columns:1fr 42px 1fr 42px 1fr 42px 1fr;margin-top:22px">
+        <div class="node orange">1 packet<br/>Wi-Fi</div>
+        <div class="arrow"></div>
+        <div class="node">1 CSI sequence<br/>4 RX × 4 core</div>
+        <div class="arrow"></div>
+        <div class="node purple">10 sequence<br/>quanh frame</div>
+        <div class="arrow"></div>
+        <div class="node green">1 pose label<br/>MediaPipe</div>
+      </div>
+      <div class="grid-2" style="margin-top:18px">
+        <div class="panel soft">
+          <h3>Vì sao 1 frame dùng nhiều sequence?</h3>
+          <p style="font-size:17px">MediaPipe 30 FPS nghĩa là 1 frame mỗi 33.3 ms. Nếu CSI chạy 300 packet/s thì packet cách nhau 3.33 ms. Vậy quanh 1 frame có khoảng 10 CSI sequence.</p>
+        </div>
+        <div class="panel green">
+          <h3>Một sample train sẽ là gì?</h3>
+          <p style="font-size:17px"><strong>X</strong> = 10 sequence CSI quanh timestamp của frame. <strong>y</strong> = keypoint pose MediaPipe của đúng frame đó. Không ghép 1 frame với 1 packet đơn lẻ.</p>
+        </div>
+      </div>
+      <div class="note">Điểm cần nhớ: timestamp của frame là mốc chính; sequence chỉ giúp kiểm tra các receiver có đang nghe cùng một packet trong cửa sổ thời gian đó hay không.</div>
+      <div class="foot"><span>Ghép CSI và frame</span><span>6 / 9</span></div>
     </section>
 
     <section class="slide">
@@ -663,49 +657,7 @@
         <div class="panel orange"><h3>2. Label pose bị ghép sai thời điểm</h3><p style="font-size:15px">Frame F3 có một tư thế cụ thể, nhưng CSI gần F3 có thể lại thuộc trước hoặc sau tư thế đó.</p></div>
         <div class="panel soft"><h3>3. Model học lỗi thu dữ liệu</h3><p style="font-size:15px">Model dễ học dấu hiệu packet burst, drop, thiếu receiver/core thay vì học quan hệ giữa dáng người và CSI.</p></div>
       </div>
-      <div class="foot"><span>Vấn đề timestamp</span><span>7 / 10</span></div>
-    </section>
-
-    <section class="slide">
-      <div class="kicker">Sequence không clean</div>
-      <h2>Không phải sequence nào cũng dùng được để train</h2>
-      <div class="grid-2">
-        <div class="panel green">
-          <h3>Sequence clean</h3>
-          <ul>
-            <li>Cùng một frame sequence xuất hiện ở đủ RX1, RX2, RX3, RX4.</li>
-            <li>Mỗi receiver đủ 4 core: core 0, 1, 2, 3.</li>
-            <li>Không thiếu block, không bị duplicate bất thường.</li>
-            <li>Timestamp giữa 4 receiver nằm trong cửa sổ rất ngắn.</li>
-          </ul>
-        </div>
-        <div class="panel red">
-          <h3>Sequence không clean</h3>
-          <ul>
-            <li>Thiếu một receiver hoặc thiếu một core trong receiver.</li>
-            <li>Có đủ receiver nhưng một receiver bị lặp block hoặc lệch thứ tự.</li>
-            <li>Timestamp giữa các receiver cách xa nhau.</li>
-            <li>Không tạo được tensor 4 receiver × 4 core ổn định.</li>
-          </ul>
-        </div>
-      </div>
-      <table class="table" style="margin-top:24px">
-        <thead>
-          <tr>
-            <th>Kiểm tra trên lần thu hiện tại</th>
-            <th>Kết quả</th>
-            <th>Ý nghĩa</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr><td>Sequence theo receiver 4</td><td>239 nhóm</td><td>receiver 4 là file ngắn nhất nên dùng làm mốc kiểm tra</td></tr>
-          <tr><td>Có mặt ở cả 4 receiver</td><td>237 nhóm</td><td>phần lớn sequence đã đồng bộ theo frame sequence</td></tr>
-          <tr><td>Strict clean 4 receiver × 4 core</td><td>217 nhóm</td><td>đây là phần nên đưa vào train baseline</td></tr>
-          <tr><td>Có mặt nhưng không clean</td><td>20 nhóm</td><td>giữ để debug, không nhét bừa vào model</td></tr>
-        </tbody>
-      </table>
-      <div class="note">Luật xử lý: train bằng sequence clean trước. Sequence không clean chỉ dùng để báo cáo lỗi thu, kiểm tra traffic/VLAN/router, hoặc quyết định thu lại.</div>
-      <div class="foot"><span>Lọc sequence</span><span>8 / 10</span></div>
+      <div class="foot"><span>Vấn đề timestamp</span><span>7 / 9</span></div>
     </section>
 
     <section class="slide">
@@ -745,7 +697,7 @@
           </ul>
         </div>
       </div>
-      <div class="foot"><span>Chọn packet/s</span><span>9 / 10</span></div>
+      <div class="foot"><span>Chọn packet/s</span><span>8 / 9</span></div>
     </section>
 
     <section class="slide">
@@ -781,7 +733,7 @@
         <div class="panel orange"><h3>600 packet/s</h3><p>iperf3 -c IP_SERVER -u -b 6M -l 1200 -t 120</p></div>
       </div>
       <div class="source">Tham chiếu: Person-in-WiFi 3D, CVPR 2024, dùng 300 packets/s và đồng bộ CSI với video frame.</div>
-      <div class="foot"><span>Đề xuất xử lý</span><span>10 / 10</span></div>
+      <div class="foot"><span>Đề xuất xử lý</span><span>9 / 9</span></div>
     </section>
   </main>
 
