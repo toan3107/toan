@@ -405,7 +405,7 @@
 
     <section class="slide">
       <div class="kicker">Person-in-WiFi 3D</div>
-      <h2>CSI sample của họ: \(1 \times 3 \times 3 \times 30 \times 20\)</h2>
+      <h2>Một sample CSI của họ được tổ chức như thế nào?</h2>
 
       <div class="shape">
         <div class="dim">1</div><div class="times">×</div>
@@ -415,24 +415,24 @@
         <div class="dim">20</div>
       </div>
       <div class="labels">
-        <div class="label">TX</div>
+        <div class="label">1 transmitter</div>
         <div class="label"></div>
-        <div class="label">RX</div>
+        <div class="label">3 receiver</div>
         <div class="label"></div>
-        <div class="label">Antenna</div>
+        <div class="label">3 antenna</div>
         <div class="label"></div>
-        <div class="label">Subcarrier</div>
+        <div class="label">30 subcarrier</div>
         <div class="label"></div>
-        <div class="label">Timestep</div>
+        <div class="label">20 timestep</div>
       </div>
 
       <div class="grid-2" style="margin-top:20px">
         <div class="panel soft">
-          <h3>Một timestep thu được bao nhiêu?</h3>
+          <h3>Trong 1 timestep có gì?</h3>
           <div class="calc">
-            <div><strong>1 timestep:</strong> \(1 \times 3 \times 3 \times 30 = 270\) CSI complex values</div>
-            <div><strong>20 timestep:</strong> \(270 \times 20 = 5400\) CSI complex values</div>
-            <div><strong>Nếu tách amp/phase:</strong> \(5400 \times 2 = 10800\) scalar values</div>
+            <div><strong>1 timestep:</strong> 1 × 3 × 3 × 30 = <strong>270</strong> CSI complex values</div>
+            <div><strong>20 timestep:</strong> 270 × 20 = <strong>5,400</strong> CSI complex values</div>
+            <div><strong>Nếu tách amplitude/phase:</strong> 5,400 × 2 = <strong>10,800</strong> số thực</div>
           </div>
         </div>
         <div class="panel green">
@@ -440,8 +440,8 @@
           <ul>
             <li>CSI rate: 300 packets/s</li>
             <li>Video: 15 FPS</li>
-            <li>Mỗi video frame: \(1/15 = 66.7ms\)</li>
-            <li>\(300 / 15 = 20\) CSI samples/frame</li>
+            <li>Mỗi video frame: 1/15 giây = 66.7 ms</li>
+            <li>300 / 15 = <strong>20 CSI samples/frame</strong></li>
           </ul>
         </div>
       </div>
@@ -483,7 +483,7 @@
 
     <section class="slide">
       <div class="kicker">Dữ liệu của mình</div>
-      <h2>Shape đề xuất: \(N \times 1 \times 4 \times 4 \times 256 \times T \times 2\)</h2>
+      <h2>Dữ liệu của mình: N × 1 × 4 × 4 × 256 × T × 2</h2>
       <table class="table">
         <thead>
           <tr>
@@ -493,16 +493,16 @@
           </tr>
         </thead>
         <tbody>
-          <tr><td>\(N\)</td><td>số sample training</td><td>tạo sau khi ghép CSI với frame MediaPipe</td></tr>
-          <tr><td>\(1\)</td><td>router phát Wi-Fi / transmitter</td><td>hiện tại có một AP/TX</td></tr>
-          <tr><td>\(4\)</td><td>receiver</td><td>4 router Nexmon</td></tr>
-          <tr><td>\(4\)</td><td>core/antenna mỗi receiver</td><td>1x4 mỗi receiver</td></tr>
-          <tr><td>\(256\)</td><td>subcarrier</td><td>Nexmon 80 MHz, nhiều hơn Intel 5300</td></tr>
-          <tr><td>\(T\)</td><td>timestep</td><td>để \(T=?\) vì còn phụ thuộc traffic và FPS</td></tr>
-          <tr><td>\(2\)</td><td>amplitude + phase</td><td>feature lấy từ CSI phức</td></tr>
+          <tr><td>N</td><td>số sample training</td><td>tạo sau khi ghép CSI với frame MediaPipe</td></tr>
+          <tr><td>1</td><td>router phát Wi-Fi / transmitter</td><td>hiện tại có một AP/TX</td></tr>
+          <tr><td>4</td><td>receiver</td><td>4 router Nexmon</td></tr>
+          <tr><td>4</td><td>core/antenna mỗi receiver</td><td>1x4 mỗi receiver</td></tr>
+          <tr><td>256</td><td>subcarrier</td><td>Nexmon 80 MHz, nhiều hơn Intel 5300</td></tr>
+          <tr><td>T</td><td>timestep</td><td>để T = ? vì còn phụ thuộc traffic và FPS</td></tr>
+          <tr><td>2</td><td>amplitude + phase</td><td>hai đặc trưng lấy từ CSI phức</td></tr>
         </tbody>
       </table>
-      <div class="note">Nếu MediaPipe 30 FPS và CSI đạt 300 sequence/s, khớp 1 video frame sẽ là \(T=10\). Nếu muốn thêm ngữ cảnh chuyển động có thể thử \(T=20\).</div>
+      <div class="note">Nếu MediaPipe 30 FPS và CSI đạt 300 sequence/s, khớp 1 video frame sẽ là T = 10. Nếu muốn thêm ngữ cảnh chuyển động có thể thử T = 20.</div>
       <div class="foot"><span>Dữ liệu của mình</span><span>4 / 6</span></div>
     </section>
 
