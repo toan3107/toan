@@ -574,6 +574,16 @@
         <div class="arrow"></div>
         <div class="node green">1 frame MediaPipe<br/>1 pose label</div>
       </div>
+      <div class="grid-2" style="margin-top:16px">
+        <div class="panel orange">
+          <h3>Vì sao frame video cách nhau 33.3 ms?</h3>
+          <p style="font-size:17px">MediaPipe chạy từ video/camera 30 FPS, nghĩa là 1 giây có 30 frame. Vì vậy khoảng cách giữa 2 frame liên tiếp là 1 / 30 giây = 0.0333 giây = 33.3 ms.</p>
+        </div>
+        <div class="panel green">
+          <h3>Vì sao 300 packet/s thành 10 CSI/frame?</h3>
+          <p style="font-size:17px">Nếu CSI được tạo đều 300 packet/s thì 1 packet cách nhau 1 / 300 giây = 3.33 ms. Trong 33.3 ms của 1 frame video sẽ có khoảng 33.3 / 3.33 = 10 CSI sequence.</p>
+        </div>
+      </div>
       <div class="note">Ý nghĩa chính: để train pose, ta không ghép 1 packet với 1 frame. Ta ghép một cửa sổ nhiều sequence CSI quanh timestamp của frame MediaPipe.</div>
       <div class="foot"><span>Ghép CSI và frame</span><span>5 / 9</span></div>
     </section>
