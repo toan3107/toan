@@ -323,6 +323,42 @@
       place-items: center;
     }
 
+    .frame-track {
+      height: 54px;
+      position: relative;
+      border-bottom: 2px solid #ccd6e4;
+      margin: 8px 0 12px;
+    }
+
+    .frame-box {
+      position: absolute;
+      bottom: 6px;
+      width: 42px;
+      height: 32px;
+      border: 2px solid var(--blue-2);
+      background: #eef5ff;
+      border-radius: 6px;
+      display: grid;
+      place-items: center;
+      font-size: 13px;
+      font-weight: 800;
+      color: #143b74;
+    }
+
+    .window-mark {
+      position: absolute;
+      top: 0;
+      height: 46px;
+      border: 2px dashed var(--blue-2);
+      background: rgba(47, 111, 214, 0.08);
+      border-radius: 8px;
+    }
+
+    .window-mark.bad {
+      border-color: var(--red);
+      background: rgba(198, 40, 40, 0.08);
+    }
+
     .code {
       font-family: Consolas, "Courier New", monospace;
       background: #101827;
@@ -544,26 +580,44 @@
 
     <section class="slide">
       <div class="kicker">Vấn đề hiện tại</div>
-      <h2>Traffic chưa đều như họ, nên timestamp bị gap</h2>
-      <div class="timeline">
-        <h3 style="margin:0;color:var(--green)">Mục tiêu: packet đều</h3>
-        <div class="ticks">
-          <span class="tick" style="left:3%"></span><span class="tick" style="left:6%"></span><span class="tick" style="left:9%"></span><span class="tick" style="left:12%"></span><span class="tick" style="left:15%"></span><span class="tick" style="left:18%"></span><span class="tick" style="left:21%"></span><span class="tick" style="left:24%"></span><span class="tick" style="left:27%"></span><span class="tick" style="left:30%"></span><span class="tick" style="left:33%"></span><span class="tick" style="left:36%"></span><span class="tick" style="left:39%"></span><span class="tick" style="left:42%"></span><span class="tick" style="left:45%"></span><span class="tick" style="left:48%"></span><span class="tick" style="left:51%"></span><span class="tick" style="left:54%"></span><span class="tick" style="left:57%"></span><span class="tick" style="left:60%"></span><span class="tick" style="left:63%"></span><span class="tick" style="left:66%"></span><span class="tick" style="left:69%"></span><span class="tick" style="left:72%"></span><span class="tick" style="left:75%"></span><span class="tick" style="left:78%"></span><span class="tick" style="left:81%"></span><span class="tick" style="left:84%"></span><span class="tick" style="left:87%"></span><span class="tick" style="left:90%"></span>
+      <h2>CSI phải nằm đúng quanh frame video, nhưng packet đang bị dồn cục</h2>
+      <div class="timeline" style="margin-top:8px">
+        <h3 style="margin:0;color:var(--blue)">Video/MediaPipe: mỗi ô là 1 frame cần label pose</h3>
+        <div class="frame-track">
+          <span class="frame-box" style="left:5%">F1</span>
+          <span class="frame-box" style="left:20%">F2</span>
+          <span class="frame-box" style="left:35%">F3</span>
+          <span class="frame-box" style="left:50%">F4</span>
+          <span class="frame-box" style="left:65%">F5</span>
+          <span class="frame-box" style="left:80%">F6</span>
         </div>
-        <h3 style="margin:0;color:var(--red)">Hiện tại: packet theo burst, có khoảng trống lớn</h3>
+
+        <h3 style="margin:0;color:var(--green)">Lý tưởng: quanh mỗi frame có đủ CSI đều để lấy T = 10</h3>
         <div class="ticks">
-          <span class="tick red" style="left:3%"></span><span class="tick red" style="left:5%"></span><span class="tick red" style="left:7%"></span>
-          <span class="tick red" style="left:20%"></span><span class="tick red" style="left:22%"></span>
+          <span class="window-mark" style="left:3%;width:14%"></span>
+          <span class="window-mark" style="left:33%;width:14%"></span>
+          <span class="window-mark" style="left:63%;width:14%"></span>
+          <span class="tick" style="left:4%"></span><span class="tick" style="left:7%"></span><span class="tick" style="left:10%"></span><span class="tick" style="left:13%"></span><span class="tick" style="left:16%"></span>
+          <span class="tick" style="left:34%"></span><span class="tick" style="left:37%"></span><span class="tick" style="left:40%"></span><span class="tick" style="left:43%"></span><span class="tick" style="left:46%"></span>
+          <span class="tick" style="left:64%"></span><span class="tick" style="left:67%"></span><span class="tick" style="left:70%"></span><span class="tick" style="left:73%"></span><span class="tick" style="left:76%"></span>
+        </div>
+
+        <h3 style="margin:0;color:var(--red)">Hiện tại: CSI đến theo cụm, frame nằm giữa gap sẽ không có đủ CSI đúng thời điểm</h3>
+        <div class="ticks">
+          <span class="window-mark bad" style="left:18%;width:16%"></span>
+          <span class="window-mark bad" style="left:58%;width:16%"></span>
+          <span class="tick red" style="left:4%"></span><span class="tick red" style="left:6%"></span><span class="tick red" style="left:8%"></span>
+          <span class="tick red" style="left:24%"></span><span class="tick red" style="left:26%"></span>
           <span class="tick red" style="left:49%"></span><span class="tick red" style="left:52%"></span><span class="tick red" style="left:55%"></span>
-          <span class="tick red" style="left:83%"></span><span class="tick red" style="left:86%"></span>
-          <span class="gap" style="left:24%;width:22%">gap</span>
-          <span class="gap" style="left:58%;width:22%">gap</span>
+          <span class="tick red" style="left:84%"></span><span class="tick red" style="left:87%"></span>
+          <span class="gap" style="left:28%;width:18%">thiếu CSI</span>
+          <span class="gap" style="left:62%;width:18%">thiếu CSI</span>
         </div>
       </div>
-      <div class="grid-3" style="margin-top:18px">
-        <div class="panel red"><h3>1. Timestep mất ý nghĩa thời gian</h3><p style="font-size:16px">Model vẫn thấy T = 10 hoặc T = 20, nhưng thời lượng thật có thể lúc 33 ms, lúc vài trăm ms. Cùng một shape input nhưng không còn cùng ý nghĩa thời gian.</p></div>
-        <div class="panel orange"><h3>2. CSI lệch với label video</h3><p style="font-size:16px">MediaPipe gán pose theo từng frame. Nếu CSI bị gap, cửa sổ CSI gần frame đó có thể mô tả tư thế trước/sau, không phải đúng pose đang được label.</p></div>
-        <div class="panel soft"><h3>3. Model học sai tín hiệu</h3><p style="font-size:16px">Network có thể học pattern burst, packet loss, receiver lệch, thay vì học chuyển động người. Train có thể ổn nhưng dữ liệu thu lại sẽ fail.</p></div>
+      <div class="grid-3" style="margin-top:14px">
+        <div class="panel red"><h3>1. Timestep không còn cố định</h3><p style="font-size:15px">T = 10 chỉ là 10 sequence. Nếu packet đều thì nó là khoảng 33 ms. Nếu bị gap, 10 sequence có thể trải dài lâu hơn nhiều.</p></div>
+        <div class="panel orange"><h3>2. Label pose bị ghép sai thời điểm</h3><p style="font-size:15px">Frame F3 có một tư thế cụ thể, nhưng CSI gần F3 có thể lại thuộc trước hoặc sau tư thế đó.</p></div>
+        <div class="panel soft"><h3>3. Model học lỗi thu dữ liệu</h3><p style="font-size:15px">Model dễ học dấu hiệu packet burst, drop, thiếu receiver/core thay vì học quan hệ giữa dáng người và CSI.</p></div>
       </div>
       <div class="foot"><span>Vấn đề timestamp</span><span>6 / 9</span></div>
     </section>
