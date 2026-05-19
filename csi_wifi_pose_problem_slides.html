@@ -657,6 +657,9 @@
         <div class="panel orange"><h3>2. Label pose bị ghép sai thời điểm</h3><p style="font-size:15px">Frame F3 có một tư thế cụ thể, nhưng CSI gần F3 có thể lại thuộc trước hoặc sau tư thế đó.</p></div>
         <div class="panel soft"><h3>3. Model học lỗi thu dữ liệu</h3><p style="font-size:15px">Model dễ học dấu hiệu packet burst, drop, thiếu receiver/core thay vì học quan hệ giữa dáng người và CSI.</p></div>
       </div>
+      <div class="note" style="margin-top:12px;font-size:17px">
+        Ví dụ: F3 ở thời điểm 66 ms. Nếu chọn T = 10 thì cần CSI quanh khoảng 50-83 ms. Nhưng nếu CSI chỉ có cụm ở 30 ms và 120 ms, lấy cụm đó ghép với F3 sẽ làm X và y lệch thời gian.
+      </div>
       <div class="foot"><span>Vấn đề timestamp</span><span>7 / 9</span></div>
     </section>
 
