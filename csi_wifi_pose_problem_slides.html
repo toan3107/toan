@@ -400,7 +400,7 @@
         <div class="panel red"><h3>2. Dữ liệu của mình</h3><p>Nhiều receiver/subcarrier hơn, nhưng timestep chưa ổn.</p></div>
         <div class="panel orange"><h3>3. Cách sửa</h3><p>Tạo traffic đều bằng iperf3 và lọc window CSI.</p></div>
       </div>
-      <div class="foot"><span>VISI AI ACADEMY</span><span>1 / 8</span></div>
+      <div class="foot"><span>VISI AI ACADEMY</span><span>1 / 9</span></div>
     </section>
 
     <section class="slide">
@@ -446,7 +446,7 @@
         </div>
       </div>
       <div class="source">Nguồn: Person-in-WiFi 3D, CVPR 2024.</div>
-      <div class="foot"><span>Dữ liệu của họ</span><span>2 / 8</span></div>
+      <div class="foot"><span>Dữ liệu của họ</span><span>2 / 9</span></div>
     </section>
 
     <section class="slide">
@@ -478,7 +478,7 @@
         </div>
       </div>
       <div class="note">Điểm mạnh của họ không chỉ là model, mà là CSI được phát đều và nhãn pose được đồng bộ theo frame video.</div>
-      <div class="foot"><span>Nhãn dữ liệu của họ</span><span>3 / 8</span></div>
+      <div class="foot"><span>Nhãn dữ liệu của họ</span><span>3 / 9</span></div>
     </section>
 
     <section class="slide">
@@ -503,7 +503,43 @@
         </tbody>
       </table>
       <div class="note">Nếu MediaPipe 30 FPS và CSI đạt 300 sequence/s, khớp 1 video frame sẽ là T = 10. Nếu muốn thêm ngữ cảnh chuyển động có thể thử T = 20.</div>
-      <div class="foot"><span>Dữ liệu của mình</span><span>4 / 8</span></div>
+      <div class="foot"><span>Dữ liệu của mình</span><span>4 / 9</span></div>
+    </section>
+
+    <section class="slide">
+      <div class="kicker">Ghép CSI với video frame</div>
+      <h2>Packet, sequence và frame video liên hệ với nhau như thế nào?</h2>
+      <div class="grid-2">
+        <div class="panel soft">
+          <h3>Không phải 1 sequence = 300 packet</h3>
+          <div class="calc">
+            <div><strong>1 packet Wi-Fi</strong> tạo ra <strong>1 sequence CSI</strong>.</div>
+            <div><strong>300 packet/s</strong> nghĩa là khoảng <strong>300 sequence/s</strong>.</div>
+            <div><strong>MediaPipe 30 FPS</strong> nghĩa là <strong>30 video frame/s</strong>.</div>
+            <div><strong>300 / 30 = 10</strong> sequence CSI cho 1 frame video.</div>
+          </div>
+        </div>
+        <div class="panel green">
+          <h3>Với setup 4 receiver của mình</h3>
+          <ul>
+            <li>1 sequence clean = cùng 1 packet được cả 4 receiver nghe thấy.</li>
+            <li>Mỗi receiver phải đủ core 0, 1, 2, 3.</li>
+            <li>1 sequence clean có 4 receiver × 4 core = 16 CSI block.</li>
+            <li>Mỗi CSI block có 256 subcarrier.</li>
+          </ul>
+        </div>
+      </div>
+      <div class="pipeline" style="grid-template-columns:1fr 46px 1fr 46px 1fr 46px 1fr;margin-top:24px">
+        <div class="node orange">Wi-Fi packet<br/>phát qua không khí</div>
+        <div class="arrow"></div>
+        <div class="node">CSI sequence<br/>4 RX × 4 core</div>
+        <div class="arrow"></div>
+        <div class="node purple">10 sequence<br/>liên tiếp</div>
+        <div class="arrow"></div>
+        <div class="node green">1 frame MediaPipe<br/>1 pose label</div>
+      </div>
+      <div class="note">Ý nghĩa chính: để train pose, ta không ghép 1 packet với 1 frame. Ta ghép một cửa sổ nhiều sequence CSI quanh timestamp của frame MediaPipe.</div>
+      <div class="foot"><span>Ghép CSI và frame</span><span>5 / 9</span></div>
     </section>
 
     <section class="slide">
@@ -525,11 +561,11 @@
         </div>
       </div>
       <div class="grid-3" style="margin-top:18px">
-        <div class="panel red"><h3>Ảnh hưởng 1</h3><p>20 timestep không còn là một đoạn thời gian cố định.</p></div>
-        <div class="panel orange"><h3>Ảnh hưởng 2</h3><p>CSI dễ lệch với frame video/MediaPipe label.</p></div>
-        <div class="panel soft"><h3>Ảnh hưởng 3</h3><p>Model học nhiễu của quá trình thu thay vì học chuyển động.</p></div>
+        <div class="panel red"><h3>1. Timestep mất ý nghĩa thời gian</h3><p style="font-size:16px">Model vẫn thấy T = 10 hoặc T = 20, nhưng thời lượng thật có thể lúc 33 ms, lúc vài trăm ms. Cùng một shape input nhưng không còn cùng ý nghĩa thời gian.</p></div>
+        <div class="panel orange"><h3>2. CSI lệch với label video</h3><p style="font-size:16px">MediaPipe gán pose theo từng frame. Nếu CSI bị gap, cửa sổ CSI gần frame đó có thể mô tả tư thế trước/sau, không phải đúng pose đang được label.</p></div>
+        <div class="panel soft"><h3>3. Model học sai tín hiệu</h3><p style="font-size:16px">Network có thể học pattern burst, packet loss, receiver lệch, thay vì học chuyển động người. Train có thể ổn nhưng dữ liệu thu lại sẽ fail.</p></div>
       </div>
-      <div class="foot"><span>Vấn đề timestamp</span><span>5 / 8</span></div>
+      <div class="foot"><span>Vấn đề timestamp</span><span>6 / 9</span></div>
     </section>
 
     <section class="slide">
@@ -571,43 +607,47 @@
         </tbody>
       </table>
       <div class="note">Luật xử lý: train bằng sequence clean trước. Sequence không clean chỉ dùng để báo cáo lỗi thu, kiểm tra traffic/VLAN/router, hoặc quyết định thu lại.</div>
-      <div class="foot"><span>Lọc sequence</span><span>6 / 8</span></div>
+      <div class="foot"><span>Lọc sequence</span><span>7 / 9</span></div>
     </section>
 
     <section class="slide">
-      <div class="kicker">Ghép CSI với video frame</div>
-      <h2>Packet, sequence và frame video liên hệ với nhau như thế nào?</h2>
-      <div class="grid-2">
-        <div class="panel soft">
-          <h3>Không phải 1 sequence = 300 packet</h3>
-          <div class="calc">
-            <div><strong>1 packet Wi-Fi</strong> tạo ra <strong>1 sequence CSI</strong>.</div>
-            <div><strong>300 packet/s</strong> nghĩa là khoảng <strong>300 sequence/s</strong>.</div>
-            <div><strong>MediaPipe 30 FPS</strong> nghĩa là <strong>30 video frame/s</strong>.</div>
-            <div><strong>300 / 30 = 10</strong> sequence CSI cho 1 frame video.</div>
-          </div>
-        </div>
+      <div class="kicker">Chọn packet rate</div>
+      <h2>Nên để bao nhiêu packet/s cho phù hợp?</h2>
+      <table class="table" style="font-size:17px;margin-top:8px">
+        <thead>
+          <tr>
+            <th>Mục tiêu</th>
+            <th>Packet/s cần</th>
+            <th>Với 30 FPS được bao nhiêu timestep/frame</th>
+            <th>Nên dùng khi</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>Nhẹ, dễ ổn định</td><td>150 packet/s</td><td>5 timestep/frame</td><td>test hệ thống, kiểm tra VLAN/router trước</td></tr>
+          <tr><td><strong>Khuyến nghị ban đầu</strong></td><td><strong>300 packet/s</strong></td><td><strong>10 timestep/frame</strong></td><td><strong>train baseline đầu tiên</strong></td></tr>
+          <tr><td>Giống Person-in-WiFi 3D về T = 20</td><td>600 packet/s</td><td>20 timestep/frame</td><td>chỉ dùng nếu timestamp rất đều</td></tr>
+          <tr><td>Cao kiểu WiPose/GoPose</td><td>1000 packet/s</td><td>33 timestep/frame</td><td>khó với Nexmon/router, chưa nên</td></tr>
+        </tbody>
+      </table>
+      <div class="grid-2" style="margin-top:22px">
         <div class="panel green">
-          <h3>Với setup 4 receiver của mình</h3>
+          <h3>Vì sao chọn 300 trước?</h3>
           <ul>
-            <li>1 sequence clean = cùng 1 packet được cả 4 receiver nghe thấy.</li>
-            <li>Mỗi receiver phải đủ core 0, 1, 2, 3.</li>
-            <li>1 sequence clean có 4 receiver × 4 core = 16 CSI block.</li>
-            <li>Mỗi CSI block có 256 subcarrier.</li>
+            <li>MediaPipe của mình là 30 FPS.</li>
+            <li>300 packet/s tương ứng khoảng 10 sequence cho mỗi frame.</li>
+            <li>T = 10 đủ để có biến đổi theo thời gian nhưng chưa quá nặng.</li>
+          </ul>
+        </div>
+        <div class="panel orange">
+          <h3>Luật quyết định</h3>
+          <ul>
+            <li>Nếu 300 còn gap/drop nhiều: hạ xuống 150-173 packet/s.</li>
+            <li>Nếu 300 rất ổn: thử 600 packet/s để lấy T = 20.</li>
+            <li>Không nhảy thẳng 1000 packet/s với router Nexmon.</li>
           </ul>
         </div>
       </div>
-      <div class="pipeline" style="grid-template-columns:1fr 46px 1fr 46px 1fr 46px 1fr;margin-top:24px">
-        <div class="node orange">Wi-Fi packet<br/>phát qua không khí</div>
-        <div class="arrow"></div>
-        <div class="node">CSI sequence<br/>4 RX × 4 core</div>
-        <div class="arrow"></div>
-        <div class="node purple">10 sequence<br/>liên tiếp</div>
-        <div class="arrow"></div>
-        <div class="node green">1 frame MediaPipe<br/>1 pose label</div>
-      </div>
-      <div class="note">Nếu traffic không đều, 10 sequence có thể không còn nằm đúng quanh một frame video. Khi đó sample train bị lệch thời gian so với label pose.</div>
-      <div class="foot"><span>Ghép CSI và frame</span><span>7 / 8</span></div>
+      <div class="foot"><span>Chọn packet/s</span><span>8 / 9</span></div>
     </section>
 
     <section class="slide">
@@ -637,24 +677,13 @@
       <div class="note">
         Mục tiêu ban đầu: tạo khoảng 300 sequence/s sạch. Với video MediaPipe 30 FPS, nếu đạt 300 sequence/s thì mỗi frame video có khoảng 10 CSI timestep.
       </div>
-      <table class="table" style="margin-top:16px;font-size:15px">
-        <thead>
-          <tr>
-            <th>Mục tiêu</th>
-            <th>Packet/s</th>
-            <th>Timestep/frame với 30 FPS</th>
-            <th>Lệnh iperf3 gần đúng</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr><td>Test hệ thống</td><td>150</td><td>5</td><td>iperf3 -c IP_SERVER -u -b 1.5M -l 1200 -t 120</td></tr>
-          <tr><td><strong>Khuyến nghị ban đầu</strong></td><td><strong>300</strong></td><td><strong>10</strong></td><td><strong>iperf3 -c IP_SERVER -u -b 3M -l 1200 -t 120</strong></td></tr>
-          <tr><td>Thử T = 20</td><td>600</td><td>20</td><td>iperf3 -c IP_SERVER -u -b 6M -l 1200 -t 120</td></tr>
-          <tr><td>Rất cao</td><td>1000</td><td>33</td><td>iperf3 -c IP_SERVER -u -b 10M -l 1200 -t 120</td></tr>
-        </tbody>
-      </table>
+      <div class="grid-3" style="margin-top:18px">
+        <div class="panel soft"><h3>150 packet/s</h3><p>iperf3 -c IP_SERVER -u -b 1.5M -l 1200 -t 120</p></div>
+        <div class="panel green"><h3>300 packet/s</h3><p><strong>iperf3 -c IP_SERVER -u -b 3M -l 1200 -t 120</strong></p></div>
+        <div class="panel orange"><h3>600 packet/s</h3><p>iperf3 -c IP_SERVER -u -b 6M -l 1200 -t 120</p></div>
+      </div>
       <div class="source">Tham chiếu: Person-in-WiFi 3D, CVPR 2024, dùng 300 packets/s và đồng bộ CSI với video frame.</div>
-      <div class="foot"><span>Đề xuất xử lý</span><span>8 / 8</span></div>
+      <div class="foot"><span>Đề xuất xử lý</span><span>9 / 9</span></div>
     </section>
   </main>
 
