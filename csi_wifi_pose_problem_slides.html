@@ -400,7 +400,7 @@
         <div class="panel red"><h3>2. Dữ liệu của mình</h3><p>Nhiều receiver/subcarrier hơn, nhưng timestep chưa ổn.</p></div>
         <div class="panel orange"><h3>3. Cách sửa</h3><p>Tạo traffic đều bằng iperf3 và lọc window CSI.</p></div>
       </div>
-      <div class="foot"><span>VISI AI ACADEMY</span><span>1 / 6</span></div>
+      <div class="foot"><span>VISI AI ACADEMY</span><span>1 / 7</span></div>
     </section>
 
     <section class="slide">
@@ -446,7 +446,7 @@
         </div>
       </div>
       <div class="source">Nguồn: Person-in-WiFi 3D, CVPR 2024.</div>
-      <div class="foot"><span>Dữ liệu của họ</span><span>2 / 6</span></div>
+      <div class="foot"><span>Dữ liệu của họ</span><span>2 / 7</span></div>
     </section>
 
     <section class="slide">
@@ -478,7 +478,7 @@
         </div>
       </div>
       <div class="note">Điểm mạnh của họ không chỉ là model, mà là CSI được phát đều và nhãn pose được đồng bộ theo frame video.</div>
-      <div class="foot"><span>Nhãn dữ liệu của họ</span><span>3 / 6</span></div>
+      <div class="foot"><span>Nhãn dữ liệu của họ</span><span>3 / 7</span></div>
     </section>
 
     <section class="slide">
@@ -503,7 +503,7 @@
         </tbody>
       </table>
       <div class="note">Nếu MediaPipe 30 FPS và CSI đạt 300 sequence/s, khớp 1 video frame sẽ là T = 10. Nếu muốn thêm ngữ cảnh chuyển động có thể thử T = 20.</div>
-      <div class="foot"><span>Dữ liệu của mình</span><span>4 / 6</span></div>
+      <div class="foot"><span>Dữ liệu của mình</span><span>4 / 7</span></div>
     </section>
 
     <section class="slide">
@@ -529,7 +529,49 @@
         <div class="panel orange"><h3>Ảnh hưởng 2</h3><p>CSI dễ lệch với frame video/MediaPipe label.</p></div>
         <div class="panel soft"><h3>Ảnh hưởng 3</h3><p>Model học nhiễu của quá trình thu thay vì học chuyển động.</p></div>
       </div>
-      <div class="foot"><span>Vấn đề timestamp</span><span>5 / 6</span></div>
+      <div class="foot"><span>Vấn đề timestamp</span><span>5 / 7</span></div>
+    </section>
+
+    <section class="slide">
+      <div class="kicker">Sequence không clean</div>
+      <h2>Không phải sequence nào cũng dùng được để train</h2>
+      <div class="grid-2">
+        <div class="panel green">
+          <h3>Sequence clean</h3>
+          <ul>
+            <li>Cùng một frame sequence xuất hiện ở đủ RX1, RX2, RX3, RX4.</li>
+            <li>Mỗi receiver đủ 4 core: core 0, 1, 2, 3.</li>
+            <li>Không thiếu block, không bị duplicate bất thường.</li>
+            <li>Timestamp giữa 4 receiver nằm trong cửa sổ rất ngắn.</li>
+          </ul>
+        </div>
+        <div class="panel red">
+          <h3>Sequence không clean</h3>
+          <ul>
+            <li>Thiếu một receiver hoặc thiếu một core trong receiver.</li>
+            <li>Có đủ receiver nhưng một receiver bị lặp block hoặc lệch thứ tự.</li>
+            <li>Timestamp giữa các receiver cách xa nhau.</li>
+            <li>Không tạo được tensor 4 receiver × 4 core ổn định.</li>
+          </ul>
+        </div>
+      </div>
+      <table class="table" style="margin-top:24px">
+        <thead>
+          <tr>
+            <th>Kiểm tra trên lần thu hiện tại</th>
+            <th>Kết quả</th>
+            <th>Ý nghĩa</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>Sequence theo receiver 4</td><td>239 nhóm</td><td>receiver 4 là file ngắn nhất nên dùng làm mốc kiểm tra</td></tr>
+          <tr><td>Có mặt ở cả 4 receiver</td><td>237 nhóm</td><td>phần lớn sequence đã đồng bộ theo frame sequence</td></tr>
+          <tr><td>Strict clean 4 receiver × 4 core</td><td>217 nhóm</td><td>đây là phần nên đưa vào train baseline</td></tr>
+          <tr><td>Có mặt nhưng không clean</td><td>20 nhóm</td><td>giữ để debug, không nhét bừa vào model</td></tr>
+        </tbody>
+      </table>
+      <div class="note">Luật xử lý: train bằng sequence clean trước. Sequence không clean chỉ dùng để báo cáo lỗi thu, kiểm tra traffic/VLAN/router, hoặc quyết định thu lại.</div>
+      <div class="foot"><span>Lọc sequence</span><span>6 / 7</span></div>
     </section>
 
     <section class="slide">
@@ -560,7 +602,7 @@
         Mục tiêu ban đầu: tạo khoảng 300 sequence/s sạch. Với video MediaPipe 30 FPS, nếu đạt 300 sequence/s thì mỗi frame video có khoảng 10 CSI timestep.
       </div>
       <div class="source">Tham chiếu: Person-in-WiFi 3D, CVPR 2024, dùng 300 packets/s và đồng bộ CSI với video frame.</div>
-      <div class="foot"><span>Đề xuất xử lý</span><span>6 / 6</span></div>
+      <div class="foot"><span>Đề xuất xử lý</span><span>7 / 7</span></div>
     </section>
   </main>
 
