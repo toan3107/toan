@@ -436,7 +436,7 @@
         <div class="panel red"><h3>2. Dữ liệu của mình</h3><p>Nhiều receiver/subcarrier hơn, nhưng timestep chưa ổn.</p></div>
         <div class="panel orange"><h3>3. Cách sửa</h3><p>Tạo traffic đều bằng iperf3 và lọc window CSI.</p></div>
       </div>
-      <div class="foot"><span>VISI AI ACADEMY</span><span>1 / 9</span></div>
+      <div class="foot"><span>VISI AI ACADEMY</span><span>1 / 10</span></div>
     </section>
 
     <section class="slide">
@@ -482,7 +482,7 @@
         </div>
       </div>
       <div class="source">Nguồn: Person-in-WiFi 3D, CVPR 2024.</div>
-      <div class="foot"><span>Dữ liệu của họ</span><span>2 / 9</span></div>
+      <div class="foot"><span>Dữ liệu của họ</span><span>2 / 10</span></div>
     </section>
 
     <section class="slide">
@@ -514,7 +514,41 @@
         </div>
       </div>
       <div class="note">Điểm mạnh của họ không chỉ là model, mà là CSI được phát đều và nhãn pose được đồng bộ theo frame video.</div>
-      <div class="foot"><span>Nhãn dữ liệu của họ</span><span>3 / 9</span></div>
+      <div class="foot"><span>Nhãn dữ liệu của họ</span><span>3 / 10</span></div>
+    </section>
+
+    <section class="slide">
+      <div class="kicker">Cách label dữ liệu</div>
+      <h2>Họ label CSI như thế nào, mình sẽ label như thế nào?</h2>
+      <div class="grid-2">
+        <div class="panel green">
+          <h3>Person-in-WiFi 3D</h3>
+          <ul>
+            <li>Quay RGB-D bằng Azure Kinect ở 15 FPS.</li>
+            <li>Dùng Kinect Body Tracking SDK để lấy pose 3D.</li>
+            <li>Mỗi video frame có một label pose 3D.</li>
+            <li>Với CSI 300 packet/s, mỗi frame ghép với 20 CSI timestep.</li>
+          </ul>
+        </div>
+        <div class="panel orange">
+          <h3>Setup của mình</h3>
+          <ul>
+            <li>Quay video/camera và chạy MediaPipe ở 30 FPS.</li>
+            <li>Mỗi frame lấy keypoint pose từ MediaPipe.</li>
+            <li>Timestamp của frame dùng để tìm cửa sổ CSI gần nó.</li>
+            <li>Nếu CSI 300 packet/s, mỗi frame ghép với khoảng 10 CSI timestep.</li>
+          </ul>
+        </div>
+      </div>
+      <div class="pipeline" style="grid-template-columns:1fr 46px 1fr 46px 1fr;margin-top:26px">
+        <div class="node orange">Video frame<br/>t = 3.333s</div>
+        <div class="arrow"></div>
+        <div class="node green">MediaPipe<br/>pose label</div>
+        <div class="arrow"></div>
+        <div class="node purple">CSI window<br/>quanh t = 3.333s</div>
+      </div>
+      <div class="note">Một sample train của mình sẽ là: X = nhiều sequence CSI quanh timestamp của một frame; y = pose MediaPipe của đúng frame đó.</div>
+      <div class="foot"><span>Cách label dữ liệu</span><span>4 / 10</span></div>
     </section>
 
     <section class="slide">
@@ -539,7 +573,7 @@
         </tbody>
       </table>
       <div class="note">Nếu MediaPipe 30 FPS và CSI đạt 300 sequence/s, khớp 1 video frame sẽ là T = 10. Nếu muốn thêm ngữ cảnh chuyển động có thể thử T = 20.</div>
-      <div class="foot"><span>Dữ liệu của mình</span><span>4 / 9</span></div>
+      <div class="foot"><span>Dữ liệu của mình</span><span>5 / 10</span></div>
     </section>
 
     <section class="slide">
@@ -585,7 +619,7 @@
         </div>
       </div>
       <div class="note">Ý nghĩa chính: để train pose, ta không ghép 1 packet với 1 frame. Ta ghép một cửa sổ nhiều sequence CSI quanh timestamp của frame MediaPipe.</div>
-      <div class="foot"><span>Ghép CSI và frame</span><span>5 / 9</span></div>
+      <div class="foot"><span>Ghép CSI và frame</span><span>6 / 10</span></div>
     </section>
 
     <section class="slide">
@@ -629,7 +663,7 @@
         <div class="panel orange"><h3>2. Label pose bị ghép sai thời điểm</h3><p style="font-size:15px">Frame F3 có một tư thế cụ thể, nhưng CSI gần F3 có thể lại thuộc trước hoặc sau tư thế đó.</p></div>
         <div class="panel soft"><h3>3. Model học lỗi thu dữ liệu</h3><p style="font-size:15px">Model dễ học dấu hiệu packet burst, drop, thiếu receiver/core thay vì học quan hệ giữa dáng người và CSI.</p></div>
       </div>
-      <div class="foot"><span>Vấn đề timestamp</span><span>6 / 9</span></div>
+      <div class="foot"><span>Vấn đề timestamp</span><span>7 / 10</span></div>
     </section>
 
     <section class="slide">
@@ -671,7 +705,7 @@
         </tbody>
       </table>
       <div class="note">Luật xử lý: train bằng sequence clean trước. Sequence không clean chỉ dùng để báo cáo lỗi thu, kiểm tra traffic/VLAN/router, hoặc quyết định thu lại.</div>
-      <div class="foot"><span>Lọc sequence</span><span>7 / 9</span></div>
+      <div class="foot"><span>Lọc sequence</span><span>8 / 10</span></div>
     </section>
 
     <section class="slide">
@@ -711,7 +745,7 @@
           </ul>
         </div>
       </div>
-      <div class="foot"><span>Chọn packet/s</span><span>8 / 9</span></div>
+      <div class="foot"><span>Chọn packet/s</span><span>9 / 10</span></div>
     </section>
 
     <section class="slide">
@@ -747,7 +781,7 @@
         <div class="panel orange"><h3>600 packet/s</h3><p>iperf3 -c IP_SERVER -u -b 6M -l 1200 -t 120</p></div>
       </div>
       <div class="source">Tham chiếu: Person-in-WiFi 3D, CVPR 2024, dùng 300 packets/s và đồng bộ CSI với video frame.</div>
-      <div class="foot"><span>Đề xuất xử lý</span><span>9 / 9</span></div>
+      <div class="foot"><span>Đề xuất xử lý</span><span>10 / 10</span></div>
     </section>
   </main>
 
