@@ -324,7 +324,7 @@
     }
 
     .frame-track {
-      height: 54px;
+      height: 46px;
       position: relative;
       border-bottom: 2px solid #ccd6e4;
       margin: 8px 0 12px;
@@ -334,7 +334,7 @@
       position: absolute;
       bottom: 6px;
       width: 42px;
-      height: 32px;
+      height: 28px;
       border: 2px solid var(--blue-2);
       background: #eef5ff;
       border-radius: 6px;
@@ -348,7 +348,7 @@
     .window-mark {
       position: absolute;
       top: 0;
-      height: 46px;
+      height: 38px;
       border: 2px dashed var(--blue-2);
       background: rgba(47, 111, 214, 0.08);
       border-radius: 8px;
@@ -619,7 +619,7 @@
     <section class="slide">
       <div class="kicker">Vấn đề hiện tại</div>
       <h2>CSI phải nằm đúng quanh frame video, nhưng packet đang bị dồn cục</h2>
-      <div class="timeline" style="margin-top:8px">
+      <div class="timeline" style="margin-top:6px;padding:14px 16px 6px">
         <h3 style="margin:0;color:var(--blue)">Video/MediaPipe: mỗi ô là 1 frame cần label pose</h3>
         <div class="frame-track">
           <span class="frame-box" style="left:5%">F1</span>
@@ -652,13 +652,13 @@
           <span class="gap" style="left:62%;width:18%">thiếu CSI</span>
         </div>
       </div>
-      <div class="grid-3" style="margin-top:14px">
-        <div class="panel red"><h3>1. Timestep không còn cố định</h3><p style="font-size:15px">T = 10 chỉ là 10 sequence. Nếu packet đều thì nó là khoảng 33 ms. Nếu bị gap, 10 sequence có thể trải dài lâu hơn nhiều.</p></div>
-        <div class="panel orange"><h3>2. Label pose bị ghép sai thời điểm</h3><p style="font-size:15px">Frame F3 có một tư thế cụ thể, nhưng CSI gần F3 có thể lại thuộc trước hoặc sau tư thế đó.</p></div>
-        <div class="panel soft"><h3>3. Model học lỗi thu dữ liệu</h3><p style="font-size:15px">Model dễ học dấu hiệu packet burst, drop, thiếu receiver/core thay vì học quan hệ giữa dáng người và CSI.</p></div>
+      <div class="grid-3" style="margin-top:10px">
+        <div class="panel red" style="padding:14px 18px"><h3>1. Timestep không cố định</h3><p style="font-size:15px">T = 10 có thể là 33 ms nếu packet đều, nhưng có thể dài hơn nhiều nếu bị gap.</p></div>
+        <div class="panel orange" style="padding:14px 18px"><h3>2. Label bị ghép sai thời điểm</h3><p style="font-size:15px">Pose của frame hiện tại có thể bị ghép với CSI thuộc trước hoặc sau frame đó.</p></div>
+        <div class="panel soft" style="padding:14px 18px"><h3>3. Model học lỗi thu dữ liệu</h3><p style="font-size:15px">Model dễ học packet burst/drop thay vì quan hệ giữa dáng người và CSI.</p></div>
       </div>
-      <div class="note" style="margin-top:12px;font-size:17px">
-        Ví dụ: F3 ở thời điểm 66 ms. Nếu chọn T = 10 thì cần CSI quanh khoảng 50-83 ms. Nhưng nếu CSI chỉ có cụm ở 30 ms và 120 ms, lấy cụm đó ghép với F3 sẽ làm X và y lệch thời gian.
+      <div class="note" style="margin-top:10px;font-size:16px;padding:10px 12px">
+        Ví dụ: F3 ở 66 ms cần CSI khoảng 50-83 ms. Nếu CSI chỉ có cụm ở 30 ms hoặc 120 ms, ghép với F3 sẽ làm X và y lệch thời gian.
       </div>
       <div class="foot"><span>Vấn đề timestamp</span><span>7 / 9</span></div>
     </section>
