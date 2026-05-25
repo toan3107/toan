@@ -3,32 +3,29 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>DeepFace Access Control - World Class Deck</title>
+  <title>DeepFace Access Control - Visual Deck</title>
   <style>
     :root {
-      --ink: #eefcf4;
-      --cream: #f5f0df;
-      --cream-2: #ede3c6;
+      --bg: #07110f;
+      --bg2: #0f211b;
+      --ink: #f7fff7;
+      --muted: #a5bdb0;
+      --line: rgba(238, 255, 246, .15);
+      --line2: rgba(238, 255, 246, .26);
+      --card: rgba(255, 255, 255, .075);
+      --card2: rgba(255, 255, 255, .115);
       --paper: #fffaf0;
-      --paper-ink: #10231d;
-      --muted: #a7c4b7;
-      --muted-dark: #527367;
-      --bg: #06130f;
-      --bg-2: #0b2119;
-      --panel: rgba(255,255,255,.075);
-      --panel-2: rgba(255,255,255,.12);
-      --line: rgba(239,255,247,.18);
-      --line-dark: rgba(16,35,29,.14);
-      --emerald: #54d98c;
-      --mint: #baf8d7;
-      --teal: #21c6a8;
-      --cyan: #70e8f7;
-      --gold: #f4c769;
-      --orange: #ff9866;
-      --rose: #ff7c92;
-      --blue: #8fd6ff;
-      --violet: #b8b2ff;
-      --shadow: 0 30px 90px rgba(0,0,0,.35);
+      --paperInk: #112018;
+      --green: #43d17d;
+      --mint: #b7f7d0;
+      --teal: #24c6aa;
+      --cyan: #7ee7ff;
+      --blue: #83bcff;
+      --gold: #f1c46b;
+      --orange: #ff9b69;
+      --red: #ff748c;
+      --violet: #b5a8ff;
+      --shadow: 0 28px 90px rgba(0, 0, 0, .36);
       --radius: 28px;
       --display: "Aptos Display", "Segoe UI Variable Display", "Segoe UI", sans-serif;
       --body: "Aptos", "Segoe UI Variable Text", "Segoe UI", sans-serif;
@@ -38,888 +35,1227 @@
     * { box-sizing: border-box; }
     html, body { width: 100%; height: 100%; margin: 0; overflow: hidden; }
     body {
-      color: var(--ink);
       font-family: var(--body);
+      color: var(--ink);
       background:
-        radial-gradient(circle at 10% 15%, rgba(84,217,140,.18), transparent 30rem),
-        radial-gradient(circle at 82% 8%, rgba(244,199,105,.16), transparent 28rem),
-        linear-gradient(135deg, #020806 0%, #06130f 42%, #10291f 100%);
+        radial-gradient(circle at 12% 10%, rgba(67, 209, 125, .18), transparent 32rem),
+        radial-gradient(circle at 88% 14%, rgba(241, 196, 107, .16), transparent 30rem),
+        radial-gradient(circle at 50% 105%, rgba(126, 231, 255, .10), transparent 30rem),
+        linear-gradient(135deg, #020907 0%, var(--bg) 42%, #132c23 100%);
     }
+
     body::before {
       content: "";
       position: fixed;
       inset: 0;
       pointer-events: none;
       background-image:
-        linear-gradient(rgba(255,255,255,.035) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(255,255,255,.035) 1px, transparent 1px);
-      background-size: 42px 42px;
-      mask-image: linear-gradient(to bottom, transparent, black 14%, black 86%, transparent);
-      opacity: .26;
-      z-index: 0;
+        linear-gradient(rgba(255, 255, 255, .038) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, .038) 1px, transparent 1px);
+      background-size: 44px 44px;
+      mask-image: linear-gradient(to bottom, transparent, black 12%, black 88%, transparent);
+      opacity: .34;
     }
 
-    .deck { position: relative; width: 100vw; height: 100vh; z-index: 1; }
-    .track { display: flex; width: 100%; height: 100%; transition: transform .55s cubic-bezier(.22,.9,.22,1); }
-    .boot .track { transition: none !important; }
+    .deck { position: relative; width: 100vw; height: 100vh; isolation: isolate; }
     .slide {
-      flex: 0 0 100vw;
-      height: 100vh;
-      padding: 54px 66px 62px;
-      position: relative;
-      overflow: hidden;
+      position: absolute;
+      inset: 0;
+      padding: 52px 68px 58px;
       display: grid;
       grid-template-rows: auto 1fr auto;
-      gap: 24px;
-      isolation: isolate;
+      gap: 22px;
+      opacity: 0;
+      transform: translateX(46px) scale(.985);
+      pointer-events: none;
+      transition: opacity .34s ease, transform .44s cubic-bezier(.22,.9,.22,1);
+      overflow: hidden;
     }
+    .slide.active { opacity: 1; transform: translateX(0) scale(1); pointer-events: auto; }
     .slide::after {
       content: "";
       position: absolute;
       inset: 22px;
       border: 1px solid var(--line);
-      border-radius: 34px;
+      border-radius: 30px;
       pointer-events: none;
       z-index: -1;
     }
-    .light {
-      color: var(--paper-ink);
+    .slide.light {
+      color: var(--paperInk);
       background:
-        radial-gradient(circle at 18% 20%, rgba(33,198,168,.14), transparent 28rem),
-        radial-gradient(circle at 86% 8%, rgba(244,199,105,.20), transparent 25rem),
-        linear-gradient(135deg, #fbf6e9 0%, #eff8ef 100%);
+        radial-gradient(circle at 12% 12%, rgba(36, 198, 170, .13), transparent 30rem),
+        radial-gradient(circle at 86% 16%, rgba(241, 196, 107, .18), transparent 25rem),
+        linear-gradient(135deg, #fffdf5 0%, #f3efe1 100%);
     }
-    .light::after { border-color: var(--line-dark); }
-    .split { grid-template-columns: .92fr 1.08fr; grid-template-rows: auto 1fr auto; column-gap: 42px; }
-    .split .top, .split .foot { grid-column: 1 / -1; }
+    .slide.light::after { border-color: rgba(17, 32, 24, .16); }
+    .slide.photo {
+      padding: 38px;
+      grid-template-rows: 1fr auto;
+      gap: 18px;
+    }
 
-    .top { display: flex; align-items: flex-start; justify-content: space-between; gap: 20px; }
-    .eyebrow {
+    .topline {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+      min-height: 36px;
+    }
+    .kicker {
+      font: 800 12px/1 var(--mono);
+      letter-spacing: .18em;
+      text-transform: uppercase;
+      color: var(--mint);
+    }
+    .light .kicker { color: #0f766e; }
+    .section-no {
+      font: 800 12px/1 var(--mono);
+      color: var(--muted);
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 9px 12px;
+      background: rgba(255,255,255,.055);
+    }
+    .light .section-no { color: #60726b; border-color: rgba(17,32,24,.16); background: rgba(255,255,255,.55); }
+
+    h1, h2, h3, p { margin: 0; }
+    h1 {
+      font-family: var(--display);
+      font-size: clamp(54px, 7.6vw, 118px);
+      line-height: .92;
+      letter-spacing: -.072em;
+      text-wrap: balance;
+    }
+    h2 {
+      font-family: var(--display);
+      font-size: clamp(40px, 5.3vw, 76px);
+      line-height: .96;
+      letter-spacing: -.055em;
+      text-wrap: balance;
+    }
+    h3 {
+      font-family: var(--display);
+      font-size: clamp(23px, 2.35vw, 35px);
+      letter-spacing: -.03em;
+      line-height: 1.05;
+    }
+    .lead {
+      font-size: clamp(20px, 2.05vw, 30px);
+      color: var(--muted);
+      line-height: 1.28;
+      max-width: 1080px;
+      text-wrap: balance;
+    }
+    .light .lead { color: #53665e; }
+    .micro { font-size: 16px; color: var(--muted); line-height: 1.38; }
+    .light .micro { color: #5a675f; }
+    .mono { font-family: var(--mono); }
+    .accent { color: var(--green); }
+    .gold { color: var(--gold); }
+    .cyan { color: var(--cyan); }
+    .red { color: var(--red); }
+
+    .content {
+      min-height: 0;
+      display: grid;
+      align-content: center;
+      gap: 22px;
+    }
+    .split { display: grid; grid-template-columns: 1fr 1fr; gap: 28px; align-items: center; min-height: 0; }
+    .split.wide-left { grid-template-columns: 1.2fr .8fr; }
+    .split.wide-right { grid-template-columns: .82fr 1.18fr; }
+    .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
+    .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+    .grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 18px; }
+    .stack { display: grid; gap: 16px; }
+
+    .card {
+      background: linear-gradient(180deg, rgba(255,255,255,.105), rgba(255,255,255,.058));
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 24px;
+      box-shadow: var(--shadow);
+      position: relative;
+      overflow: hidden;
+    }
+    .card.flat { box-shadow: none; }
+    .card::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle at 16% 0%, rgba(255,255,255,.14), transparent 18rem);
+      pointer-events: none;
+    }
+    .light .card {
+      color: var(--paperInk);
+      background: rgba(255,255,255,.68);
+      border-color: rgba(17, 32, 24, .13);
+      box-shadow: 0 20px 60px rgba(17, 32, 24, .13);
+    }
+    .stat {
+      min-height: 164px;
+      display: grid;
+      align-content: space-between;
+    }
+    .stat strong { font-size: 44px; line-height: 1; letter-spacing: -.055em; font-family: var(--display); }
+    .stat span { color: var(--muted); font-size: 15px; line-height: 1.35; }
+    .light .stat span { color: #5b675e; }
+    .chip-row { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+    .chip {
       display: inline-flex;
       align-items: center;
-      gap: 10px;
-      border: 1px solid rgba(186,248,215,.24);
-      background: rgba(255,255,255,.075);
+      gap: 8px;
+      border: 1px solid var(--line2);
       border-radius: 999px;
-      padding: 7px 13px;
-      color: var(--mint);
-      font-family: var(--mono);
-      font-size: 12px;
-      letter-spacing: .11em;
-      text-transform: uppercase;
-      font-weight: 800;
+      padding: 9px 12px;
+      background: rgba(255,255,255,.075);
+      color: var(--ink);
+      font: 800 13px/1 var(--mono);
       white-space: nowrap;
     }
-    .eyebrow::before {
-      content: "";
-      width: 8px; height: 8px; border-radius: 50%;
-      background: var(--emerald);
-      box-shadow: 0 0 18px rgba(84,217,140,.75);
+    .chip::before { content: ""; width: 8px; height: 8px; border-radius: 99px; background: var(--green); box-shadow: 0 0 18px var(--green); }
+    .chip.blue::before { background: var(--cyan); box-shadow: 0 0 18px var(--cyan); }
+    .chip.gold::before { background: var(--gold); box-shadow: 0 0 18px var(--gold); }
+    .chip.red::before { background: var(--red); box-shadow: 0 0 18px var(--red); }
+    .light .chip { background: rgba(255,255,255,.75); color: var(--paperInk); border-color: rgba(17,32,24,.15); }
+
+    .bullets { list-style: none; padding: 0; margin: 0; display: grid; gap: 12px; }
+    .bullets li {
+      display: grid;
+      grid-template-columns: 26px 1fr;
+      gap: 11px;
+      align-items: start;
+      font-size: 20px;
+      line-height: 1.25;
+      color: var(--ink);
     }
-    .light .eyebrow { background: rgba(255,255,255,.68); border-color: rgba(16,35,29,.13); color: #0a6b57; }
+    .bullets li::before {
+      content: "";
+      width: 10px;
+      height: 10px;
+      margin-top: 8px;
+      border-radius: 50%;
+      background: var(--green);
+      box-shadow: 0 0 18px var(--green);
+    }
+    .light .bullets li { color: var(--paperInk); }
 
-    h1, h2, h3, h4 { margin: 0; font-family: var(--display); letter-spacing: -.045em; }
-    h1 { font-size: clamp(62px, 7vw, 112px); line-height: .96; max-width: 1080px; }
-    h2 { font-size: clamp(42px, 4.65vw, 76px); line-height: .98; max-width: 1040px; }
-    h3 { font-size: clamp(25px, 2.25vw, 36px); line-height: 1.06; }
-    h4 { font-size: 20px; line-height: 1.08; }
-    p { margin: 0; color: var(--muted); font-size: clamp(17px, 1.25vw, 22px); line-height: 1.45; }
-    .light p { color: #416459; }
-    .lead { font-size: clamp(21px, 1.65vw, 29px); color: #dffdee; max-width: 920px; }
-    .light .lead { color: #26483f; }
-    .kicker { color: var(--gold); font-family: var(--mono); font-weight: 900; letter-spacing: .18em; text-transform: uppercase; font-size: 14px; }
-    .stack { display: flex; flex-direction: column; gap: 20px; justify-content: center; min-height: 0; }
-    .row { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
-
-    .pill {
-      display: inline-flex;
-      align-items: center;
-      padding: 8px 12px;
+    .shot {
+      border: 1px solid var(--line);
+      border-radius: 26px;
+      overflow: hidden;
+      background: #0b1412;
+      box-shadow: var(--shadow);
+      position: relative;
+      min-height: 0;
+    }
+    .shot img {
+      width: 100%;
+      height: 100%;
+      display: block;
+      object-fit: cover;
+      object-position: center;
+    }
+    .shot.contain img { object-fit: contain; background: #0a0f0d; }
+    .shot.tall { height: 66vh; }
+    .shot.medium { height: 48vh; }
+    .shot.small { height: 30vh; }
+    .shot.full { height: calc(100vh - 150px); }
+    .shot .tag {
+      position: absolute;
+      z-index: 2;
+      left: 18px;
+      top: 18px;
+      padding: 8px 11px;
       border-radius: 999px;
+      background: rgba(3, 9, 7, .72);
+      border: 1px solid rgba(255,255,255,.2);
+      backdrop-filter: blur(10px);
+      font: 800 12px/1 var(--mono);
+      color: var(--mint);
+    }
+    .light .shot { border-color: rgba(17,32,24,.14); box-shadow: 0 22px 70px rgba(17,32,24,.16); }
+
+    .device {
+      background: linear-gradient(180deg, #182721, #07100d);
+      padding: 10px;
+      border-radius: 30px;
+      border: 1px solid rgba(255,255,255,.16);
+      box-shadow: var(--shadow);
+      position: relative;
+    }
+    .device::before {
+      content: "";
+      display: block;
+      height: 22px;
+      border-radius: 18px 18px 0 0;
+      background:
+        radial-gradient(circle at 17px 11px, #ff6b6b 0 4px, transparent 5px),
+        radial-gradient(circle at 34px 11px, #ffd166 0 4px, transparent 5px),
+        radial-gradient(circle at 51px 11px, #43d17d 0 4px, transparent 5px),
+        linear-gradient(90deg, rgba(255,255,255,.08), rgba(255,255,255,.02));
+      margin-bottom: 8px;
+    }
+    .device .shot { height: 100%; border-radius: 20px; box-shadow: none; }
+
+    .hero-collage {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 18px;
+      transform: rotate(-1.2deg);
+    }
+    .hero-collage .device:nth-child(1) { grid-column: 1 / 3; height: 34vh; transform: rotate(.8deg); }
+    .hero-collage .device:nth-child(2) { height: 27vh; transform: translateY(-8px) rotate(-1.1deg); }
+    .hero-collage .device:nth-child(3) { height: 27vh; transform: translateY(18px) rotate(1deg); }
+
+    .visual-map {
+      display: grid;
+      grid-template-columns: repeat(12, 1fr);
+      grid-template-rows: repeat(6, 72px);
+      gap: 14px;
+    }
+    .node {
+      border: 1px solid var(--line2);
+      border-radius: 20px;
+      background: rgba(255,255,255,.085);
+      display: grid;
+      place-items: center;
+      text-align: center;
+      padding: 12px;
+      font: 850 15px/1.15 var(--display);
+      position: relative;
+      box-shadow: 0 20px 55px rgba(0,0,0,.18);
+    }
+    .node small { display: block; margin-top: 5px; color: var(--muted); font: 700 11px/1.1 var(--mono); }
+    .node.green { border-color: rgba(67,209,125,.45); background: rgba(67,209,125,.13); }
+    .node.blue { border-color: rgba(126,231,255,.45); background: rgba(126,231,255,.13); }
+    .node.gold { border-color: rgba(241,196,107,.48); background: rgba(241,196,107,.14); }
+    .node.red { border-color: rgba(255,116,140,.5); background: rgba(255,116,140,.12); }
+    .node.violet { border-color: rgba(181,168,255,.45); background: rgba(181,168,255,.13); }
+    .flowline {
+      position: absolute;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, rgba(183,247,208,.7), transparent);
+      transform-origin: left center;
+      pointer-events: none;
+    }
+
+    .timeline { display: grid; gap: 14px; }
+    .step {
+      display: grid;
+      grid-template-columns: 52px 1fr auto;
+      align-items: center;
+      gap: 14px;
+      padding: 16px 18px;
+      border-radius: 22px;
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,.07);
+    }
+    .step b {
+      width: 40px; height: 40px; border-radius: 50%;
+      display: grid; place-items: center;
+      background: var(--green); color: #052015;
+      font-family: var(--mono); font-size: 14px;
+    }
+    .step span { font-size: 20px; font-weight: 800; letter-spacing: -.02em; }
+    .step code { color: var(--mint); font-family: var(--mono); font-size: 13px; }
+    .light .step { background: rgba(255,255,255,.62); border-color: rgba(17,32,24,.12); }
+    .light .step code { color: #0f766e; }
+
+    .matrix {
+      display: grid;
+      gap: 10px;
+      border-radius: 26px;
+      overflow: hidden;
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,.06);
+    }
+    .row {
+      display: grid;
+      grid-template-columns: 1.1fr 1fr 1.5fr;
+      gap: 1px;
+      background: var(--line);
+    }
+    .row > div {
+      background: rgba(9, 24, 19, .92);
+      padding: 14px 16px;
+      font-size: 15px;
+      line-height: 1.25;
+    }
+    .row.head > div {
+      background: rgba(183,247,208,.14);
+      font: 850 12px/1 var(--mono);
+      color: var(--mint);
+      letter-spacing: .08em;
+      text-transform: uppercase;
+    }
+
+    .metric-board {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+    }
+    .metric {
+      border-radius: 26px;
+      min-height: 150px;
+      border: 1px solid rgba(255,255,255,.14);
+      background: linear-gradient(135deg, rgba(67,209,125,.18), rgba(255,255,255,.06));
+      display: grid;
+      align-content: space-between;
+      padding: 22px;
+    }
+    .metric strong { font: 900 54px/1 var(--display); letter-spacing: -.06em; }
+    .metric span { color: var(--muted); font: 800 13px/1.2 var(--mono); }
+
+    .footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      color: var(--muted);
+      font: 700 12px/1 var(--mono);
+      letter-spacing: .06em;
+      text-transform: uppercase;
+      min-height: 22px;
+    }
+    .progress {
+      position: fixed;
+      left: 32px;
+      right: 32px;
+      bottom: 24px;
+      height: 3px;
+      background: rgba(255,255,255,.12);
+      z-index: 20;
+      border-radius: 999px;
+      overflow: hidden;
+    }
+    .progress span { display: block; height: 100%; width: 0%; background: linear-gradient(90deg, var(--green), var(--gold)); }
+    .nav {
+      position: fixed;
+      right: 32px;
+      bottom: 38px;
+      z-index: 25;
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+    .nav button {
+      width: 42px; height: 42px; border-radius: 50%;
       border: 1px solid rgba(255,255,255,.16);
       background: rgba(255,255,255,.08);
       color: var(--ink);
-      font-size: 13px;
-      font-weight: 800;
-      white-space: nowrap;
+      font-size: 20px;
+      cursor: pointer;
+      backdrop-filter: blur(12px);
     }
-    .pill.green { border-color: rgba(84,217,140,.46); color: var(--mint); }
-    .pill.gold { border-color: rgba(244,199,105,.48); color: #ffe1a1; }
-    .pill.red { border-color: rgba(255,124,146,.48); color: #ffc3cd; }
-    .light .pill { background: rgba(255,255,255,.72); color: #123128; border-color: var(--line-dark); }
-    .light .pill.green { color: #0a6b57; }
-    .light .pill.gold { color: #795307; }
-    .light .pill.red { color: #a3162c; }
-
-    .glass, .card {
-      border: 1px solid rgba(255,255,255,.14);
-      background:
-        radial-gradient(circle at 85% 10%, rgba(84,217,140,.10), transparent 12rem),
-        linear-gradient(135deg, rgba(255,255,255,.11), rgba(255,255,255,.045));
-      border-radius: var(--radius);
-      box-shadow: var(--shadow);
-      backdrop-filter: blur(14px);
-    }
-    .card { padding: 24px; box-shadow: none; }
-    .light .glass, .light .card { border-color: var(--line-dark); background: rgba(255,255,255,.70); box-shadow: 0 24px 70px rgba(7,38,25,.12); }
-
-    .grid2 { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 18px; }
-    .grid3 { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 18px; }
-    .grid4 { display: grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap: 16px; }
-    .grid5 { display: grid; grid-template-columns: repeat(5, minmax(0,1fr)); gap: 12px; }
-
-    .metric {
-      min-height: 150px;
-      padding: 22px;
-      border-radius: 24px;
-      border: 1px solid rgba(186,248,215,.18);
+    .counter {
+      position: fixed;
+      left: 32px;
+      bottom: 38px;
+      z-index: 25;
+      color: var(--muted);
+      font: 800 12px/1 var(--mono);
       background: rgba(255,255,255,.075);
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-    }
-    .light .metric { background: rgba(255,255,255,.72); border-color: var(--line-dark); }
-    .metric .num { font-family: var(--display); font-size: 58px; line-height: .9; letter-spacing: -.06em; color: var(--mint); font-weight: 900; }
-    .light .metric .num { color: #08745f; }
-    .metric .label { color: var(--muted); font-size: 14px; line-height: 1.35; font-weight: 750; }
-    .light .metric .label { color: #476b5f; }
-
-    .shot {
-      overflow: hidden;
-      border-radius: 30px;
-      border: 1px solid rgba(255,255,255,.17);
-      background: #08120f;
-      box-shadow: var(--shadow);
-      min-height: 0;
-      position: relative;
-    }
-    .light .shot { border-color: var(--line-dark); background: white; box-shadow: 0 28px 70px rgba(7,38,25,.14); }
-    .shot img { width: 100%; height: 100%; object-fit: cover; display: block; }
-    .shot.contain img { object-fit: contain; background: #08120f; }
-    .tag {
-      position: absolute;
-      left: 16px; top: 16px;
-      border: 1px solid rgba(255,255,255,.18);
-      background: rgba(4,18,15,.72);
-      color: var(--ink);
+      border: 1px solid rgba(255,255,255,.14);
+      padding: 14px 16px;
       border-radius: 999px;
-      padding: 8px 12px;
-      font-size: 13px;
-      font-weight: 900;
-      backdrop-filter: blur(10px);
-      z-index: 2;
+      backdrop-filter: blur(12px);
     }
 
-    .table { width: 100%; border-collapse: collapse; font-size: 15px; }
-    .table th, .table td { text-align: left; vertical-align: top; padding: 13px 14px; border-bottom: 1px solid rgba(255,255,255,.12); line-height: 1.34; }
-    .table th { color: var(--mint); font-family: var(--mono); text-transform: uppercase; letter-spacing: .10em; font-size: 11px; }
-    .table td { color: #eafdf2; }
-    .light .table th { color: #08745f; }
-    .light .table td { color: var(--paper-ink); border-bottom-color: var(--line-dark); }
-    .code { font-family: var(--mono); font-size: .9em; background: rgba(0,0,0,.24); color: #d8fff0; padding: 3px 7px; border-radius: 8px; white-space: nowrap; }
-    .light .code { color: #075f50; background: rgba(7,38,25,.08); }
+    .big-number {
+      font: 950 clamp(82px, 12vw, 180px)/.82 var(--display);
+      letter-spacing: -.08em;
+      color: var(--green);
+    }
+    .title-lockup { display: grid; gap: 16px; align-content: center; }
+    .caption-strip {
+      display: flex;
+      justify-content: space-between;
+      gap: 18px;
+      align-items: center;
+      padding: 16px 20px;
+      border-radius: 24px;
+      background: rgba(255,255,255,.08);
+      border: 1px solid var(--line);
+      backdrop-filter: blur(16px);
+    }
+    .caption-strip h3 { font-size: 24px; }
+    .caption-strip p { color: var(--muted); max-width: 780px; line-height: 1.35; }
 
-    .list { list-style: none; padding: 0; margin: 0; display: grid; gap: 12px; }
-    .list li { display: grid; grid-template-columns: 24px 1fr; gap: 10px; color: var(--muted); font-size: 19px; line-height: 1.36; }
-    .light .list li { color: #3d6056; }
-    .list li::before {
-      content: "";
-      width: 10px; height: 10px; border-radius: 50%;
-      background: var(--emerald);
-      margin-top: 8px;
-      box-shadow: 0 0 18px rgba(84,217,140,.55);
-    }
-
-    .diagram {
-      padding: 24px;
-      min-height: 0;
-      display: grid;
-      gap: 14px;
-    }
-    .nodes { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; }
-    .node {
-      border-radius: 20px;
-      border: 1px solid rgba(255,255,255,.14);
-      background: rgba(255,255,255,.075);
-      padding: 17px;
-      min-height: 104px;
-    }
-    .light .node { background: rgba(255,255,255,.72); border-color: var(--line-dark); }
-    .node b { display: block; font-family: var(--display); font-size: 21px; letter-spacing: -.035em; margin-bottom: 6px; }
-    .node span { color: var(--muted); font-size: 13px; line-height: 1.35; }
-    .light .node span { color: #527367; }
-    .node.primary { border-color: rgba(33,198,168,.48); background: rgba(33,198,168,.12); }
-    .node.gold { border-color: rgba(244,199,105,.48); background: rgba(244,199,105,.12); }
-    .node.rose { border-color: rgba(255,124,146,.48); background: rgba(255,124,146,.10); }
-
-    .flow { display: grid; grid-template-columns: repeat(6, minmax(0,1fr)); gap: 12px; }
-    .step {
-      position: relative;
-      min-height: 168px;
-      border: 1px solid rgba(255,255,255,.14);
-      border-radius: 22px;
-      padding: 18px;
-      background: rgba(255,255,255,.07);
-    }
-    .light .step { background: rgba(255,255,255,.72); border-color: var(--line-dark); }
-    .step:not(:last-child)::after {
-      content: "→";
-      position: absolute;
-      right: -14px; top: 50%; transform: translateY(-50%);
-      color: var(--gold); font-size: 24px; font-weight: 900; z-index: 3;
-    }
-    .idx { width: 34px; height: 34px; border-radius: 50%; background: var(--mint); color: #082016; display: grid; place-items: center; font-family: var(--mono); font-weight: 900; margin-bottom: 12px; }
-    .step p { font-size: 13px; line-height: 1.35; }
-
-    .visual {
-      position: relative;
-      min-height: 0;
-      overflow: hidden;
-      display: grid;
-      place-items: center;
-    }
-    .orb {
-      width: min(52vh, 560px);
-      aspect-ratio: 1;
-      border-radius: 50%;
-      border: 1px solid rgba(186,248,215,.25);
-      background:
-        radial-gradient(circle at 50% 50%, rgba(186,248,215,.18), transparent 22%),
-        radial-gradient(circle at 50% 50%, transparent 42%, rgba(84,217,140,.12) 43%, transparent 45%),
-        radial-gradient(circle at 50% 50%, transparent 63%, rgba(244,199,105,.16) 64%, transparent 66%);
-      box-shadow: inset 0 0 80px rgba(84,217,140,.10), 0 35px 90px rgba(0,0,0,.25);
-      position: relative;
-    }
-    .orb::before, .orb::after {
-      content: "";
-      position: absolute; inset: 16%;
-      border: 1px solid rgba(112,232,247,.30);
-      border-radius: 42% 58% 46% 54%;
-      transform: rotate(18deg);
-    }
-    .orb::after { inset: 27%; border-color: rgba(244,199,105,.42); transform: rotate(-24deg); }
-    .face-lines {
-      position: absolute;
-      width: 38%; height: 38%;
-      border: 8px solid rgba(245,240,223,.82);
-      border-radius: 50%;
-      left: 31%; top: 31%;
-    }
-    .face-lines::before, .face-lines::after {
-      content: "";
-      position: absolute;
-      width: 12px; height: 12px; border-radius: 50%;
-      background: var(--cream);
-      top: 38%;
-    }
-    .face-lines::before { left: 28%; }
-    .face-lines::after { right: 28%; }
-
-    .foot { display: flex; justify-content: space-between; align-items: center; gap: 20px; color: rgba(186,248,215,.55); font-family: var(--mono); text-transform: uppercase; letter-spacing: .11em; font-size: 11px; }
-    .light .foot { color: rgba(16,35,29,.48); }
-    .watermark { position: absolute; right: 58px; bottom: 60px; font-family: var(--display); font-size: 160px; font-weight: 900; letter-spacing: -.08em; color: rgba(255,255,255,.045); z-index: -1; }
-    .light .watermark { color: rgba(16,35,29,.05); }
-
-    .progress { position: fixed; left: 28px; right: 28px; bottom: 18px; height: 4px; background: rgba(255,255,255,.12); border-radius: 999px; z-index: 60; overflow: hidden; }
-    .progress span { display: block; height: 100%; width: 0; background: linear-gradient(90deg, var(--emerald), var(--cyan), var(--gold)); transition: width .35s ease; }
-    .counter { position: fixed; left: 34px; bottom: 31px; z-index: 70; font-family: var(--mono); color: rgba(234,253,242,.7); font-size: 12px; font-weight: 900; }
-    .controls { position: fixed; right: 34px; bottom: 31px; display: flex; gap: 10px; z-index: 70; }
-    .control { width: 42px; height: 42px; border-radius: 50%; border: 1px solid rgba(255,255,255,.17); background: rgba(255,255,255,.10); color: white; font-size: 20px; cursor: pointer; backdrop-filter: blur(10px); }
-
-    @media (max-width: 980px) {
-      body { overflow: auto; }
-      .deck { height: auto; }
-      .track { display: block; transform: none !important; }
-      .slide, .split { height: auto; min-height: 100vh; display: flex; flex-direction: column; padding: 34px 22px 58px; }
-      .grid2, .grid3, .grid4, .grid5, .nodes, .flow { grid-template-columns: 1fr; }
-      .step:not(:last-child)::after { display: none; }
-      .shot { min-height: 300px; }
-      .controls, .counter, .progress { display: none; }
+    @media (max-width: 1000px) {
+      .slide { padding: 32px 28px 54px; }
+      .split, .split.wide-left, .split.wide-right, .grid-3, .grid-4, .grid-2 { grid-template-columns: 1fr; }
+      .hero-collage { display: none; }
+      h1 { font-size: 54px; }
+      h2 { font-size: 42px; }
+      .shot.tall, .shot.full { height: 48vh; }
     }
   </style>
 </head>
-<body class="boot">
-  <main class="deck">
-    <div class="track" id="track">
-      <section class="slide split" data-title="Cover">
-        <div class="top"><span class="eyebrow">AI System Design Deck</span><span class="pill green">DeepFace Access Control</span></div>
-        <div class="stack">
-          <div class="kicker">Full-stack face recognition access system</div>
-          <h1>Hệ thống kiểm soát ra vào bằng nhận diện khuôn mặt</h1>
-          <p class="lead">Deck trình bày đầy đủ use case, kiến trúc, luồng dữ liệu, AI pipeline, API, dữ liệu, vận hành, kiểm thử, bảo mật và kịch bản demo.</p>
-          <div class="row"><span class="pill green">React / Vite</span><span class="pill">FastAPI</span><span class="pill gold">DeepFace</span><span class="pill">Qdrant</span><span class="pill red">Monitoring</span></div>
-        </div>
-        <div class="visual glass"><div class="orb"><div class="face-lines"></div></div></div>
-        <div class="foot"><span>BTL AI / System report</span><span>HTML standalone deck</span></div>
-        <div class="watermark">FACE</div>
-      </section>
+<body>
+  <div class="deck" id="deck">
 
-      <section class="slide light" data-title="Agenda">
-        <div class="top"><span class="eyebrow">Agenda</span><span class="pill">39 slides</span></div>
-        <h2>Deck đi theo logic bảo vệ: vấn đề → thiết kế → chứng minh → vận hành.</h2>
-        <div class="grid4">
-          <div class="metric"><div class="num">01</div><div class="label">Use case, mục tiêu, phạm vi MVP và tiêu chí đánh giá.</div></div>
-          <div class="metric"><div class="num">02</div><div class="label">UI, kiến trúc service, dữ liệu và pipeline AI.</div></div>
-          <div class="metric"><div class="num">03</div><div class="label">API, queue, monitoring, Docker, CI/CD và backup.</div></div>
-          <div class="metric"><div class="num">04</div><div class="label">Kiểm thử, bảo mật, demo script, roadmap và kết luận.</div></div>
-        </div>
-        <div class="foot"><span>Presentation roadmap</span><span>Designed for defense</span></div>
-      </section>
-
-      <section class="slide split" data-title="Problem">
-        <div class="top"><span class="eyebrow">Bối cảnh</span><span class="pill gold">Access control</span></div>
-        <div class="stack">
-          <h2>Thẻ từ, mã PIN và xác nhận thủ công đều có điểm yếu.</h2>
-          <ul class="list">
-            <li>Thẻ có thể bị mượn hộ hoặc quên mang theo.</li>
-            <li>Mã PIN có thể bị chia sẻ, ghi lại hoặc nhìn trộm.</li>
-            <li>Xác nhận thủ công phụ thuộc con người và khó audit nhất quán.</li>
-            <li>Hệ thống cần xác minh nhanh, lưu log và quan sát được trạng thái vận hành.</li>
-          </ul>
-        </div>
-        <div class="glass diagram">
-          <div class="nodes">
-            <div class="node rose"><b>Identity risk</b><span>Không chắc người cầm thẻ là người được cấp quyền.</span></div>
-            <div class="node gold"><b>Audit gap</b><span>Thiếu log rõ: ai, lúc nào, camera nào, kết quả gì.</span></div>
-            <div class="node primary"><b>AI fit</b><span>Khuôn mặt là tín hiệu xác minh tự nhiên tại cổng ra vào.</span></div>
+    <section class="slide active">
+      <div class="topline"><div class="kicker">AI System Design</div><div class="section-no">DeepFace Access Control</div></div>
+      <div class="content split wide-left">
+        <div class="title-lockup">
+          <h1>Face Access<br><span class="accent">Control</span></h1>
+          <p class="lead">Hệ thống kiểm soát ra vào bằng nhận diện khuôn mặt: User Terminal, Admin Console, FastAPI backend, DeepFace worker, vector search và monitoring.</p>
+          <div class="chip-row">
+            <span class="chip">React UI</span>
+            <span class="chip blue">FastAPI</span>
+            <span class="chip gold">DeepFace</span>
+            <span class="chip red">Qdrant</span>
           </div>
         </div>
-        <div class="foot"><span>Problem framing</span><span>From access token to biometric verification</span></div>
-      </section>
-
-      <section class="slide light" data-title="Goal">
-        <div class="top"><span class="eyebrow">Mục tiêu</span><span class="pill green">End-to-end MVP</span></div>
-        <h2>Mục tiêu không phải “chạy DeepFace”, mà là xây được một hệ thống AI hoàn chỉnh.</h2>
-        <div class="grid3">
-          <div class="card"><h3>User Terminal</h3><p>Gửi snapshot/webcam, chọn camera, xem trạng thái xử lý và lịch sử gần nhất.</p></div>
-          <div class="card"><h3>Admin Console</h3><p>Quản lý employees, cameras, users, enrollment và access logs.</p></div>
-          <div class="card"><h3>Backend API</h3><p>Auth, phân quyền, CRUD, upload ảnh, tạo log, đẩy job và metrics.</p></div>
-          <div class="card"><h3>AI Worker</h3><p>DeepFace detection, embedding, matching và cập nhật kết quả.</p></div>
-          <div class="card"><h3>Storage layer</h3><p>PostgreSQL, MinIO, Qdrant và Redis đúng vai trò.</p></div>
-          <div class="card"><h3>Ops layer</h3><p>Nginx, Docker Compose, Prometheus/Grafana, backup và CI/CD baseline.</p></div>
+        <div class="hero-collage">
+          <div class="device"><div class="shot"><img src="assets/screenshots/home-live.png" alt="Home Gateway"></div></div>
+          <div class="device"><div class="shot"><img src="assets/screenshots/user-terminal.png" alt="User Terminal"></div></div>
+          <div class="device"><div class="shot"><img src="assets/screenshots/admin-dashboard-live.png" alt="Admin Dashboard"></div></div>
         </div>
-        <div class="foot"><span>Objective</span><span>AI engineering system, not algorithm-only demo</span></div>
-      </section>
+      </div>
+      <div class="footer"><span>Visual presentation deck</span><span>Local demo + system evidence</span></div>
+    </section>
 
-      <section class="slide split" data-title="Use case">
-        <div class="top"><span class="eyebrow">Use case</span><span class="pill">Company gate / lab room</span></div>
+    <section class="slide light">
+      <div class="topline"><div class="kicker">01 / Big Picture</div><div class="section-no">Problem</div></div>
+      <div class="content split">
+        <div>
+          <h2>Từ “demo nhận diện ảnh” thành <span class="accent">hệ thống vận hành</span>.</h2>
+          <p class="lead">Điểm quan trọng không chỉ là model nhận ra khuôn mặt, mà là toàn bộ đường đi: upload, queue, worker, vector DB, log, dashboard và kiểm soát lỗi.</p>
+        </div>
+        <div class="grid-2">
+          <div class="card stat"><strong>1</strong><span>entrypoint qua Nginx: Home, User, Admin, API.</span></div>
+          <div class="card stat"><strong>2</strong><span>queue riêng: enrollment và access check.</span></div>
+          <div class="card stat"><strong>3</strong><span>storage lớp: PostgreSQL, MinIO, Qdrant.</span></div>
+          <div class="card stat"><strong>4</strong><span>trạng thái kết quả: processing, granted, denied, error.</span></div>
+        </div>
+      </div>
+      <div class="footer"><span>Goal</span><span>End-to-end AI engineering MVP</span></div>
+    </section>
+
+    <section class="slide">
+      <div class="topline"><div class="kicker">02 / User Journey</div><div class="section-no">One Minute Demo</div></div>
+      <div class="content">
+        <div class="timeline">
+          <div class="step"><b>1</b><span>Admin tạo nhân viên</span><code>employees</code></div>
+          <div class="step"><b>2</b><span>Upload ảnh mẫu khuôn mặt</span><code>employee-faces/*</code></div>
+          <div class="step"><b>3</b><span>Worker tạo embedding và upsert Qdrant</span><code>embedding_jobs</code></div>
+          <div class="step"><b>4</b><span>User gửi snapshot tại terminal</span><code>access-snapshots/*</code></div>
+          <div class="step"><b>5</b><span>Worker match vector và ghi access log</span><code>granted / denied / error</code></div>
+        </div>
+      </div>
+      <div class="footer"><span>Flow</span><span>Admin enrollment -> User access check -> Ops evidence</span></div>
+    </section>
+
+    <section class="slide photo">
+      <div class="shot full"><span class="tag">Home Gateway</span><img src="assets/screenshots/home-live.png" alt="Home Gateway"></div>
+      <div class="caption-strip">
+        <h3>Home Gateway</h3>
+        <p>Cổng vào hệ thống, điều hướng rõ giữa khu vực User Terminal và Admin Console.</p>
+      </div>
+    </section>
+
+    <section class="slide">
+      <div class="topline"><div class="kicker">03 / Presentation Layer</div><div class="section-no">Home</div></div>
+      <div class="content split wide-right">
         <div class="stack">
-          <h2>Admin đăng ký nhân viên. User check quyền tại terminal.</h2>
-          <p class="lead">Mỗi access request tạo một log có trạng thái rõ ràng: processing, granted, denied hoặc error.</p>
-          <ul class="list">
-            <li>Admin tạo employee và upload ảnh khuôn mặt mẫu.</li>
-            <li>Worker tạo embedding và lưu vector vào Qdrant.</li>
-            <li>User gửi snapshot tại terminal.</li>
-            <li>Worker so khớp, verify employee active và cập nhật access log.</li>
+          <h2>Home không xử lý nghiệp vụ.</h2>
+          <ul class="bullets">
+            <li>Chỉ là landing gateway cho vai trò.</li>
+            <li>Giảm nhầm lẫn giữa người dùng terminal và admin.</li>
+            <li>Nginx phục vụ static build và route về đúng app.</li>
           </ul>
         </div>
-        <div class="grid2">
-          <div class="metric"><div class="num">Admin</div><div class="label">Quản trị dữ liệu nền: employee, camera, user, logs.</div></div>
-          <div class="metric"><div class="num">User</div><div class="label">Thao tác duy nhất: gửi ảnh để xác minh quyền ra vào.</div></div>
-          <div class="metric"><div class="num">Worker</div><div class="label">Xử lý AI bất đồng bộ, không khóa backend request.</div></div>
-          <div class="metric"><div class="num">Ops</div><div class="label">Theo dõi health, queue, metrics, backup và build pipeline.</div></div>
-        </div>
-        <div class="foot"><span>Actors</span><span>Admin / User / AI Worker / DevOps</span></div>
-      </section>
+        <div class="device"><div class="shot tall"><img src="assets/screenshots/home-live.png" alt="Home Gateway"></div></div>
+      </div>
+      <div class="footer"><span>Design choice</span><span>Role-based entry</span></div>
+    </section>
 
-      <section class="slide light" data-title="System snapshot">
-        <div class="top"><span class="eyebrow">System snapshot</span><span class="pill green">3 interface screenshots</span></div>
-        <h2>Ba giao diện chính trong README là bằng chứng sản phẩm.</h2>
-        <div class="grid3" style="height:100%;min-height:0;">
-          <div class="shot"><span class="tag">Home Gateway</span><img src="../screenshots/home.png" alt="Home Gateway"></div>
-          <div class="shot"><span class="tag">User Terminal</span><img src="../screenshots/user-access.png" alt="User Terminal"></div>
-          <div class="shot"><span class="tag">Admin Console</span><img src="../screenshots/admin-dashboard.png" alt="Admin Console"></div>
-        </div>
-        <div class="foot"><span>UI evidence</span><span>Only three README screenshots used</span></div>
-      </section>
+    <section class="slide photo">
+      <div class="shot full"><span class="tag">User Login</span><img src="assets/screenshots/user-login.png" alt="User Login"></div>
+      <div class="caption-strip">
+        <h3>User Login</h3>
+        <p>Terminal cần xác thực trước khi gửi snapshot để backend gắn request với tài khoản hợp lệ.</p>
+      </div>
+    </section>
 
-      <section class="slide split" data-title="Home UI">
-        <div class="top"><span class="eyebrow">Home Gateway</span><span class="pill">Entry point</span></div>
+    <section class="slide photo">
+      <div class="shot full"><span class="tag">User Terminal</span><img src="assets/screenshots/user-terminal.png" alt="User Terminal"></div>
+      <div class="caption-strip">
+        <h3>User Terminal</h3>
+        <p>Một màn hình tập trung vào hành động chính: chọn camera, upload/chụp ảnh và gửi access check.</p>
+      </div>
+    </section>
+
+    <section class="slide">
+      <div class="topline"><div class="kicker">04 / User Terminal Anatomy</div><div class="section-no">UX</div></div>
+      <div class="content split">
+        <div class="device"><div class="shot tall"><img src="assets/screenshots/user-terminal.png" alt="User Terminal"></div></div>
+        <div class="grid-2">
+          <div class="card stat"><strong>01</strong><span>Camera active/default lấy từ backend.</span></div>
+          <div class="card stat"><strong>02</strong><span>Upload hoặc webcam snapshot.</span></div>
+          <div class="card stat"><strong>03</strong><span>API trả trạng thái processing ngay.</span></div>
+          <div class="card stat"><strong>04</strong><span>Log refresh để lấy kết quả cuối.</span></div>
+        </div>
+      </div>
+      <div class="footer"><span>User UX</span><span>Fast feedback, simple action surface</span></div>
+    </section>
+
+    <section class="slide photo">
+      <div class="shot full"><span class="tag">User Session</span><img src="assets/screenshots/user-session.png" alt="User Session"></div>
+      <div class="caption-strip">
+        <h3>Access Session</h3>
+        <p>Terminal hiển thị trạng thái phiên, camera và lịch sử gần nhất để người vận hành hiểu request đang ở đâu.</p>
+      </div>
+    </section>
+
+    <section class="slide photo">
+      <div class="shot full"><span class="tag">User History</span><img src="assets/screenshots/user-history.png" alt="User History"></div>
+      <div class="caption-strip">
+        <h3>User History</h3>
+        <p>Lịch sử kết quả giúp kiểm tra nhanh lần access vừa gửi: granted, denied, processing hoặc error.</p>
+      </div>
+    </section>
+
+    <section class="slide photo">
+      <div class="shot full"><span class="tag">Admin Login</span><img src="assets/screenshots/admin-login.png" alt="Admin Login"></div>
+      <div class="caption-strip">
+        <h3>Admin Login</h3>
+        <p>Khu vực quản trị được tách khỏi User Terminal và yêu cầu role admin.</p>
+      </div>
+    </section>
+
+    <section class="slide photo">
+      <div class="shot full"><span class="tag">Admin Dashboard</span><img src="assets/screenshots/admin-dashboard-live.png" alt="Admin Dashboard"></div>
+      <div class="caption-strip">
+        <h3>Admin Dashboard</h3>
+        <p>Dashboard tổng quan giúp admin kiểm tra nhanh employees, users, cameras, logs và trạng thái hệ thống.</p>
+      </div>
+    </section>
+
+    <section class="slide">
+      <div class="topline"><div class="kicker">05 / Admin Console</div><div class="section-no">Control Room</div></div>
+      <div class="content split wide-right">
         <div class="stack">
-          <h2>Một cổng vào giúp demo và điều hướng rõ ràng.</h2>
-          <ul class="list">
-            <li>Home định tuyến tới User Terminal hoặc Admin Console.</li>
-            <li>Nginx gom frontend và backend về cùng entrypoint.</li>
-            <li>Người bảo vệ demo bắt đầu từ đây để kể câu chuyện hệ thống.</li>
+          <h2>Admin Console là phòng điều khiển.</h2>
+          <ul class="bullets">
+            <li>Quản lý nhân viên và trạng thái embedding.</li>
+            <li>Theo dõi access logs để audit.</li>
+            <li>Kiểm tra health và dependency trước demo.</li>
           </ul>
         </div>
-        <div class="shot"><span class="tag">Home UI</span><img src="../screenshots/home.png" alt="Home UI"></div>
-        <div class="foot"><span>frontend-home</span><span>Gateway / role-based navigation</span></div>
-      </section>
+        <div class="device"><div class="shot tall"><img src="assets/screenshots/admin-dashboard-live.png" alt="Admin Dashboard"></div></div>
+      </div>
+      <div class="footer"><span>Admin</span><span>Manage, enroll, monitor, audit</span></div>
+    </section>
 
-      <section class="slide split light" data-title="User UI">
-        <div class="top"><span class="eyebrow">User Terminal</span><span class="pill green">Access check</span></div>
-        <div class="stack">
-          <h2>Terminal tối giản để giảm lỗi thao tác.</h2>
-          <ul class="list">
-            <li>Đăng nhập bằng user account và token.</li>
-            <li>Chọn camera active/default từ backend.</li>
-            <li>Upload snapshot hoặc chụp webcam.</li>
-            <li>Gửi request access và xem log mới nhất.</li>
-          </ul>
+    <section class="slide photo">
+      <div class="shot full"><span class="tag">Employee Management</span><img src="assets/screenshots/admin-employees.png" alt="Admin Employees"></div>
+      <div class="caption-strip">
+        <h3>Employee Management</h3>
+        <p>Admin tạo nhân viên, upload ảnh mẫu và theo dõi trạng thái embedding trước khi nhân viên có thể được nhận diện.</p>
+      </div>
+    </section>
+
+    <section class="slide">
+      <div class="topline"><div class="kicker">06 / Employee Lifecycle</div><div class="section-no">Enrollment</div></div>
+      <div class="content split">
+        <div class="timeline">
+          <div class="step"><b>1</b><span>Create employee</span><code>embedding_status = none</code></div>
+          <div class="step"><b>2</b><span>Upload face image</span><code>pending</code></div>
+          <div class="step"><b>3</b><span>Worker builds embedding</span><code>DeepFace Facenet512</code></div>
+          <div class="step"><b>4</b><span>Qdrant upsert</span><code>deepface_embeddings</code></div>
+          <div class="step"><b>5</b><span>Ready for access check</span><code>success</code></div>
         </div>
-        <div class="shot"><span class="tag">User Terminal</span><img src="../screenshots/user-access.png" alt="User Terminal"></div>
-        <div class="foot"><span>frontend-user</span><span>Snapshot / webcam / status / history</span></div>
-      </section>
+        <div class="device"><div class="shot tall"><img src="assets/screenshots/admin-employees.png" alt="Admin Employees"></div></div>
+      </div>
+      <div class="footer"><span>Lifecycle</span><span>none -> pending -> success/error</span></div>
+    </section>
 
-      <section class="slide split" data-title="Admin UI">
-        <div class="top"><span class="eyebrow">Admin Console</span><span class="pill gold">Control plane</span></div>
-        <div class="stack">
-          <h2>Admin là control plane của toàn bộ hệ thống.</h2>
-          <ul class="list">
-            <li>Tạo/sửa/vô hiệu hóa nhân viên.</li>
-            <li>Upload ảnh enrollment và theo dõi embedding status.</li>
-            <li>Quản lý camera/cổng vào và user.</li>
-            <li>Xem access logs để audit granted/denied/error.</li>
-          </ul>
+    <section class="slide photo">
+      <div class="shot full"><span class="tag">Access Logs</span><img src="assets/screenshots/admin-access-logs.png" alt="Admin Access Logs"></div>
+      <div class="caption-strip">
+        <h3>Access Logs</h3>
+        <p>Bảng log là audit trail của hệ thống: camera, employee, score, status, thời gian và thông báo lỗi.</p>
+      </div>
+    </section>
+
+    <section class="slide light">
+      <div class="topline"><div class="kicker">07 / Access Status</div><div class="section-no">State Machine</div></div>
+      <div class="content">
+        <div class="grid-4">
+          <div class="card stat"><strong class="gold">processing</strong><span>Backend đã nhận ảnh, lưu snapshot và queue job.</span></div>
+          <div class="card stat"><strong class="accent">granted</strong><span>Match employee active và score vượt threshold.</span></div>
+          <div class="card stat"><strong class="red">denied</strong><span>Ảnh hợp lệ nhưng không đủ điều kiện cấp quyền.</span></div>
+          <div class="card stat"><strong>error</strong><span>Ảnh lỗi, no-face, multi-face hoặc dependency lỗi.</span></div>
         </div>
-        <div class="shot"><span class="tag">Admin Dashboard</span><img src="../screenshots/admin-dashboard.png" alt="Admin Dashboard"></div>
-        <div class="foot"><span>frontend-admin</span><span>Employees / cameras / logs / status</span></div>
-      </section>
+      </div>
+      <div class="footer"><span>Contract</span><span>UI đọc trạng thái từ access_logs</span></div>
+    </section>
 
-      <section class="slide light" data-title="Architecture principle">
-        <div class="top"><span class="eyebrow">Nguyên tắc kiến trúc</span><span class="pill">Clear responsibility</span></div>
-        <h2>Tách service để mỗi khối làm đúng việc của nó.</h2>
-        <div class="grid4">
-          <div class="card"><h3>UI</h3><p>Chỉ hiển thị form, trạng thái và gọi API; không xử lý AI.</p></div>
-          <div class="card"><h3>Backend</h3><p>Xác thực, validate, upload, tạo record và queue job.</p></div>
-          <div class="card"><h3>Worker</h3><p>Chạy DeepFace, search vector, cập nhật quyết định.</p></div>
-          <div class="card"><h3>Data/Ops</h3><p>Lưu business data, object, vector, queue và metrics.</p></div>
+    <section class="slide photo">
+      <div class="shot full"><span class="tag">Admin Settings</span><img src="assets/screenshots/admin-settings.png" alt="Admin Settings"></div>
+      <div class="caption-strip">
+        <h3>System Settings</h3>
+        <p>Trang cấu hình/trạng thái giúp trình bày hệ thống như một sản phẩm có vận hành, không chỉ là model notebook.</p>
+      </div>
+    </section>
+
+    <section class="slide">
+      <div class="topline"><div class="kicker">08 / Architecture</div><div class="section-no">System Map</div></div>
+      <div class="content">
+        <div class="visual-map">
+          <div class="node violet" style="grid-column: 5 / 9; grid-row: 1;">User / Admin Browser<small>single user entry</small></div>
+          <div class="node blue" style="grid-column: 5 / 9; grid-row: 2;">Nginx Gateway<small>localhost:8080</small></div>
+          <div class="node blue" style="grid-column: 1 / 4; grid-row: 3;">Home UI<small>frontend-home</small></div>
+          <div class="node blue" style="grid-column: 4 / 7; grid-row: 3;">User Terminal<small>frontend-user</small></div>
+          <div class="node blue" style="grid-column: 7 / 10; grid-row: 3;">Admin Console<small>frontend-admin</small></div>
+          <div class="node green" style="grid-column: 10 / 13; grid-row: 3 / 5;">FastAPI Backend<small>auth, CRUD, upload, queue</small></div>
+          <div class="node gold" style="grid-column: 5 / 8; grid-row: 5;">Redis Queue<small>embedding_jobs / access_jobs</small></div>
+          <div class="node red" style="grid-column: 8 / 11; grid-row: 5;">AI Worker<small>DeepFace + matching</small></div>
+          <div class="node violet" style="grid-column: 1 / 4; grid-row: 6;">PostgreSQL<small>source of truth</small></div>
+          <div class="node gold" style="grid-column: 4 / 7; grid-row: 6;">MinIO<small>face images</small></div>
+          <div class="node violet" style="grid-column: 7 / 10; grid-row: 6;">Qdrant<small>face vectors</small></div>
+          <div class="node blue" style="grid-column: 10 / 13; grid-row: 6;">Prometheus/Grafana<small>metrics dashboard</small></div>
         </div>
-        <div class="foot"><span>Architecture</span><span>Small services, strong boundaries</span></div>
-      </section>
+      </div>
+      <div class="footer"><span>Architecture</span><span>Separate UI, API, worker, storage and observability</span></div>
+    </section>
 
-      <section class="slide" data-title="Architecture map">
-        <div class="top"><span class="eyebrow">Kiến trúc tổng thể</span><span class="pill green">Service map</span></div>
-        <h2>Browser → Nginx → Frontend/API → Queue → Worker → Storage.</h2>
-        <div class="glass diagram">
-          <div class="nodes">
-            <div class="node primary"><b>Nginx Gateway</b><span>Một entrypoint cho Home, User, Admin và Backend API.</span></div>
-            <div class="node primary"><b>FastAPI Backend</b><span>Auth, role, CRUD, upload, job producer, health/metrics.</span></div>
-            <div class="node gold"><b>Redis Queue</b><span>embedding_jobs và access_jobs để tách xử lý nền.</span></div>
-            <div class="node rose"><b>AI Worker</b><span>DeepFace detector, embedding, matching và update log.</span></div>
-            <div class="node"><b>PostgreSQL</b><span>users, employees, cameras, embeddings metadata, access logs.</span></div>
-            <div class="node"><b>MinIO + Qdrant</b><span>Ảnh object storage và vector database.</span></div>
+    <section class="slide light">
+      <div class="topline"><div class="kicker">09 / Why Async</div><div class="section-no">Queue Design</div></div>
+      <div class="content split">
+        <div>
+          <h2>AI inference không nằm trên request path.</h2>
+          <p class="lead">Backend trả nhanh bằng log <span class="mono">processing</span>. Worker chạy DeepFace phía sau và cập nhật kết quả cuối.</p>
+        </div>
+        <div class="timeline">
+          <div class="step"><b>A</b><span>HTTP request</span><code>&lt; 1s target</code></div>
+          <div class="step"><b>B</b><span>Redis job</span><code>small metadata</code></div>
+          <div class="step"><b>C</b><span>Worker AI</span><code>variable latency</code></div>
+          <div class="step"><b>D</b><span>Access log updated</span><code>final status</code></div>
+        </div>
+      </div>
+      <div class="footer"><span>Trade-off</span><span>Fast API, scalable worker</span></div>
+    </section>
+
+    <section class="slide">
+      <div class="topline"><div class="kicker">10 / Service Matrix</div><div class="section-no">Responsibilities</div></div>
+      <div class="content">
+        <div class="matrix">
+          <div class="row head"><div>Layer</div><div>Service</div><div>Vai trò</div></div>
+          <div class="row"><div>Presentation</div><div>Home / User / Admin</div><div>Giao diện theo vai trò, không chạy AI.</div></div>
+          <div class="row"><div>Application</div><div>FastAPI Backend</div><div>Auth, CRUD, upload, access log, queue job.</div></div>
+          <div class="row"><div>AI</div><div>Worker + DeepFace</div><div>Detect face, embedding, Qdrant search, update result.</div></div>
+          <div class="row"><div>Data</div><div>PostgreSQL / MinIO / Qdrant</div><div>Metadata, ảnh gốc/snapshot, vector index.</div></div>
+          <div class="row"><div>Ops</div><div>Prometheus / Grafana</div><div>Health, queue, logs, dashboard evidence.</div></div>
+        </div>
+      </div>
+      <div class="footer"><span>Design clarity</span><span>One service, one responsibility</span></div>
+    </section>
+
+    <section class="slide light">
+      <div class="topline"><div class="kicker">11 / Enrollment Pipeline</div><div class="section-no">AI Flow</div></div>
+      <div class="content split">
+        <div class="timeline">
+          <div class="step"><b>1</b><span>Admin upload</span><code>multipart image</code></div>
+          <div class="step"><b>2</b><span>MinIO object key</span><code>employee-faces/*</code></div>
+          <div class="step"><b>3</b><span>Redis embedding job</span><code>employee_id + image_key</code></div>
+          <div class="step"><b>4</b><span>DeepFace embedding</span><code>Facenet512</code></div>
+          <div class="step"><b>5</b><span>PostgreSQL + Qdrant</span><code>metadata + vector</code></div>
+        </div>
+        <div class="device"><div class="shot tall"><img src="assets/screenshots/admin-employees.png" alt="Enrollment UI"></div></div>
+      </div>
+      <div class="footer"><span>Enrollment</span><span>Ảnh mẫu -> embedding -> searchable vector</span></div>
+    </section>
+
+    <section class="slide">
+      <div class="topline"><div class="kicker">12 / Access Pipeline</div><div class="section-no">Decision Flow</div></div>
+      <div class="content split">
+        <div class="device"><div class="shot tall"><img src="assets/screenshots/user-terminal.png" alt="Access UI"></div></div>
+        <div class="timeline">
+          <div class="step"><b>1</b><span>User snapshot</span><code>access-snapshots/*</code></div>
+          <div class="step"><b>2</b><span>Log created</span><code>status = processing</code></div>
+          <div class="step"><b>3</b><span>Worker embeds face</span><code>one face required</code></div>
+          <div class="step"><b>4</b><span>Qdrant nearest search</span><code>candidate + score</code></div>
+          <div class="step"><b>5</b><span>Final status</span><code>granted / denied / error</code></div>
+        </div>
+      </div>
+      <div class="footer"><span>Access check</span><span>Snapshot -> vector search -> audit log</span></div>
+    </section>
+
+    <section class="slide light">
+      <div class="topline"><div class="kicker">13 / Decision Rules</div><div class="section-no">Matching</div></div>
+      <div class="content">
+        <div class="grid-3">
+          <div class="card stat"><strong>Score ≥ 0.70</strong><span>Candidate đủ tin cậy theo threshold demo.</span></div>
+          <div class="card stat"><strong>Employee active</strong><span>PostgreSQL là nguồn quyết định quyền cuối.</span></div>
+          <div class="card stat"><strong>One face only</strong><span>No-face/multi-face chuyển sang error để tránh quyết định sai.</span></div>
+        </div>
+        <div class="card flat">
+          <p class="lead">Threshold không phải hằng số production. Khi triển khai thật cần hiệu chỉnh theo camera, ánh sáng, khoảng cách, góc mặt và false accept / false reject rate.</p>
+        </div>
+      </div>
+      <div class="footer"><span>AI policy</span><span>Technical score + business status</span></div>
+    </section>
+
+    <section class="slide photo">
+      <div class="shot full"><span class="tag">MinIO Console</span><img src="assets/screenshots/minio-console.png" alt="MinIO Console"></div>
+      <div class="caption-strip">
+        <h3>MinIO Object Storage</h3>
+        <p>Ảnh employee và access snapshot được lưu bằng object key; PostgreSQL chỉ lưu metadata/path.</p>
+      </div>
+    </section>
+
+    <section class="slide photo">
+      <div class="shot full"><span class="tag">Qdrant Dashboard</span><img src="assets/screenshots/qdrant-dashboard.png" alt="Qdrant Dashboard"></div>
+      <div class="caption-strip">
+        <h3>Qdrant Vector Database</h3>
+        <p>Embedding khuôn mặt được index để tìm nearest vector nhanh hơn so khớp tuần tự trong database quan hệ.</p>
+      </div>
+    </section>
+
+    <section class="slide">
+      <div class="topline"><div class="kicker">14 / Vector Search</div><div class="section-no">How Matching Works</div></div>
+      <div class="content split">
+        <div>
+          <h2>Face image trở thành vector.</h2>
+          <p class="lead">Worker biến snapshot thành embedding, query Qdrant, nhận candidate gần nhất, rồi verify lại employee trong PostgreSQL.</p>
+        </div>
+        <div class="grid-2">
+          <div class="card stat"><strong>512D</strong><span>Facenet512 embedding space.</span></div>
+          <div class="card stat"><strong>cosine</strong><span>Đo độ gần giữa vector snapshot và vector employee.</span></div>
+          <div class="card stat"><strong>payload</strong><span>Qdrant giữ employee/model metadata.</span></div>
+          <div class="card stat"><strong>verify</strong><span>Backend data vẫn kiểm tra active/inactive.</span></div>
+        </div>
+      </div>
+      <div class="footer"><span>AI internals</span><span>Image -> embedding -> nearest vector -> decision</span></div>
+    </section>
+
+    <section class="slide light">
+      <div class="topline"><div class="kicker">15 / Data Model</div><div class="section-no">Source of Truth</div></div>
+      <div class="content">
+        <div class="grid-3">
+          <div class="card stat"><strong>users</strong><span>username, password_hash, role, active.</span></div>
+          <div class="card stat"><strong>employees</strong><span>code, name, department, embedding_status.</span></div>
+          <div class="card stat"><strong>cameras</strong><span>location, active/default gate.</span></div>
+          <div class="card stat"><strong>face_embeddings</strong><span>employee_id, model_name, vector metadata.</span></div>
+          <div class="card stat"><strong>access_logs</strong><span>status, score, employee, camera, image path.</span></div>
+          <div class="card stat"><strong>objects</strong><span>MinIO image keys linked from DB.</span></div>
+        </div>
+      </div>
+      <div class="footer"><span>Data</span><span>PostgreSQL owns business truth</span></div>
+    </section>
+
+    <section class="slide">
+      <div class="topline"><div class="kicker">16 / Backend API</div><div class="section-no">Contract</div></div>
+      <div class="content">
+        <div class="grid-4">
+          <div class="card stat"><strong>/auth</strong><span>login, current user, bearer token.</span></div>
+          <div class="card stat"><strong>/employees</strong><span>CRUD employee và upload face image.</span></div>
+          <div class="card stat"><strong>/access</strong><span>snapshot upload và queue access check.</span></div>
+          <div class="card stat"><strong>/logs</strong><span>audit trail cho admin/user view.</span></div>
+          <div class="card stat"><strong>/cameras</strong><span>camera list và active default.</span></div>
+          <div class="card stat"><strong>/admin</strong><span>system/user management.</span></div>
+          <div class="card stat"><strong>/health</strong><span>dependency readiness.</span></div>
+          <div class="card stat"><strong>/metrics</strong><span>Prometheus scrape endpoint.</span></div>
+        </div>
+      </div>
+      <div class="footer"><span>API</span><span>Frontend contract + operations endpoints</span></div>
+    </section>
+
+    <section class="slide light">
+      <div class="topline"><div class="kicker">17 / Security</div><div class="section-no">MVP Guardrails</div></div>
+      <div class="content split">
+        <div>
+          <h2>Bảo mật ở mức MVP, nhưng có ranh giới rõ.</h2>
+          <p class="lead">Bearer token, role admin/user, password hash, upload validation và không commit file môi trường thật.</p>
+        </div>
+        <div class="grid-2">
+          <div class="card stat"><strong>Auth</strong><span>Token-based API access.</span></div>
+          <div class="card stat"><strong>Role</strong><span>Admin API protected.</span></div>
+          <div class="card stat"><strong>Upload</strong><span>Extension, MIME, size validation.</span></div>
+          <div class="card stat"><strong>Secret</strong><span>.env.example only, rotate demo credentials.</span></div>
+        </div>
+      </div>
+      <div class="footer"><span>Security</span><span>Enough for MVP, hardening required for production</span></div>
+    </section>
+
+    <section class="slide photo">
+      <div class="shot full"><span class="tag">Grafana Dashboard</span><img src="assets/screenshots/grafana-dashboard-live.png" alt="Grafana Dashboard"></div>
+      <div class="caption-strip">
+        <h3>Grafana Overview</h3>
+        <p>Dashboard chứng minh backend, database, Redis, queue length và access logs đang được quan sát.</p>
+      </div>
+    </section>
+
+    <section class="slide">
+      <div class="topline"><div class="kicker">18 / Observability</div><div class="section-no">Metrics</div></div>
+      <div class="content split">
+        <div class="metric-board">
+          <div class="metric"><strong>UP</strong><span>backend</span></div>
+          <div class="metric"><strong>UP</strong><span>database</span></div>
+          <div class="metric"><strong>UP</strong><span>redis</span></div>
+          <div class="metric"><strong>0</strong><span>queued jobs when idle</span></div>
+          <div class="metric"><strong>logs</strong><span>by status</span></div>
+          <div class="metric"><strong>alerts</strong><span>backlog / dependency down</span></div>
+        </div>
+        <div class="device"><div class="shot tall"><img src="assets/screenshots/grafana-dashboard-live.png" alt="Grafana"></div></div>
+      </div>
+      <div class="footer"><span>Monitoring</span><span>Health + queue + access status evidence</span></div>
+    </section>
+
+    <section class="slide photo">
+      <div class="shot full"><span class="tag">Prometheus Targets</span><img src="assets/screenshots/prometheus-targets.png" alt="Prometheus Targets"></div>
+      <div class="caption-strip">
+        <h3>Prometheus Targets</h3>
+        <p>Prometheus scrape metrics từ backend và service liên quan để tạo dashboard/alert.</p>
+      </div>
+    </section>
+
+    <section class="slide light">
+      <div class="topline"><div class="kicker">19 / Docker Compose</div><div class="section-no">Run Locally</div></div>
+      <div class="content split">
+        <div>
+          <h2>Một stack local đầy đủ.</h2>
+          <p class="lead">Docker Compose dựng UI, API, worker, database, Redis, MinIO, Qdrant, Nginx, Prometheus và Grafana.</p>
+        </div>
+        <div class="card">
+          <div class="timeline">
+            <div class="step"><b>1</b><span>Copy env</span><code>Copy-Item .env.example .env</code></div>
+            <div class="step"><b>2</b><span>Build + run</span><code>docker compose up --build -d</code></div>
+            <div class="step"><b>3</b><span>Baseline check</span><code>scripts/demo-baseline-check.ps1</code></div>
           </div>
         </div>
-        <div class="foot"><span>Core map</span><span>No DeepFace inside HTTP request path</span></div>
-      </section>
+      </div>
+      <div class="footer"><span>Runtime</span><span>Local reproducibility matters</span></div>
+    </section>
 
-      <section class="slide light" data-title="Design decisions">
-        <div class="top"><span class="eyebrow">Quyết định thiết kế</span><span class="pill green">Why this architecture</span></div>
-        <table class="table glass">
-          <thead><tr><th>Yêu cầu</th><th>Quyết định</th><th>Lý do</th></tr></thead>
-          <tbody>
-            <tr><td>API phản hồi nhanh</td><td>Backend chỉ tạo log và queue job.</td><td>DeepFace có latency biến động, không nên khóa HTTP request.</td></tr>
-            <tr><td>Lưu ảnh an toàn</td><td>MinIO lưu ảnh, PostgreSQL lưu object key.</td><td>File nhị phân lớn không phù hợp để nhét vào relational table.</td></tr>
-            <tr><td>Search khuôn mặt</td><td>Qdrant lưu face vectors.</td><td>Vector database phù hợp khi số employee/embedding tăng.</td></tr>
-            <tr><td>Quan sát vận hành</td><td>Prometheus + Grafana.</td><td>Có health, queue length và access logs by status khi demo.</td></tr>
-          </tbody>
-        </table>
-        <div class="foot"><span>Tradeoffs</span><span>Latency / scalability / observability</span></div>
-      </section>
-
-      <section class="slide" data-title="Service matrix">
-        <div class="top"><span class="eyebrow">Service matrix</span><span class="pill">Implementation map</span></div>
-        <table class="table glass">
-          <thead><tr><th>Service</th><th>Công nghệ</th><th>Trách nhiệm</th><th>Repo</th></tr></thead>
-          <tbody>
-            <tr><td>Home/User/Admin</td><td>React, Vite</td><td>3 trải nghiệm UI theo vai trò.</td><td><span class="code">frontend/</span></td></tr>
-            <tr><td>Nginx</td><td>Nginx</td><td>Reverse proxy và static serving.</td><td><span class="code">nginx/</span></td></tr>
-            <tr><td>Backend</td><td>FastAPI</td><td>Auth, CRUD, upload, queue, health, metrics.</td><td><span class="code">backend/app</span></td></tr>
-            <tr><td>Worker</td><td>Python, DeepFace</td><td>AI jobs, embedding, vector search.</td><td><span class="code">worker/app</span></td></tr>
-            <tr><td>Data/Ops</td><td>PostgreSQL, Redis, MinIO, Qdrant, Prometheus, Grafana</td><td>Lưu trữ, queue, vector DB, monitoring.</td><td><span class="code">docker-compose.yml</span></td></tr>
-          </tbody>
-        </table>
-        <div class="foot"><span>Service ownership</span><span>Each service has a defense talking point</span></div>
-      </section>
-
-      <section class="slide light" data-title="Data model">
-        <div class="top"><span class="eyebrow">Thiết kế dữ liệu</span><span class="pill">Source of truth</span></div>
-        <h2>PostgreSQL giữ dữ liệu nghiệp vụ; hệ khác hỗ trợ đúng chuyên môn.</h2>
-        <div class="grid4">
-          <div class="metric"><div class="num">users</div><div class="label">username, password_hash, role, is_active.</div></div>
-          <div class="metric"><div class="num">employees</div><div class="label">code, name, department, status, embedding_status.</div></div>
-          <div class="metric"><div class="num">cameras</div><div class="label">name, location, stream_url, active state.</div></div>
-          <div class="metric"><div class="num">logs</div><div class="label">status, score, image_path, camera, employee.</div></div>
+    <section class="slide">
+      <div class="topline"><div class="kicker">20 / URLs</div><div class="section-no">Demo Entrypoints</div></div>
+      <div class="content">
+        <div class="grid-4">
+          <div class="card stat"><strong>:8080</strong><span>Home Gateway</span></div>
+          <div class="card stat"><strong>/user</strong><span>User Terminal</span></div>
+          <div class="card stat"><strong>/admin</strong><span>Admin Console</span></div>
+          <div class="card stat"><strong>/docs</strong><span>Backend OpenAPI</span></div>
+          <div class="card stat"><strong>:9001</strong><span>MinIO Console</span></div>
+          <div class="card stat"><strong>:6333</strong><span>Qdrant REST</span></div>
+          <div class="card stat"><strong>:9090</strong><span>Prometheus</span></div>
+          <div class="card stat"><strong>:3000</strong><span>Grafana</span></div>
         </div>
-        <div class="foot"><span>PostgreSQL</span><span>Business data and audit trail</span></div>
-      </section>
+      </div>
+      <div class="footer"><span>Demo access</span><span>Open only what is needed during defense</span></div>
+    </section>
 
-      <section class="slide" data-title="Storage split">
-        <div class="top"><span class="eyebrow">Storage split</span><span class="pill green">Right storage for right data</span></div>
-        <div class="grid3">
-          <div class="card"><h3>PostgreSQL</h3><p>Source of truth cho users, employees, cameras, embeddings metadata và access logs.</p></div>
-          <div class="card"><h3>MinIO</h3><p>Lưu ảnh employee-faces và access-snapshots bằng object key.</p></div>
-          <div class="card"><h3>Qdrant</h3><p>Lưu vector embedding và payload employee/model metadata.</p></div>
-          <div class="card"><h3>Redis</h3><p>Queue tạm thời cho embedding_jobs và access_jobs.</p></div>
-          <div class="card"><h3>Prometheus</h3><p>Lưu time-series metrics phục vụ dashboard và alert.</p></div>
-          <div class="card"><h3>Grafana</h3><p>Trực quan hóa health, queue backlog và access logs status.</p></div>
+    <section class="slide light">
+      <div class="topline"><div class="kicker">21 / CI/CD</div><div class="section-no">Automation</div></div>
+      <div class="content split">
+        <div>
+          <h2>Pipeline chứng minh repo không chỉ chạy tay.</h2>
+          <p class="lead">GitHub Actions kiểm thử backend/worker, build frontend và build/publish Docker images khi cấu hình secret.</p>
         </div>
-        <div class="foot"><span>Storage strategy</span><span>Relational / object / vector / queue / metrics</span></div>
-      </section>
-
-      <section class="slide light" data-title="Data relations">
-        <div class="top"><span class="eyebrow">Quan hệ dữ liệu</span><span class="pill">Business model</span></div>
-        <table class="table glass">
-          <thead><tr><th>Quan hệ</th><th>Kiểu</th><th>Ý nghĩa</th></tr></thead>
-          <tbody>
-            <tr><td><span class="code">employees → face_embeddings</span></td><td>1-n</td><td>Một employee có thể có nhiều embedding từ nhiều ảnh.</td></tr>
-            <tr><td><span class="code">employees → access_logs</span></td><td>1-n / nullable</td><td>Log có employee khi match; denied/error có thể không có employee.</td></tr>
-            <tr><td><span class="code">cameras → access_logs</span></td><td>1-n</td><td>Mỗi lần check access gắn với camera/cổng cụ thể.</td></tr>
-            <tr><td><span class="code">MinIO object key → PostgreSQL</span></td><td>reference</td><td>DB lưu đường dẫn object, file thật nằm trong MinIO.</td></tr>
-            <tr><td><span class="code">Qdrant payload → employee_id</span></td><td>reference</td><td>Worker search vector rồi verify employee active trong PostgreSQL.</td></tr>
-          </tbody>
-        </table>
-        <div class="foot"><span>Data consistency</span><span>PostgreSQL remains source of truth</span></div>
-      </section>
-
-      <section class="slide" data-title="Enrollment pipeline">
-        <div class="top"><span class="eyebrow">Pipeline enrollment</span><span class="pill gold">embedding_jobs</span></div>
-        <h2>Enrollment biến ảnh mẫu thành vector có thể tìm kiếm.</h2>
-        <div class="flow">
-          <div class="step"><div class="idx">1</div><h4>Upload</h4><p>Admin gửi ảnh mặt cho employee.</p></div>
-          <div class="step"><div class="idx">2</div><h4>Validate</h4><p>Backend kiểm tra file, type, size.</p></div>
-          <div class="step"><div class="idx">3</div><h4>Object</h4><p>Ảnh vào MinIO employee-faces.</p></div>
-          <div class="step"><div class="idx">4</div><h4>Queue</h4><p>Redis nhận embedding job.</p></div>
-          <div class="step"><div class="idx">5</div><h4>Embedding</h4><p>Worker detect face và tạo vector.</p></div>
-          <div class="step"><div class="idx">6</div><h4>Upsert</h4><p>Lưu PostgreSQL và Qdrant.</p></div>
+        <div class="timeline">
+          <div class="step"><b>CI</b><span>Backend tests</span><code>pytest backend/app/tests</code></div>
+          <div class="step"><b>CI</b><span>Worker tests</span><code>pytest worker/app/tests</code></div>
+          <div class="step"><b>CI</b><span>Frontend build</span><code>npm run build</code></div>
+          <div class="step"><b>CD</b><span>Docker image build</span><code>backend / worker / frontend</code></div>
         </div>
-        <div class="foot"><span>Enrollment</span><span>Backend stores image, worker creates vector</span></div>
-      </section>
+      </div>
+      <div class="footer"><span>CI/CD</span><span>Test, build, package</span></div>
+    </section>
 
-      <section class="slide light" data-title="Enrollment controls">
-        <div class="top"><span class="eyebrow">Kiểm soát enrollment</span><span class="pill red">Quality gates</span></div>
-        <table class="table glass">
-          <thead><tr><th>Gate</th><th>Điều kiện</th><th>Nếu fail</th></tr></thead>
-          <tbody>
-            <tr><td>Upload validation</td><td>File không rỗng, đúng extension/content type, không vượt size.</td><td>API từ chối, không queue job.</td></tr>
-            <tr><td>Face detection</td><td>Ảnh cần đúng một khuôn mặt.</td><td>embedding_status = error.</td></tr>
-            <tr><td>Duplicate check</td><td>Không quá giống employee active khác.</td><td>Worker ghi lỗi duplicate.</td></tr>
-            <tr><td>Vector save</td><td>PostgreSQL và Qdrant cập nhật thành công.</td><td>Ghi embedding_error để admin xử lý.</td></tr>
-          </tbody>
-        </table>
-        <div class="foot"><span>Quality gates</span><span>Bad data is stopped early</span></div>
-      </section>
-
-      <section class="slide" data-title="Access pipeline">
-        <div class="top"><span class="eyebrow">Pipeline access check</span><span class="pill green">access_jobs</span></div>
-        <h2>Access check tạo log ngay, worker cập nhật kết quả sau.</h2>
-        <div class="flow">
-          <div class="step"><div class="idx">1</div><h4>Snapshot</h4><p>User gửi ảnh từ terminal.</p></div>
-          <div class="step"><div class="idx">2</div><h4>Processing</h4><p>Backend tạo access log.</p></div>
-          <div class="step"><div class="idx">3</div><h4>Queue</h4><p>Redis nhận access job.</p></div>
-          <div class="step"><div class="idx">4</div><h4>Embedding</h4><p>Worker tạo vector snapshot.</p></div>
-          <div class="step"><div class="idx">5</div><h4>Search</h4><p>Qdrant trả candidate gần nhất.</p></div>
-          <div class="step"><div class="idx">6</div><h4>Decision</h4><p>Cập nhật granted/denied/error.</p></div>
+    <section class="slide">
+      <div class="topline"><div class="kicker">22 / Testing</div><div class="section-no">Quality Gates</div></div>
+      <div class="content">
+        <div class="grid-4">
+          <div class="card stat"><strong>Backend</strong><span>auth, employees, cameras, access, logs, metrics.</span></div>
+          <div class="card stat"><strong>Worker</strong><span>detector, embedder, vector store, job handlers.</span></div>
+          <div class="card stat"><strong>Frontend</strong><span>TypeScript compile và Vite production build.</span></div>
+          <div class="card stat"><strong>Runtime</strong><span>health, routes, queues, monitoring baseline.</span></div>
         </div>
-        <div class="foot"><span>Access flow</span><span>Async, auditable, observable</span></div>
-      </section>
+      </div>
+      <div class="footer"><span>Validation</span><span>Unit + build + runtime baseline</span></div>
+    </section>
 
-      <section class="slide light" data-title="Decision logic">
-        <div class="top"><span class="eyebrow">Quy tắc ra quyết định</span><span class="pill">Decision table</span></div>
-        <table class="table glass">
-          <thead><tr><th>Tình huống</th><th>Status</th><th>Giải thích</th></tr></thead>
-          <tbody>
-            <tr><td>Ảnh lỗi, không đọc được hoặc MinIO lỗi</td><td><span class="code">error</span></td><td>Worker không có input hợp lệ để xử lý.</td></tr>
-            <tr><td>Không detect mặt hoặc nhiều mặt</td><td><span class="code">error</span></td><td>Hệ thống yêu cầu một request tương ứng một người.</td></tr>
-            <tr><td>Không có candidate phù hợp</td><td><span class="code">denied</span></td><td>Ảnh hợp lệ nhưng không giống employee đã đăng ký.</td></tr>
-            <tr><td>Score dưới threshold</td><td><span class="code">denied</span></td><td>Có candidate nhưng độ tin cậy chưa đủ.</td></tr>
-            <tr><td>Employee inactive</td><td><span class="code">denied</span></td><td>PostgreSQL quyết định quyền cuối cùng.</td></tr>
-            <tr><td>Employee active và score đạt ngưỡng</td><td><span class="code">granted</span></td><td>Ghi employee, score và message vào access log.</td></tr>
-          </tbody>
-        </table>
-        <div class="foot"><span>Decision model</span><span>Status is explicit, not boolean-only</span></div>
-      </section>
-
-      <section class="slide" data-title="AI config">
-        <div class="top"><span class="eyebrow">Cấu hình AI</span><span class="pill gold">DeepFace</span></div>
-        <h2>Cấu hình đủ rõ để bảo vệ và đủ linh hoạt để tuning.</h2>
-        <div class="grid4">
-          <div class="metric"><div class="num">512</div><div class="label">Facenet512 tạo vector embedding khuôn mặt.</div></div>
-          <div class="metric"><div class="num">MTCNN</div><div class="label">Detector backend cho enrollment và access check.</div></div>
-          <div class="metric"><div class="num">0.70</div><div class="label">Match threshold demo cho quyết định granted.</div></div>
-          <div class="metric"><div class="num">0.95</div><div class="label">Duplicate threshold để chặn đăng ký trùng.</div></div>
+    <section class="slide light">
+      <div class="topline"><div class="kicker">23 / Demo Checklist</div><div class="section-no">Acceptance</div></div>
+      <div class="content">
+        <div class="timeline">
+          <div class="step"><b>✓</b><span>Stack up</span><code>docker compose ps</code></div>
+          <div class="step"><b>✓</b><span>Admin tạo employee</span><code>employees table</code></div>
+          <div class="step"><b>✓</b><span>Upload ảnh -> embedding success</span><code>worker + Qdrant</code></div>
+          <div class="step"><b>✓</b><span>User snapshot -> granted</span><code>access log</code></div>
+          <div class="step"><b>✓</b><span>Sai người/no-face -> denied/error</span><code>message rõ</code></div>
+          <div class="step"><b>✓</b><span>Grafana hiển thị queue/logs</span><code>ops evidence</code></div>
         </div>
-        <div class="foot"><span>AI config</span><span>Threshold must be calibrated in real deployment</span></div>
-      </section>
+      </div>
+      <div class="footer"><span>Defense</span><span>Show outcome, then explain internals</span></div>
+    </section>
 
-      <section class="slide light" data-title="AI caveats">
-        <div class="top"><span class="eyebrow">Giới hạn AI</span><span class="pill red">Reality check</span></div>
-        <div class="grid3">
-          <div class="card"><h3>Threshold không tuyệt đối</h3><p>Camera, ánh sáng, góc mặt, kính, khoảng cách và chất lượng ảnh đều ảnh hưởng score.</p></div>
-          <div class="card"><h3>Dataset demo nhỏ</h3><p>Không nên dùng kết quả MVP để kết luận accuracy production.</p></div>
-          <div class="card"><h3>Một ảnh là chưa đủ</h3><p>Production nên hỗ trợ nhiều ảnh/embedding cho mỗi employee ở nhiều góc mặt.</p></div>
-          <div class="card"><h3>Latency biến động</h3><p>Model load và detector có chi phí cao, vì vậy cần worker nền.</p></div>
-          <div class="card"><h3>No-face/multi-face</h3><p>Cần xử lý rõ để tránh quyết định sai tại terminal.</p></div>
-          <div class="card"><h3>Privacy</h3><p>Khuôn mặt là dữ liệu sinh trắc học, cần retention và quyền truy cập chặt.</p></div>
+    <section class="slide">
+      <div class="topline"><div class="kicker">24 / Backup</div><div class="section-no">Ops</div></div>
+      <div class="content split">
+        <div>
+          <h2>Backup tập trung vào dữ liệu nghiệp vụ.</h2>
+          <p class="lead">PostgreSQL là source of truth. MinIO bucket và Qdrant snapshot là phần cần bổ sung khi production.</p>
         </div>
-        <div class="foot"><span>AI engineering</span><span>Accuracy requires controlled evaluation</span></div>
-      </section>
-
-      <section class="slide" data-title="Backend API">
-        <div class="top"><span class="eyebrow">Backend API</span><span class="pill">FastAPI contract</span></div>
-        <table class="table glass">
-          <thead><tr><th>Nhóm</th><th>Endpoint</th><th>Vai trò</th></tr></thead>
-          <tbody>
-            <tr><td>Auth</td><td><span class="code">POST /auth/login</span>, <span class="code">GET /auth/me</span></td><td>Login, bearer token, user profile.</td></tr>
-            <tr><td>Employees</td><td><span class="code">GET/POST/PUT/DELETE /employees</span></td><td>Quản lý hồ sơ nhân viên.</td></tr>
-            <tr><td>Face image</td><td><span class="code">POST /employees/{id}/face-image</span></td><td>Upload ảnh và queue embedding job.</td></tr>
-            <tr><td>Cameras</td><td><span class="code">GET/POST/PUT/DELETE /cameras</span></td><td>Cấu hình camera/cổng vào.</td></tr>
-            <tr><td>Access</td><td><span class="code">POST /access/check-image</span></td><td>Queue access job và tạo log processing.</td></tr>
-            <tr><td>Ops</td><td><span class="code">/health</span>, <span class="code">/metrics</span></td><td>Health check và Prometheus metrics.</td></tr>
-          </tbody>
-        </table>
-        <div class="foot"><span>API</span><span>Swagger not needed in slides; contract table is clearer</span></div>
-      </section>
-
-      <section class="slide light" data-title="Auth">
-        <div class="top"><span class="eyebrow">Auth và phân quyền</span><span class="pill green">Bearer token</span></div>
-        <div class="grid2">
-          <div class="card"><h3>Admin role</h3><p>Quản lý employee, camera, user, face-image enrollment, access logs và status hệ thống.</p></div>
-          <div class="card"><h3>User role</h3><p>Dùng terminal để gửi ảnh check access và xem thông tin/log cần thiết cho terminal.</p></div>
-          <div class="card"><h3>API guard</h3><p>Endpoint quản trị cần role admin; request thiếu/sai token trả 401/403.</p></div>
-          <div class="card"><h3>Password handling</h3><p>Password được hash, không trả hash qua API và không commit secret thật.</p></div>
+        <div class="grid-2">
+          <div class="card stat"><strong>local</strong><span>PowerShell dump PostgreSQL.</span></div>
+          <div class="card stat"><strong>S3</strong><span>Upload dump lên MinIO/S3-compatible.</span></div>
+          <div class="card stat"><strong>cron</strong><span>Backup định kỳ trong container.</span></div>
+          <div class="card stat"><strong>retention</strong><span>Chính sách giữ/xóa dữ liệu sinh trắc học.</span></div>
         </div>
-        <div class="foot"><span>Security base</span><span>Role-based access boundaries</span></div>
-      </section>
+      </div>
+      <div class="footer"><span>Backup</span><span>Database first, object/vector next</span></div>
+    </section>
 
-      <section class="slide" data-title="Queue design">
-        <div class="top"><span class="eyebrow">Queue design</span><span class="pill gold">Redis</span></div>
-        <h2>Redis chỉ giữ metadata nhỏ, không giữ file ảnh nhị phân.</h2>
-        <div class="grid2">
-          <div class="card"><h3>embedding_jobs</h3><p>Job đăng ký khuôn mặt: employee_id, image_key, model config và type.</p></div>
-          <div class="card"><h3>access_jobs</h3><p>Job kiểm tra truy cập: access_log_id, camera_id, image_key và type.</p></div>
-          <div class="card"><h3>Vì sao nhẹ?</h3><p>Ảnh thật nằm trong MinIO, Redis chỉ là đường dẫn và metadata job.</p></div>
-          <div class="card"><h3>Vì sao scale được?</h3><p>Có thể tăng số worker mà không đổi UI/backend contract.</p></div>
+    <section class="slide light">
+      <div class="topline"><div class="kicker">25 / Risks</div><div class="section-no">Production Hardening</div></div>
+      <div class="content">
+        <div class="grid-3">
+          <div class="card stat"><strong>Threshold</strong><span>Cần hiệu chỉnh tại hiện trường, không dùng cứng cho production.</span></div>
+          <div class="card stat"><strong>Biometric data</strong><span>Ảnh khuôn mặt là dữ liệu nhạy cảm, cần retention và access control.</span></div>
+          <div class="card stat"><strong>Secrets</strong><span>Đổi credential demo, dùng Secret Manager/Kubernetes Secret.</span></div>
+          <div class="card stat"><strong>HTTPS</strong><span>Bắt buộc nếu expose ngoài máy local.</span></div>
+          <div class="card stat"><strong>Rate limit</strong><span>Chặn spam upload hoặc brute force login.</span></div>
+          <div class="card stat"><strong>Audit</strong><span>Ghi log thao tác admin quan trọng.</span></div>
         </div>
-        <div class="foot"><span>Async queue</span><span>Small messages, heavy work in worker</span></div>
-      </section>
+      </div>
+      <div class="footer"><span>Risk</span><span>MVP is functional, production needs hardening</span></div>
+    </section>
 
-      <section class="slide light" data-title="States">
-        <div class="top"><span class="eyebrow">Trạng thái quan trọng</span><span class="pill">Debug language</span></div>
-        <table class="table glass">
-          <thead><tr><th>Đối tượng</th><th>Status</th><th>Ý nghĩa</th></tr></thead>
-          <tbody>
-            <tr><td>Employee embedding</td><td><span class="code">none</span></td><td>Chưa upload ảnh hoặc chưa có job.</td></tr>
-            <tr><td>Employee embedding</td><td><span class="code">pending</span></td><td>Backend đã queue, worker chưa xử lý xong.</td></tr>
-            <tr><td>Employee embedding</td><td><span class="code">success</span></td><td>Embedding đã lưu vào PostgreSQL/Qdrant.</td></tr>
-            <tr><td>Employee embedding</td><td><span class="code">error</span></td><td>Ảnh/model/dependency lỗi.</td></tr>
-            <tr><td>Access log</td><td><span class="code">processing</span></td><td>Request đã nhận, đang chờ worker.</td></tr>
-            <tr><td>Access log</td><td><span class="code">granted / denied / error</span></td><td>Kết quả cuối của access pipeline.</td></tr>
-          </tbody>
-        </table>
-        <div class="foot"><span>Status model</span><span>UI and backend speak the same state language</span></div>
-      </section>
-
-      <section class="slide" data-title="Monitoring">
-        <div class="top"><span class="eyebrow">Monitoring</span><span class="pill green">Prometheus + Grafana</span></div>
-        <h2>Monitoring chứng minh hệ thống vận hành, không chỉ chạy demo UI.</h2>
-        <div class="grid4">
-          <div class="metric"><div class="num">UP</div><div class="label">Backend process còn hoạt động.</div></div>
-          <div class="metric"><div class="num">DB</div><div class="label">Backend kết nối PostgreSQL thành công.</div></div>
-          <div class="metric"><div class="num">Q</div><div class="label">Queue length theo embedding_jobs/access_jobs.</div></div>
-          <div class="metric"><div class="num">Logs</div><div class="label">Access logs theo granted/denied/error.</div></div>
+    <section class="slide">
+      <div class="topline"><div class="kicker">26 / What To Say</div><div class="section-no">Defense Notes</div></div>
+      <div class="content split">
+        <div>
+          <h2>Trọng tâm bảo vệ</h2>
+          <p class="lead">Đừng chỉ nói “DeepFace nhận diện”. Hãy nói hệ thống xử lý request AI bất đồng bộ, lưu audit log và có observability.</p>
         </div>
-        <div class="foot"><span>Observability</span><span>Health / queue / access status</span></div>
-      </section>
-
-      <section class="slide light" data-title="Metrics">
-        <div class="top"><span class="eyebrow">Metric chính</span><span class="pill">Dashboard vocabulary</span></div>
-        <table class="table glass">
-          <thead><tr><th>Metric</th><th>Ý nghĩa</th><th>Khi demo</th></tr></thead>
-          <tbody>
-            <tr><td><span class="code">deepface_backend_up</span></td><td>Backend còn sống.</td><td>Nên bằng 1 hoặc UP.</td></tr>
-            <tr><td><span class="code">deepface_database_up</span></td><td>Kết nối PostgreSQL.</td><td>Nếu 0, API nghiệp vụ không ổn.</td></tr>
-            <tr><td><span class="code">deepface_redis_up</span></td><td>Kết nối Redis.</td><td>Nếu 0, job không vào queue.</td></tr>
-            <tr><td><span class="code">deepface_queue_length</span></td><td>Số job đang chờ.</td><td>Tăng liên tục nghĩa là worker backlog/lỗi.</td></tr>
-            <tr><td><span class="code">deepface_access_logs_total</span></td><td>Số log theo status.</td><td>Chứng minh granted/denied/error có record.</td></tr>
-          </tbody>
-        </table>
-        <div class="foot"><span>Metrics</span><span>What to explain in Grafana</span></div>
-      </section>
-
-      <section class="slide" data-title="Docker compose">
-        <div class="top"><span class="eyebrow">Docker Compose</span><span class="pill green">One-command demo</span></div>
-        <h2>Docker Compose đóng gói toàn bộ stack local.</h2>
-        <div class="grid3">
-          <div class="card"><h3>Application</h3><p>nginx, backend, worker, frontend-home, frontend-user, frontend-admin.</p></div>
-          <div class="card"><h3>Data</h3><p>database, redis, minio, qdrant và persistent volumes.</p></div>
-          <div class="card"><h3>Ops</h3><p>prometheus, grafana, alertmanager và cron-backup.</p></div>
+        <div class="timeline">
+          <div class="step"><b>1</b><span>Use case rõ</span><code>access control</code></div>
+          <div class="step"><b>2</b><span>Kiến trúc đúng vai trò</span><code>UI / API / Worker / Data</code></div>
+          <div class="step"><b>3</b><span>Pipeline AI có trạng thái</span><code>processing -> final</code></div>
+          <div class="step"><b>4</b><span>Monitoring là bằng chứng runtime</span><code>Grafana</code></div>
         </div>
-        <div class="glass card"><p><span class="code">Copy-Item .env.example .env</span> → <span class="code">docker compose up --build -d</span> → mở <span class="code">http://localhost:8080</span></p></div>
-        <div class="foot"><span>Runtime</span><span>Docker Desktop + env file + compose command</span></div>
-      </section>
+      </div>
+      <div class="footer"><span>Presentation</span><span>Lead with architecture, prove with screenshots</span></div>
+    </section>
 
-      <section class="slide light" data-title="URLs">
-        <div class="top"><span class="eyebrow">URL sau khi chạy</span><span class="pill">Demo map</span></div>
-        <table class="table glass">
-          <thead><tr><th>Thành phần</th><th>URL</th><th>Khi nào mở</th></tr></thead>
-          <tbody>
-            <tr><td>Home Gateway</td><td><span class="code">http://localhost:8080</span></td><td>Bắt đầu demo.</td></tr>
-            <tr><td>User Terminal</td><td><span class="code">/user/</span></td><td>Gửi snapshot check access.</td></tr>
-            <tr><td>Admin Console</td><td><span class="code">/admin/</span></td><td>Quản lý employees và logs.</td></tr>
-            <tr><td>Backend health</td><td><span class="code">/health</span></td><td>Chứng minh backend/dependencies.</td></tr>
-            <tr><td>Prometheus/Grafana</td><td><span class="code">:9090</span>, <span class="code">:3000</span></td><td>Monitoring và dashboard.</td></tr>
-            <tr><td>MinIO/Qdrant</td><td><span class="code">:9001</span>, <span class="code">:6333</span></td><td>Object storage và vector DB.</td></tr>
-          </tbody>
-        </table>
-        <div class="foot"><span>Demo navigation</span><span>Open only what supports your story</span></div>
-      </section>
-
-      <section class="slide" data-title="CI/CD">
-        <div class="top"><span class="eyebrow">CI/CD</span><span class="pill gold">Delivery baseline</span></div>
-        <div class="grid4">
-          <div class="metric"><div class="num">Test</div><div class="label">Backend tests và worker tests chạy tự động.</div></div>
-          <div class="metric"><div class="num">Build</div><div class="label">Frontend TypeScript/Vite production build.</div></div>
-          <div class="metric"><div class="num">Image</div><div class="label">Docker images cho backend, worker và frontends.</div></div>
-          <div class="metric"><div class="num">Push</div><div class="label">Có thể publish Docker Hub khi cấu hình secrets.</div></div>
+    <section class="slide light">
+      <div class="topline"><div class="kicker">27 / Team Split</div><div class="section-no">Modules</div></div>
+      <div class="content">
+        <div class="grid-4">
+          <div class="card stat"><strong>Backend</strong><span>Auth, employees, access, logs, database, metrics.</span></div>
+          <div class="card stat"><strong>AI/Worker</strong><span>DeepFace, detector, embedding, Qdrant, threshold.</span></div>
+          <div class="card stat"><strong>Frontend</strong><span>Home, User Terminal, Admin Console, webcam/snapshot.</span></div>
+          <div class="card stat"><strong>DevOps</strong><span>Docker, Nginx, monitoring, CI/CD, backup, docs.</span></div>
         </div>
-        <div class="foot"><span>CI/CD</span><span>Test, build, package, publish</span></div>
-      </section>
+      </div>
+      <div class="footer"><span>Team</span><span>Clear module ownership</span></div>
+    </section>
 
-      <section class="slide light" data-title="Helm backup">
-        <div class="top"><span class="eyebrow">Helm và backup</span><span class="pill green">Beyond local demo</span></div>
-        <div class="grid2">
-          <div class="card"><h3>Helm baseline</h3><p>Chart tại <span class="code">helm/deepface-access</span> là nền tảng triển khai Kubernetes cho backend, worker, frontend, database, Redis, MinIO, Qdrant và ingress.</p></div>
-          <div class="card"><h3>Backup strategy</h3><p>Script backup local/S3 và cron-backup dump PostgreSQL định kỳ lên MinIO/S3-compatible storage.</p></div>
-          <div class="card"><h3>Production cần thêm</h3><p>Image registry, tag, resource request/limit, Kubernetes Secret, persistent volume và TLS.</p></div>
-          <div class="card"><h3>Data cần bảo vệ</h3><p>PostgreSQL là quan trọng nhất; MinIO bucket và Qdrant snapshot nên bổ sung khi production.</p></div>
+    <section class="slide">
+      <div class="topline"><div class="kicker">28 / Product Suite</div><div class="section-no">3 Apps</div></div>
+      <div class="content">
+        <div class="grid-3">
+          <div class="device"><div class="shot medium"><span class="tag">Home</span><img src="assets/screenshots/home-live.png" alt="Home"></div></div>
+          <div class="device"><div class="shot medium"><span class="tag">User</span><img src="assets/screenshots/user-terminal.png" alt="User"></div></div>
+          <div class="device"><div class="shot medium"><span class="tag">Admin</span><img src="assets/screenshots/admin-dashboard-live.png" alt="Admin"></div></div>
         </div>
-        <div class="foot"><span>Operations</span><span>Deployability and recovery path</span></div>
-      </section>
+        <p class="lead">Ba giao diện tách vai trò: cổng vào, terminal thao tác nhanh và console quản trị hệ thống.</p>
+      </div>
+      <div class="footer"><span>UX Evidence</span><span>Home + User + Admin</span></div>
+    </section>
 
-      <section class="slide" data-title="Testing">
-        <div class="top"><span class="eyebrow">Kiểm thử</span><span class="pill">QA plan</span></div>
-        <table class="table glass">
-          <thead><tr><th>Nhóm</th><th>Nội dung</th><th>Lệnh</th></tr></thead>
-          <tbody>
-            <tr><td>Backend API</td><td>Auth, employees, cameras, access, logs, operations.</td><td><span class="code">pytest backend/app/tests</span></td></tr>
-            <tr><td>Worker services</td><td>Detector, embedder, vector store, job handlers.</td><td><span class="code">pytest worker/app/tests</span></td></tr>
-            <tr><td>Frontend build</td><td>TypeScript compile và Vite production build.</td><td><span class="code">npm run build</span></td></tr>
-            <tr><td>Runtime baseline</td><td>Health, routes, metrics, Redis queues.</td><td><span class="code">scripts/demo-baseline-check.ps1</span></td></tr>
-          </tbody>
-        </table>
-        <div class="foot"><span>Testing strategy</span><span>Service-level tests + runtime baseline</span></div>
-      </section>
-
-      <section class="slide light" data-title="Acceptance">
-        <div class="top"><span class="eyebrow">Acceptance criteria</span><span class="pill green">Demo pass</span></div>
-        <div class="grid3">
-          <div class="card"><h3>Stack starts</h3><p>Compose service Up/healthy, Home mở được.</p></div>
-          <div class="card"><h3>Admin creates employee</h3><p>Employee xuất hiện trong Admin Console.</p></div>
-          <div class="card"><h3>Embedding success</h3><p>Upload ảnh, worker xử lý, Qdrant có vector.</p></div>
-          <div class="card"><h3>Granted case</h3><p>Snapshot đúng người chuyển từ processing sang granted.</p></div>
-          <div class="card"><h3>Denied/error case</h3><p>Ảnh sai/no-face tạo denied hoặc error rõ ràng.</p></div>
-          <div class="card"><h3>Monitoring visible</h3><p>Grafana/Prometheus hiển thị service health và queue.</p></div>
+    <section class="slide light">
+      <div class="topline"><div class="kicker">29 / Trace One Request</div><div class="section-no">From Image To Log</div></div>
+      <div class="content">
+        <div class="timeline">
+          <div class="step"><b>UI</b><span>User gửi ảnh snapshot</span><code>multipart/form-data</code></div>
+          <div class="step"><b>API</b><span>Backend tạo access_log</span><code>status=processing</code></div>
+          <div class="step"><b>OBJ</b><span>Snapshot lưu trong MinIO</span><code>access-snapshots/*</code></div>
+          <div class="step"><b>Q</b><span>Redis nhận access job</span><code>access_log_id + image_key</code></div>
+          <div class="step"><b>AI</b><span>Worker detect, embed, search</span><code>DeepFace + Qdrant</code></div>
+          <div class="step"><b>DB</b><span>PostgreSQL lưu kết quả cuối</span><code>score + employee + status</code></div>
         </div>
-        <div class="foot"><span>Acceptance</span><span>What success looks like in defense</span></div>
-      </section>
+      </div>
+      <div class="footer"><span>Traceability</span><span>Every request becomes an auditable record</span></div>
+    </section>
 
-      <section class="slide" data-title="Security">
-        <div class="top"><span class="eyebrow">Bảo mật</span><span class="pill red">Hardening checklist</span></div>
-        <div class="grid3">
-          <div class="card"><h3>Hiện có</h3><p>Bearer token, password hash, role admin/user, CORS config, upload validation.</p></div>
-          <div class="card"><h3>Cần hardening</h3><p>Đổi credential demo, HTTPS, rate limit, secret manager, audit admin actions.</p></div>
-          <div class="card"><h3>Dữ liệu sinh trắc học</h3><p>Cần consent, retention, quyền xóa dữ liệu, giới hạn truy cập ảnh gốc và backup.</p></div>
+    <section class="slide">
+      <div class="topline"><div class="kicker">30 / Queue Payload</div><div class="section-no">Small Messages</div></div>
+      <div class="content split">
+        <div>
+          <h2>Redis không chứa ảnh.</h2>
+          <p class="lead">Queue chỉ giữ metadata nhỏ. File thật nằm trong MinIO, giúp job nhẹ và dễ retry.</p>
         </div>
-        <div class="foot"><span>Security</span><span>Demo-ready is not production-ready</span></div>
-      </section>
-
-      <section class="slide light" data-title="Risks">
-        <div class="top"><span class="eyebrow">Rủi ro kỹ thuật</span><span class="pill gold">Risk register</span></div>
-        <table class="table glass">
-          <thead><tr><th>Rủi ro</th><th>Tác động</th><th>Giảm thiểu</th></tr></thead>
-          <tbody>
-            <tr><td>Threshold chưa calibrate</td><td>False accept / false reject.</td><td>Thu dataset thật và tune theo FAR/FRR.</td></tr>
-            <tr><td>Worker bottleneck</td><td>Queue backlog tăng.</td><td>Scale worker, đo latency, warmup model.</td></tr>
-            <tr><td>Qdrant mất sync</td><td>Search vector sai/lỗi.</td><td>Giữ metadata trong PostgreSQL và có reindex job.</td></tr>
-            <tr><td>MinIO object mất</td><td>Không debug/reprocess ảnh.</td><td>Bucket backup, lifecycle policy và object retention.</td></tr>
-            <tr><td>Biometric privacy</td><td>Rủi ro pháp lý và đạo đức.</td><td>Access control, audit log, retention và minh bạch mục đích.</td></tr>
-          </tbody>
-        </table>
-        <div class="foot"><span>Risk management</span><span>Known limitations are engineering maturity</span></div>
-      </section>
-
-      <section class="slide" data-title="Demo script">
-        <div class="top"><span class="eyebrow">Kịch bản demo</span><span class="pill green">Defense flow</span></div>
-        <h2>Demo theo luồng nghiệp vụ, không theo cấu trúc thư mục.</h2>
-        <div class="flow">
-          <div class="step"><div class="idx">1</div><h4>Start</h4><p>Chạy Docker Compose.</p></div>
-          <div class="step"><div class="idx">2</div><h4>Home</h4><p>Mở gateway, giới thiệu role.</p></div>
-          <div class="step"><div class="idx">3</div><h4>Admin</h4><p>Tạo employee, upload ảnh.</p></div>
-          <div class="step"><div class="idx">4</div><h4>Worker</h4><p>Đợi embedding success.</p></div>
-          <div class="step"><div class="idx">5</div><h4>User</h4><p>Gửi snapshot check access.</p></div>
-          <div class="step"><div class="idx">6</div><h4>Ops</h4><p>Mở logs/metrics/dashboard.</p></div>
+        <div class="card">
+          <div class="timeline">
+            <div class="step"><b>Emb</b><span>employee embedding job</span><code>{"employee_id", "image_key"}</code></div>
+            <div class="step"><b>Acc</b><span>access check job</span><code>{"access_log_id", "camera_id", "image_key"}</code></div>
+            <div class="step"><b>Ret</b><span>worker cập nhật record</span><code>final status in PostgreSQL</code></div>
+          </div>
         </div>
-        <div class="foot"><span>Demo flow</span><span>UI → API → Redis → Worker → Qdrant → PostgreSQL → Grafana</span></div>
-      </section>
+      </div>
+      <div class="footer"><span>Queue</span><span>Metadata only, object storage owns images</span></div>
+    </section>
 
-      <section class="slide light" data-title="Roadmap">
-        <div class="top"><span class="eyebrow">Roadmap</span><span class="pill">Next iteration</span></div>
-        <div class="grid4">
-          <div class="metric"><div class="num">01</div><div class="label">Alembic migrations để version schema.</div></div>
-          <div class="metric"><div class="num">02</div><div class="label">Playwright E2E cho Admin/User flow.</div></div>
-          <div class="metric"><div class="num">03</div><div class="label">Nhiều ảnh/embedding cho mỗi employee.</div></div>
-          <div class="metric"><div class="num">04</div><div class="label">Worker metrics và latency histogram.</div></div>
-          <div class="metric"><div class="num">05</div><div class="label">Qdrant reindex job khi đổi model.</div></div>
-          <div class="metric"><div class="num">06</div><div class="label">Secret manager, TLS, rate limit.</div></div>
-          <div class="metric"><div class="num">07</div><div class="label">Accuracy report với dataset có kiểm soát.</div></div>
-          <div class="metric"><div class="num">08</div><div class="label">Helm production values và autoscaling.</div></div>
+    <section class="slide photo">
+      <div class="shot full"><span class="tag">Storage Evidence</span><img src="assets/screenshots/minio-console.png" alt="MinIO Storage Evidence"></div>
+      <div class="caption-strip">
+        <h3>Ảnh được lưu như object</h3>
+        <p>MinIO giúp hệ thống tách file ảnh khỏi database nghiệp vụ, phù hợp hơn cho backup và retention.</p>
+      </div>
+    </section>
+
+    <section class="slide photo">
+      <div class="shot full"><span class="tag">Vector Evidence</span><img src="assets/screenshots/qdrant-dashboard.png" alt="Qdrant Evidence"></div>
+      <div class="caption-strip">
+        <h3>Vector index có thể quan sát</h3>
+        <p>Qdrant không phải chi tiết ẩn trong code; nó là một service độc lập trong kiến trúc.</p>
+      </div>
+    </section>
+
+    <section class="slide light">
+      <div class="topline"><div class="kicker">33 / Alert Rules</div><div class="section-no">Ops Signals</div></div>
+      <div class="content">
+        <div class="grid-3">
+          <div class="card stat"><strong>Dependency Down</strong><span>Backend không kết nối được DB/Redis.</span></div>
+          <div class="card stat"><strong>Queue Backlog</strong><span>Job tồn nhiều, worker có thể lỗi hoặc quá tải.</span></div>
+          <div class="card stat"><strong>Processing Stuck</strong><span>Nhiều access log không chuyển trạng thái cuối.</span></div>
+          <div class="card stat"><strong>Error Spike</strong><span>Ảnh lỗi/no-face nhiều hoặc dependency AI lỗi.</span></div>
+          <div class="card stat"><strong>Metrics Missing</strong><span>Prometheus không scrape được endpoint.</span></div>
+          <div class="card stat"><strong>Demo Evidence</strong><span>Grafana chứng minh hệ thống đang chạy thật.</span></div>
         </div>
-        <div class="foot"><span>Roadmap</span><span>From MVP to production-grade system</span></div>
-      </section>
+      </div>
+      <div class="footer"><span>Alerting</span><span>Watch the pipeline, not only the model</span></div>
+    </section>
 
-      <section class="slide" data-title="Closing">
-        <div class="top"><span class="eyebrow">Kết luận</span><span class="pill gold">Key message</span></div>
-        <div class="stack" style="max-width:1180px;">
-          <h1>Điểm mạnh là thiết kế hệ thống, không chỉ thuật toán nhận diện.</h1>
-          <p class="lead">Dự án có UI theo vai trò, backend điều phối nghiệp vụ, worker AI bất đồng bộ, dữ liệu tách đúng trách nhiệm, access logs để audit và monitoring để chứng minh runtime.</p>
-          <div class="row"><span class="pill green">Role-based UI</span><span class="pill">Async Worker</span><span class="pill gold">Vector DB</span><span class="pill">Audit Logs</span><span class="pill red">Monitoring</span></div>
+    <section class="slide photo">
+      <div class="shot full"><span class="tag">Prometheus Evidence</span><img src="assets/screenshots/prometheus-targets.png" alt="Prometheus Evidence"></div>
+      <div class="caption-strip">
+        <h3>Targets rõ ràng</h3>
+        <p>Khi bảo vệ, đây là bằng chứng metrics stack không chỉ nằm trên giấy.</p>
+      </div>
+    </section>
+
+    <section class="slide">
+      <div class="topline"><div class="kicker">35 / Failure Modes</div><div class="section-no">Error Design</div></div>
+      <div class="content split">
+        <div class="device"><div class="shot tall"><img src="assets/screenshots/admin-access-logs.png" alt="Access logs errors"></div></div>
+        <div class="stack">
+          <h2>Không phải lỗi nào cũng là denied.</h2>
+          <ul class="bullets">
+            <li><b>denied</b>: ảnh hợp lệ nhưng không đủ ngưỡng hoặc employee inactive.</li>
+            <li><b>error</b>: ảnh không đọc được, no-face, multi-face hoặc dependency lỗi.</li>
+            <li>Phân biệt status giúp admin debug nhanh hơn.</li>
+          </ul>
         </div>
-        <div class="foot"><span>DeepFace Access Control</span><span>Q&A</span></div>
-        <div class="watermark">END</div>
-      </section>
-    </div>
-  </main>
+      </div>
+      <div class="footer"><span>Reliability</span><span>Make failure explainable</span></div>
+    </section>
 
-  <div class="counter" id="counter">01 / 39</div>
-  <div class="controls"><button class="control" id="prev" type="button">‹</button><button class="control" id="next" type="button">›</button></div>
+    <section class="slide light">
+      <div class="topline"><div class="kicker">36 / Production Roadmap</div><div class="section-no">Next Steps</div></div>
+      <div class="content">
+        <div class="grid-4">
+          <div class="card stat"><strong>Alembic</strong><span>Version schema thay vì auto-create.</span></div>
+          <div class="card stat"><strong>E2E</strong><span>Playwright cho luồng Admin/User.</span></div>
+          <div class="card stat"><strong>Multi-face images</strong><span>Nhiều ảnh/embedding cho mỗi employee.</span></div>
+          <div class="card stat"><strong>Latency metrics</strong><span>Histogram cho pipeline access.</span></div>
+          <div class="card stat"><strong>Reindex</strong><span>Job rebuild Qdrant khi đổi model.</span></div>
+          <div class="card stat"><strong>TLS</strong><span>HTTPS và secure cookies/token policy.</span></div>
+          <div class="card stat"><strong>Retention</strong><span>Chính sách lưu/xóa ảnh sinh trắc học.</span></div>
+          <div class="card stat"><strong>K8s</strong><span>Helm values, secrets, PV, ingress.</span></div>
+        </div>
+      </div>
+      <div class="footer"><span>Roadmap</span><span>From MVP to staging-ready</span></div>
+    </section>
+
+    <section class="slide">
+      <div class="topline"><div class="kicker">37 / Live Demo Script</div><div class="section-no">Run Order</div></div>
+      <div class="content split">
+        <div class="timeline">
+          <div class="step"><b>1</b><span>Open Home</span><code>localhost:8080</code></div>
+          <div class="step"><b>2</b><span>Login Admin</span><code>create employee</code></div>
+          <div class="step"><b>3</b><span>Upload face image</span><code>wait success</code></div>
+          <div class="step"><b>4</b><span>Login User</span><code>send snapshot</code></div>
+          <div class="step"><b>5</b><span>Show Admin logs</span><code>granted/denied/error</code></div>
+          <div class="step"><b>6</b><span>Open Grafana</span><code>service UP + queue</code></div>
+        </div>
+        <div class="device"><div class="shot tall"><img src="assets/screenshots/grafana-dashboard-live.png" alt="Grafana demo"></div></div>
+      </div>
+      <div class="footer"><span>Demo</span><span>Keep sequence short, use logs as proof</span></div>
+    </section>
+
+    <section class="slide photo">
+      <div class="shot full"><span class="tag">UI Evidence Wall</span><img src="assets/screenshots/admin-dashboard-live.png" alt="Evidence Wall"></div>
+      <div class="caption-strip">
+        <h3>Kết luận</h3>
+        <p>MVP đạt luồng end-to-end: quản trị nhân viên, tạo embedding, check access, ghi log và quan sát vận hành.</p>
+      </div>
+    </section>
+
+    <section class="slide">
+      <div class="topline"><div class="kicker">54 / Final</div><div class="section-no">DeepFace Access Control</div></div>
+      <div class="content split wide-left">
+        <div>
+          <h1>Ready for<br><span class="accent">demo.</span></h1>
+          <p class="lead">Một hệ thống AI full-stack có giao diện, API, worker, queue, object storage, vector database, monitoring và tài liệu bảo vệ.</p>
+        </div>
+        <div class="grid-2">
+          <div class="card stat"><strong>Frontend</strong><span>Home, User, Admin.</span></div>
+          <div class="card stat"><strong>Backend</strong><span>FastAPI + SQLAlchemy.</span></div>
+          <div class="card stat"><strong>AI</strong><span>DeepFace + Qdrant.</span></div>
+          <div class="card stat"><strong>Ops</strong><span>Docker + Grafana.</span></div>
+        </div>
+      </div>
+      <div class="footer"><span>End</span><span>Questions</span></div>
+    </section>
+  </div>
+
+  <div class="counter" id="counter">1 / 1</div>
+  <div class="nav">
+    <button type="button" id="prev" aria-label="Previous slide">‹</button>
+    <button type="button" id="next" aria-label="Next slide">›</button>
+  </div>
   <div class="progress"><span id="progress"></span></div>
 
   <script>
-    const track = document.getElementById("track");
-    const slides = Array.from(document.querySelectorAll(".slide"));
+    const slides = [...document.querySelectorAll(".slide")];
     const counter = document.getElementById("counter");
     const progress = document.getElementById("progress");
-    let index = Math.max(0, Math.min(slides.length - 1, Number(new URLSearchParams(location.search).get("slide") || 1) - 1));
-    function render() {
-      track.style.transform = `translateX(${-index * 100}vw)`;
-      counter.textContent = `${String(index + 1).padStart(2, "0")} / ${String(slides.length).padStart(2, "0")}`;
+    let index = 0;
+
+    function show(next) {
+      index = Math.max(0, Math.min(slides.length - 1, next));
+      slides.forEach((slide, i) => slide.classList.toggle("active", i === index));
+      counter.textContent = `${index + 1} / ${slides.length}`;
       progress.style.width = `${((index + 1) / slides.length) * 100}%`;
-      document.title = `${String(index + 1).padStart(2, "0")} - ${slides[index].dataset.title || "DeepFace Access"}`;
-      const url = new URL(location.href);
-      url.searchParams.set("slide", String(index + 1));
+      const url = new URL(window.location.href);
+      url.hash = String(index + 1).padStart(2, "0");
       history.replaceState(null, "", url);
     }
-    function go(delta) {
-      index = Math.max(0, Math.min(slides.length - 1, index + delta));
-      render();
+
+    function bootFromHash() {
+      const raw = window.location.hash.replace("#", "");
+      const parsed = Number.parseInt(raw, 10);
+      if (Number.isFinite(parsed)) index = Math.max(0, Math.min(slides.length - 1, parsed - 1));
+      show(index);
     }
-    document.getElementById("prev").addEventListener("click", () => go(-1));
-    document.getElementById("next").addEventListener("click", () => go(1));
+
+    document.getElementById("prev").addEventListener("click", () => show(index - 1));
+    document.getElementById("next").addEventListener("click", () => show(index + 1));
     window.addEventListener("keydown", (event) => {
-      if (["ArrowRight", "PageDown", " "].includes(event.key)) { event.preventDefault(); go(1); }
-      if (["ArrowLeft", "PageUp"].includes(event.key)) { event.preventDefault(); go(-1); }
-      if (event.key === "Home") { index = 0; render(); }
-      if (event.key === "End") { index = slides.length - 1; render(); }
+      if (["ArrowRight", "PageDown", " "].includes(event.key)) { event.preventDefault(); show(index + 1); }
+      if (["ArrowLeft", "PageUp", "Backspace"].includes(event.key)) { event.preventDefault(); show(index - 1); }
+      if (event.key === "Home") show(0);
+      if (event.key === "End") show(slides.length - 1);
     });
-    render();
-    requestAnimationFrame(() => {
-      requestAnimationFrame(() => {
-        document.body.classList.remove("boot");
-      });
-    });
+    window.addEventListener("hashchange", bootFromHash);
+    bootFromHash();
   </script>
 </body>
 </html>
