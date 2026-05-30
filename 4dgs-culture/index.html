@@ -1,0 +1,1214 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>4DGS for Cultural Heritage & Historical Site Preservation</title>
+  <style>
+    :root {
+      --bg: #081019;
+      --panel: rgba(8, 16, 25, 0.72);
+      --panel-strong: rgba(8, 16, 25, 0.88);
+      --line: rgba(255, 255, 255, 0.16);
+      --text: #f6fbff;
+      --muted: #c7d3df;
+      --soft: #8ea3b5;
+      --cyan: #48d6ff;
+      --cyan-soft: rgba(72, 214, 255, 0.18);
+      --amber: #ffbe63;
+      --amber-soft: rgba(255, 190, 99, 0.2);
+      --jade: #65e0b3;
+      --danger: #ff7d72;
+      --shadow: 0 24px 70px rgba(0, 0, 0, 0.42);
+      --radius: 8px;
+      --slide-w: 1600px;
+      --slide-h: 900px;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      overflow: hidden;
+      background:
+        radial-gradient(circle at 12% 12%, rgba(72, 214, 255, 0.14), transparent 28%),
+        radial-gradient(circle at 82% 10%, rgba(255, 190, 99, 0.12), transparent 34%),
+        linear-gradient(135deg, #07111d 0%, #0b1722 48%, #121015 100%);
+      color: var(--text);
+    }
+
+    button {
+      font: inherit;
+    }
+
+    .deck {
+      width: 100vw;
+      height: 100vh;
+      display: grid;
+      place-items: center;
+      padding: 28px;
+    }
+
+    .slide {
+      position: absolute;
+      width: min(100vw - 56px, calc((100vh - 56px) * 16 / 9));
+      height: min(100vh - 56px, calc((100vw - 56px) * 9 / 16));
+      aspect-ratio: 16 / 9;
+      overflow: hidden;
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      border-radius: 10px;
+      background: #09131d;
+      box-shadow: var(--shadow);
+      opacity: 0;
+      pointer-events: none;
+      transform: translateY(18px) scale(0.985);
+      transition: opacity 260ms ease, transform 260ms ease;
+    }
+
+    .slide.active {
+      opacity: 1;
+      pointer-events: auto;
+      transform: translateY(0) scale(1);
+      z-index: 2;
+    }
+
+    .bg {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .wash::after,
+    .wash-right::after,
+    .wash-light::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+    }
+
+    .wash::after {
+      background:
+        linear-gradient(90deg, rgba(5, 12, 19, 0.9) 0%, rgba(5, 12, 19, 0.62) 42%, rgba(5, 12, 19, 0.08) 100%),
+        linear-gradient(0deg, rgba(5, 12, 19, 0.34), rgba(5, 12, 19, 0.05));
+    }
+
+    .wash-right::after {
+      background:
+        linear-gradient(90deg, rgba(5, 12, 19, 0.04) 0%, rgba(5, 12, 19, 0.46) 44%, rgba(5, 12, 19, 0.92) 100%),
+        linear-gradient(0deg, rgba(5, 12, 19, 0.42), rgba(5, 12, 19, 0.08));
+    }
+
+    .wash-light::after {
+      background:
+        linear-gradient(180deg, rgba(5, 12, 19, 0.3), rgba(5, 12, 19, 0.72)),
+        radial-gradient(circle at 76% 18%, transparent 0%, rgba(5, 12, 19, 0.42) 44%, rgba(5, 12, 19, 0.78) 100%);
+    }
+
+    .content {
+      position: relative;
+      z-index: 1;
+      height: 100%;
+      padding: 62px 72px 56px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .center {
+      justify-content: center;
+    }
+
+    .row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 34px;
+      align-items: stretch;
+    }
+
+    .row.wide-left {
+      grid-template-columns: 1.12fr 0.88fr;
+    }
+
+    .row.wide-right {
+      grid-template-columns: 0.86fr 1.14fr;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      width: fit-content;
+      align-items: center;
+      gap: 9px;
+      margin-bottom: 18px;
+      color: var(--amber);
+      font-size: clamp(13px, 1.2vw, 18px);
+      font-weight: 800;
+      line-height: 1;
+      text-transform: uppercase;
+      letter-spacing: 0;
+    }
+
+    .eyebrow::before {
+      content: "";
+      width: 34px;
+      height: 3px;
+      border-radius: 999px;
+      background: linear-gradient(90deg, var(--cyan), var(--amber));
+    }
+
+    h1, h2, h3, p {
+      margin: 0;
+    }
+
+    h1 {
+      max-width: 930px;
+      font-size: clamp(52px, 6.1vw, 88px);
+      line-height: 0.98;
+      letter-spacing: 0;
+      font-weight: 900;
+    }
+
+    h2 {
+      max-width: 980px;
+      font-size: clamp(40px, 4.2vw, 66px);
+      line-height: 1.03;
+      letter-spacing: 0;
+      font-weight: 900;
+    }
+
+    h3 {
+      font-size: clamp(22px, 2vw, 34px);
+      line-height: 1.1;
+      letter-spacing: 0;
+      font-weight: 850;
+    }
+
+    .lead {
+      max-width: 830px;
+      margin-top: 26px;
+      color: var(--muted);
+      font-size: clamp(22px, 2vw, 34px);
+      line-height: 1.34;
+      font-weight: 500;
+    }
+
+    .text {
+      color: var(--muted);
+      font-size: clamp(18px, 1.42vw, 25px);
+      line-height: 1.42;
+      font-weight: 500;
+    }
+
+    .small {
+      color: var(--soft);
+      font-size: clamp(14px, 1.05vw, 18px);
+      line-height: 1.4;
+      font-weight: 600;
+    }
+
+    .tagline {
+      width: fit-content;
+      max-width: 780px;
+      margin-top: 28px;
+      padding: 16px 18px;
+      border-left: 3px solid var(--cyan);
+      background: rgba(4, 10, 16, 0.54);
+      color: #eaf7ff;
+      font-size: clamp(18px, 1.45vw, 25px);
+      line-height: 1.36;
+      font-weight: 700;
+    }
+
+    .card {
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--panel);
+      backdrop-filter: blur(18px);
+      padding: 24px;
+      box-shadow: 0 18px 60px rgba(0, 0, 0, 0.22);
+    }
+
+    .card.light {
+      background: rgba(255, 255, 255, 0.08);
+    }
+
+    .stack {
+      display: grid;
+      gap: 18px;
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 18px;
+    }
+
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 18px;
+    }
+
+    .grid-4 {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 16px;
+    }
+
+    .metric {
+      display: grid;
+      gap: 8px;
+      min-height: 164px;
+    }
+
+    .metric strong {
+      color: var(--text);
+      font-size: clamp(30px, 3vw, 48px);
+      line-height: 1;
+      font-weight: 900;
+    }
+
+    .metric span {
+      color: var(--muted);
+      font-size: clamp(15px, 1.12vw, 19px);
+      line-height: 1.34;
+      font-weight: 600;
+    }
+
+    .bullets {
+      display: grid;
+      gap: 14px;
+      margin: 24px 0 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .bullets li {
+      position: relative;
+      padding-left: 28px;
+      color: var(--muted);
+      font-size: clamp(18px, 1.42vw, 25px);
+      line-height: 1.34;
+      font-weight: 600;
+    }
+
+    .bullets li::before {
+      content: "";
+      position: absolute;
+      left: 0;
+      top: 0.58em;
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--cyan);
+      box-shadow: 0 0 24px rgba(72, 214, 255, 0.85);
+    }
+
+    .numbered {
+      display: grid;
+      gap: 14px;
+      counter-reset: step;
+      margin-top: 24px;
+    }
+
+    .step {
+      display: grid;
+      grid-template-columns: 48px 1fr;
+      gap: 16px;
+      align-items: start;
+    }
+
+    .step::before {
+      counter-increment: step;
+      content: counter(step);
+      display: grid;
+      width: 48px;
+      height: 48px;
+      place-items: center;
+      border: 1px solid rgba(72, 214, 255, 0.55);
+      border-radius: 50%;
+      background: rgba(72, 214, 255, 0.14);
+      color: var(--cyan);
+      font-weight: 900;
+    }
+
+    .step strong {
+      display: block;
+      margin-bottom: 4px;
+      color: var(--text);
+      font-size: clamp(18px, 1.35vw, 24px);
+      line-height: 1.2;
+    }
+
+    .step span {
+      color: var(--muted);
+      font-size: clamp(15px, 1.12vw, 19px);
+      line-height: 1.35;
+      font-weight: 600;
+    }
+
+    .pill-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 28px;
+    }
+
+    .pill {
+      border: 1px solid rgba(255, 255, 255, 0.16);
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.07);
+      padding: 10px 14px;
+      color: #eaf7ff;
+      font-size: clamp(14px, 1vw, 17px);
+      font-weight: 800;
+      line-height: 1;
+      white-space: nowrap;
+    }
+
+    .compare {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 18px;
+      margin-top: 30px;
+    }
+
+    .compare .card {
+      min-height: 350px;
+    }
+
+    .compare h3 {
+      margin-bottom: 18px;
+    }
+
+    .bad h3 {
+      color: #ffb0a9;
+    }
+
+    .good h3 {
+      color: #b7fff0;
+    }
+
+    .image-panel {
+      overflow: hidden;
+      min-height: 100%;
+      padding: 0;
+    }
+
+    .image-panel img {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .caption {
+      position: absolute;
+      left: 24px;
+      right: 24px;
+      bottom: 20px;
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      border-radius: var(--radius);
+      background: rgba(4, 10, 16, 0.7);
+      padding: 14px 16px;
+      color: var(--muted);
+      font-size: clamp(13px, 1vw, 17px);
+      line-height: 1.28;
+      font-weight: 650;
+      backdrop-filter: blur(16px);
+    }
+
+    .table {
+      display: grid;
+      gap: 10px;
+      margin-top: 24px;
+    }
+
+    .table-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 10px;
+      align-items: stretch;
+    }
+
+    .cell {
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: rgba(255, 255, 255, 0.07);
+      padding: 14px 16px;
+      color: var(--muted);
+      font-size: clamp(14px, 1.1vw, 19px);
+      line-height: 1.3;
+      font-weight: 650;
+    }
+
+    .cell.head {
+      color: var(--text);
+      font-weight: 900;
+      background: rgba(72, 214, 255, 0.13);
+    }
+
+    .revenue {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 16px;
+      margin-top: 28px;
+    }
+
+    .rev-card {
+      min-height: 190px;
+      display: grid;
+      gap: 10px;
+    }
+
+    .rev-card b {
+      color: var(--amber);
+      font-size: clamp(18px, 1.35vw, 23px);
+      line-height: 1.1;
+    }
+
+    .rev-card span {
+      color: var(--muted);
+      font-size: clamp(14px, 1vw, 18px);
+      line-height: 1.35;
+      font-weight: 600;
+    }
+
+    .timeline {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 18px;
+      margin-top: 34px;
+    }
+
+    .phase {
+      position: relative;
+      min-height: 270px;
+      overflow: hidden;
+    }
+
+    .phase::before {
+      content: "";
+      display: block;
+      width: 46px;
+      height: 4px;
+      margin-bottom: 20px;
+      border-radius: 99px;
+      background: linear-gradient(90deg, var(--cyan), var(--amber));
+    }
+
+    .phase h3 {
+      margin-bottom: 14px;
+      color: var(--text);
+    }
+
+    .phase p {
+      color: var(--muted);
+      font-size: clamp(15px, 1.1vw, 19px);
+      line-height: 1.38;
+      font-weight: 600;
+    }
+
+    .mini-diagram {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 12px;
+      margin-top: 30px;
+      align-items: center;
+    }
+
+    .mini-node {
+      min-height: 154px;
+      display: grid;
+      align-content: start;
+      gap: 12px;
+    }
+
+    .icon {
+      width: 42px;
+      height: 42px;
+      display: grid;
+      place-items: center;
+      color: var(--cyan);
+    }
+
+    .icon svg {
+      width: 100%;
+      height: 100%;
+      stroke: currentColor;
+      fill: none;
+      stroke-width: 1.8;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    .mini-node b {
+      color: var(--text);
+      font-size: clamp(17px, 1.3vw, 22px);
+      line-height: 1.15;
+    }
+
+    .mini-node span {
+      color: var(--muted);
+      font-size: clamp(13px, 0.98vw, 17px);
+      line-height: 1.34;
+      font-weight: 600;
+    }
+
+    .quote {
+      max-width: 1040px;
+      border-left: 4px solid var(--amber);
+      padding-left: 28px;
+      color: var(--text);
+      font-size: clamp(33px, 3.35vw, 56px);
+      line-height: 1.08;
+      font-weight: 900;
+    }
+
+    .footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      color: rgba(255, 255, 255, 0.64);
+      font-size: clamp(12px, 0.9vw, 16px);
+      font-weight: 700;
+    }
+
+    .footer b {
+      color: var(--cyan);
+    }
+
+    .nav {
+      position: fixed;
+      z-index: 20;
+      right: 28px;
+      bottom: 26px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px;
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      border-radius: 999px;
+      background: rgba(5, 12, 19, 0.72);
+      box-shadow: 0 14px 42px rgba(0, 0, 0, 0.34);
+      backdrop-filter: blur(16px);
+    }
+
+    .nav button {
+      width: 42px;
+      height: 42px;
+      display: grid;
+      place-items: center;
+      border: 0;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.08);
+      color: var(--text);
+      cursor: pointer;
+    }
+
+    .nav button:hover,
+    .nav button:focus-visible {
+      outline: none;
+      background: rgba(72, 214, 255, 0.18);
+      color: var(--cyan);
+    }
+
+    .nav svg {
+      width: 21px;
+      height: 21px;
+      stroke: currentColor;
+      fill: none;
+      stroke-width: 2.2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    .counter {
+      min-width: 58px;
+      text-align: center;
+      color: var(--muted);
+      font-size: 14px;
+      font-weight: 900;
+      letter-spacing: 0;
+    }
+
+    .progress {
+      position: fixed;
+      z-index: 30;
+      left: 0;
+      bottom: 0;
+      width: 100%;
+      height: 4px;
+      background: rgba(255, 255, 255, 0.08);
+    }
+
+    .progress span {
+      display: block;
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, var(--cyan), var(--amber));
+      transition: width 180ms ease;
+    }
+
+    .print-note {
+      position: fixed;
+      z-index: 20;
+      left: 28px;
+      bottom: 28px;
+      color: rgba(255, 255, 255, 0.7);
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    @media (max-width: 900px) {
+      .deck {
+        padding: 12px;
+      }
+
+      .slide {
+        width: calc(100vw - 24px);
+        height: calc((100vw - 24px) * 9 / 16);
+      }
+
+      .content {
+        padding: 28px 28px 24px;
+      }
+
+      .row,
+      .row.wide-left,
+      .row.wide-right,
+      .grid-3,
+      .grid-4,
+      .revenue,
+      .timeline,
+      .mini-diagram {
+        grid-template-columns: 1fr;
+      }
+
+      .compare,
+      .grid-2 {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      h1 {
+        font-size: 32px;
+      }
+
+      h2 {
+        font-size: 27px;
+      }
+
+      .lead,
+      .text,
+      .bullets li {
+        font-size: 14px;
+      }
+
+      .card {
+        padding: 14px;
+      }
+
+      .nav,
+      .print-note {
+        display: none;
+      }
+    }
+
+    @page {
+      size: 16in 9in;
+      margin: 0;
+    }
+
+    @media print {
+      body {
+        overflow: visible;
+        background: #081019;
+      }
+
+      .deck {
+        display: block;
+        width: auto;
+        height: auto;
+        padding: 0;
+      }
+
+      .slide {
+        position: relative;
+        display: block;
+        width: 16in;
+        height: 9in;
+        page-break-after: always;
+        opacity: 1;
+        transform: none;
+        border: 0;
+        border-radius: 0;
+        box-shadow: none;
+      }
+
+      .nav,
+      .progress,
+      .print-note {
+        display: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="deck" aria-live="polite">
+    <section class="slide active wash" data-title="Cover">
+      <img class="bg" src="assets/hero-4dgs-heritage.png" alt="Khach tham quan dung VR xem di san van hoa duoc tai dung bang 4DGS" />
+      <div class="content">
+        <div>
+          <div class="eyebrow">Startup Pitch Deck</div>
+          <h1>4DGS for Cultural Heritage & Historical Site Preservation</h1>
+          <p class="lead">Nền tảng số hóa di sản, lễ hội và điểm đến lịch sử thành trải nghiệm 3D/VR có chuyển động theo thời gian.</p>
+          <div class="pill-row">
+            <span class="pill">Tourism</span>
+            <span class="pill">Museum</span>
+            <span class="pill">VR Experience</span>
+            <span class="pill">Cultural Preservation</span>
+          </div>
+        </div>
+        <div class="footer">
+          <span>Topic: 4DGS for Culture Heritage & Historical Site Preservations</span>
+          <span><b>Heritage in Motion</b></span>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide">
+      <div class="content center">
+        <div>
+          <div class="eyebrow">01. Vấn đề</div>
+          <h2>Di sản có giá trị, nhưng cách kể chuyện hiện tại còn phẳng.</h2>
+          <div class="grid-2" style="margin-top: 34px;">
+            <article class="card metric">
+              <strong>Ngắn hạn</strong>
+              <span>Nhiều lễ hội chỉ diễn ra vài ngày hoặc theo mùa, khách du lịch đến sai thời điểm sẽ không được trải nghiệm.</span>
+            </article>
+            <article class="card metric">
+              <strong>2D</strong>
+              <span>Ảnh, poster và video chỉ cho người xem nhìn từ một góc, khó tạo cảm giác đang có mặt tại địa điểm.</span>
+            </article>
+            <article class="card metric">
+              <strong>Khó giữ chân</strong>
+              <span>Bảo tàng và khu du lịch cần trải nghiệm mới để hấp dẫn giới trẻ, khách quốc tế và tour giáo dục.</span>
+            </article>
+            <article class="card metric">
+              <strong>Dễ mai một</strong>
+              <span>Những chuyển động, nghi lễ, âm thanh và bối cảnh sống của di sản khó được lưu giữ đầy đủ bằng tư liệu tĩnh.</span>
+            </article>
+          </div>
+        </div>
+        <div class="footer">
+          <span>Problem</span>
+          <span>02 / 13</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide wash-right">
+      <img class="bg" src="assets/workflow-4dgs.png" alt="Quy trinh 4DGS tu camera den tai dung dong va VR" />
+      <div class="content">
+        <div class="row wide-right">
+          <div></div>
+          <div>
+            <div class="eyebrow">02. 4DGS là gì?</div>
+            <h2>4DGS biến video/ảnh thành một không gian 3D có thời gian.</h2>
+            <p class="lead">Hiểu đơn giản: người xem không chỉ xem cảnh, mà có thể xoay góc, tiến lại gần, dừng khoảnh khắc và quan sát chuyển động từ nhiều vị trí.</p>
+            <div class="tagline">3D là không gian. 4D là không gian cộng thêm thời gian.</div>
+          </div>
+        </div>
+        <div class="footer">
+          <span>Technology Definition</span>
+          <span>03 / 13</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide">
+      <div class="content center">
+        <div>
+          <div class="eyebrow">03. Vì sao hơn video 2D?</div>
+          <h2>Điểm ăn tiền: người xem được tự do khám phá một cảnh đang chuyển động.</h2>
+          <div class="compare">
+            <article class="card bad">
+              <h3>Video 2D</h3>
+              <ul class="bullets">
+                <li>Một góc máy cố định hoặc được dựng sẵn.</li>
+                <li>Người xem thụ động, không tự chọn vị trí nhìn.</li>
+                <li>Khó dùng cho VR vì thiếu chiều sâu thật.</li>
+                <li>Khó tái khai thác thành nhiều trải nghiệm khác nhau.</li>
+              </ul>
+            </article>
+            <article class="card good">
+              <h3>4DGS / VR</h3>
+              <ul class="bullets">
+                <li>Xoay 360 độ, nhìn từ khán đài, trên cao hoặc sát sân khấu.</li>
+                <li>Dừng thời gian để xem chi tiết nghi lễ, trang phục, động tác.</li>
+                <li>Đưa vào kính VR, web 3D, kiosk bảo tàng và tour giáo dục.</li>
+                <li>Một dữ liệu gốc có thể đóng gói thành nhiều sản phẩm.</li>
+              </ul>
+            </article>
+          </div>
+        </div>
+        <div class="footer">
+          <span>2D vs 4D Experience</span>
+          <span>04 / 13</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide wash-light">
+      <img class="bg" src="assets/workflow-4dgs.png" alt="Workflow 4DGS cho di san van hoa" />
+      <div class="content">
+        <div>
+          <div class="eyebrow">04. Quy trình sản phẩm</div>
+          <h2>Từ ghi hình thực địa đến trải nghiệm VR thương mại.</h2>
+          <div class="mini-diagram">
+            <article class="card mini-node">
+              <div class="icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24"><path d="M4 7h4l2-2h4l2 2h4v12H4z"/><circle cx="12" cy="13" r="4"/></svg>
+              </div>
+              <b>Capture</b>
+              <span>Quay nhiều góc tại lễ hội, di tích, nghi lễ hoặc không gian trưng bày.</span>
+            </article>
+            <article class="card mini-node">
+              <div class="icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24"><circle cx="6" cy="8" r="2"/><circle cx="15" cy="5" r="2"/><circle cx="17" cy="15" r="3"/><path d="M8 8l5-2M8 9l7 5"/></svg>
+              </div>
+              <b>Reconstruct</b>
+              <span>Dựng cảnh bằng Gaussian splats: hình khối, ánh sáng, vật thể và chuyển động.</span>
+            </article>
+            <article class="card mini-node">
+              <div class="icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24"><path d="M4 7h16v10H4z"/><path d="M8 20h8"/><path d="M12 17v3"/><path d="M7 11h10"/></svg>
+              </div>
+              <b>Experience</b>
+              <span>Đóng gói thành web 3D, VR headset, kiosk bảo tàng hoặc mobile tour.</span>
+            </article>
+            <article class="card mini-node">
+              <div class="icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24"><path d="M5 19V5"/><path d="M5 19h14"/><path d="M8 16v-5"/><path d="M12 16V8"/><path d="M16 16v-7"/></svg>
+              </div>
+              <b>Monetize</b>
+              <span>Bán vé, license cho điểm du lịch, gói giáo dục và booth sự kiện.</span>
+            </article>
+          </div>
+        </div>
+        <div class="footer">
+          <span>Capture - Reconstruct - Experience - Monetize</span>
+          <span>05 / 13</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide wash-right">
+      <img class="bg" src="assets/museum-heritage-vr.png" alt="Bao tang hien dai voi VR va tai dung di san" />
+      <div class="content">
+        <div class="row wide-right">
+          <div></div>
+          <div>
+            <div class="eyebrow">05. Khách hàng mục tiêu</div>
+            <h2>Bán trải nghiệm cho nơi cần kéo khách và kể chuyện tốt hơn.</h2>
+            <ul class="bullets">
+              <li>Khu du lịch, điểm tham quan, phố cổ, di tích lịch sử.</li>
+              <li>Bảo tàng, trung tâm văn hóa, nhà trưng bày địa phương.</li>
+              <li>Công ty tour, trường học, chương trình giáo dục trải nghiệm.</li>
+              <li>Sở du lịch, sự kiện quảng bá văn hóa, hội chợ du lịch.</li>
+            </ul>
+          </div>
+        </div>
+        <div class="footer">
+          <span>Target Customers</span>
+          <span>06 / 13</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide wash">
+      <img class="bg" src="assets/festival-bull-race-vr.png" alt="Trai nghiem VR le hoi dua bo van hoa" />
+      <div class="content">
+        <div>
+          <div class="eyebrow">06. Use case nổi bật</div>
+          <h2>Lễ hội chuyển động: từ sự kiện vài ngày thành sản phẩm quanh năm.</h2>
+          <p class="lead">Ví dụ MVP: tái dựng một lễ hội địa phương như Đua bò Bảy Núi, đua ghe ngo, múa lân sư rồng hoặc múa rối nước thành không gian 4D/VR.</p>
+          <ul class="bullets">
+            <li>Khách đứng tại nhiều vị trí: đường đua, khán đài, góc nhìn flycam.</li>
+            <li>Có timeline để tua, dừng, xem lại khoảnh khắc quan trọng.</li>
+            <li>Có thuyết minh văn hóa bằng tiếng Việt và tiếng Anh.</li>
+          </ul>
+        </div>
+        <div class="footer">
+          <span>Festival VR</span>
+          <span>07 / 13</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide">
+      <div class="content center">
+        <div>
+          <div class="eyebrow">07. Gói trải nghiệm</div>
+          <h2>Một nền tảng, nhiều cách triển khai tại điểm đến.</h2>
+          <div class="grid-3" style="margin-top: 34px;">
+            <article class="card metric">
+              <strong>VR Booth</strong>
+              <span>Kính VR đặt tại bảo tàng, khu du lịch, hội chợ. Phù hợp bán vé theo lượt.</span>
+            </article>
+            <article class="card metric">
+              <strong>Web 3D</strong>
+              <span>Khách xem online trước khi đi tour, dùng cho truyền thông và bán tour.</span>
+            </article>
+            <article class="card metric">
+              <strong>Kiosk</strong>
+              <span>Màn hình cảm ứng tại phòng trưng bày, khách tự chọn cảnh và góc nhìn.</span>
+            </article>
+            <article class="card metric">
+              <strong>School Pack</strong>
+              <span>Gói bài học văn hóa có tương tác, quiz, thuyết minh và bản đồ di sản.</span>
+            </article>
+            <article class="card metric">
+              <strong>Event Pack</strong>
+              <span>Cho thuê booth tại lễ hội, khai trương, tuần lễ du lịch, sự kiện địa phương.</span>
+            </article>
+            <article class="card metric">
+              <strong>Digital Archive</strong>
+              <span>Lưu trữ dữ liệu di sản động cho bảo tồn, nghiên cứu và truyền thông lâu dài.</span>
+            </article>
+          </div>
+        </div>
+        <div class="footer">
+          <span>Product Packages</span>
+          <span>08 / 13</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide wash-right">
+      <img class="bg" src="assets/museum-heritage-vr.png" alt="Bao tang so va khong gian trinh bay di san" />
+      <div class="content">
+        <div class="row wide-right">
+          <div></div>
+          <div class="card">
+            <div class="eyebrow">08. Giá trị cho bảo tàng</div>
+            <h2>Không thay hiện vật, mà làm hiện vật có ngữ cảnh sống.</h2>
+            <div class="numbered">
+              <div class="step">
+                <div>
+                  <strong>Phục dựng bối cảnh</strong>
+                  <span>Hiện vật được đặt lại trong nghi lễ, địa điểm, âm thanh và chuyển động gốc.</span>
+                </div>
+              </div>
+              <div class="step">
+                <div>
+                  <strong>Tăng thời gian tham quan</strong>
+                  <span>Khách có lý do dừng lại lâu hơn thay vì chỉ đọc bảng mô tả.</span>
+                </div>
+              </div>
+              <div class="step">
+                <div>
+                  <strong>Tạo sản phẩm giáo dục</strong>
+                  <span>Nội dung 4DGS có thể dùng lại cho lớp học, tour hướng dẫn và triển lãm lưu động.</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="footer">
+          <span>Museum Value</span>
+          <span>09 / 13</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide">
+      <div class="content center">
+        <div>
+          <div class="eyebrow">09. Mô hình kinh doanh</div>
+          <h2>Không bán “4DGS”. Bán quyền khai thác trải nghiệm di sản số.</h2>
+          <div class="revenue">
+            <article class="card rev-card">
+              <b>Phí số hóa</b>
+              <span>Thu theo dự án khi ghi hình, dựng cảnh và đóng gói trải nghiệm.</span>
+              <span><strong style="color: var(--text);">50-200 triệu/gói</strong></span>
+            </article>
+            <article class="card rev-card">
+              <b>License tháng/năm</b>
+              <span>Khu du lịch hoặc bảo tàng thuê nền tảng để vận hành liên tục.</span>
+              <span><strong style="color: var(--text);">5-20 triệu/tháng</strong></span>
+            </article>
+            <article class="card rev-card">
+              <b>Vé trải nghiệm</b>
+              <span>Bán theo lượt VR tại điểm tham quan, chia doanh thu với địa điểm.</span>
+              <span><strong style="color: var(--text);">30-80 nghìn/lượt</strong></span>
+            </article>
+            <article class="card rev-card">
+              <b>Booth sự kiện</b>
+              <span>Cho thuê setup kính VR, nhân sự vận hành và nội dung lễ hội.</span>
+              <span><strong style="color: var(--text);">5-20 triệu/ngày</strong></span>
+            </article>
+          </div>
+          <div class="tagline">Số hóa một lần, khai thác doanh thu nhiều lần.</div>
+        </div>
+        <div class="footer">
+          <span>Business Model: B2B2C</span>
+          <span>10 / 13</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide">
+      <div class="content center">
+        <div>
+          <div class="eyebrow">10. Ví dụ tài chính</div>
+          <h2>Một điểm du lịch có thể hoàn vốn bằng doanh thu vé phụ trợ.</h2>
+          <div class="table">
+            <div class="table-row">
+              <div class="cell head">Giả định</div>
+              <div class="cell head">Một điểm du lịch</div>
+              <div class="cell head">Nếu mở rộng 5 điểm</div>
+            </div>
+            <div class="table-row">
+              <div class="cell">Giá vé VR</div>
+              <div class="cell">50.000đ/lượt</div>
+              <div class="cell">Không đổi</div>
+            </div>
+            <div class="table-row">
+              <div class="cell">Lượt dùng trung bình</div>
+              <div class="cell">50 lượt/ngày</div>
+              <div class="cell">250 lượt/ngày</div>
+            </div>
+            <div class="table-row">
+              <div class="cell">Doanh thu 20 ngày/tháng</div>
+              <div class="cell">50 triệu/tháng</div>
+              <div class="cell">250 triệu/tháng</div>
+            </div>
+            <div class="table-row">
+              <div class="cell">Chia doanh thu 30%</div>
+              <div class="cell">15 triệu/tháng</div>
+              <div class="cell">75 triệu/tháng</div>
+            </div>
+          </div>
+          <p class="tagline">Điểm bán không phải là “công nghệ đẹp”, mà là giúp điểm đến có thêm sản phẩm thu tiền quanh năm.</p>
+        </div>
+        <div class="footer">
+          <span>Financial Logic</span>
+          <span>11 / 13</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide">
+      <div class="content center">
+        <div>
+          <div class="eyebrow">11. Roadmap</div>
+          <h2>Đi từ demo nhỏ đến nền tảng di sản số có thể nhân rộng.</h2>
+          <div class="timeline">
+            <article class="card phase">
+              <h3>Phase 1 - MVP</h3>
+              <p>Chọn một lễ hội/di tích, dựng bản web 3D hoặc video 360 tương tác, có thuyết minh và 3 góc nhìn chính.</p>
+            </article>
+            <article class="card phase">
+              <h3>Phase 2 - VR Pilot</h3>
+              <p>Tối ưu cho Meta Quest/Pico, thử nghiệm tại trường học, bảo tàng nhỏ hoặc sự kiện văn hóa trong 1-2 ngày.</p>
+            </article>
+            <article class="card phase">
+              <h3>Phase 3 - Commercial</h3>
+              <p>Bán gói số hóa và license cho khu du lịch, mở thư viện nhiều lễ hội: đua bò, đua ghe, phố cổ, nghi lễ, sân khấu dân gian.</p>
+            </article>
+          </div>
+        </div>
+        <div class="footer">
+          <span>Implementation Roadmap</span>
+          <span>12 / 13</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide wash">
+      <img class="bg" src="assets/hero-4dgs-heritage.png" alt="Trai nghiem di san 4DGS va VR" />
+      <div class="content">
+        <div>
+          <div class="eyebrow">12. Kết luận</div>
+          <p class="quote">4DGS giúp biến di sản từ thứ để nhìn lại thành trải nghiệm có thể bước vào, học, chia sẻ và khai thác thương mại.</p>
+          <div class="pill-row">
+            <span class="pill">Preserve</span>
+            <span class="pill">Experience</span>
+            <span class="pill">Educate</span>
+            <span class="pill">Monetize</span>
+          </div>
+          <p class="tagline">Đề xuất MVP: chọn một lễ hội Việt Nam có chuyển động mạnh, dựng bản 4D/VR ngắn 2-3 phút và bán thử cho khu du lịch hoặc bảo tàng địa phương.</p>
+        </div>
+        <div class="footer">
+          <span>Heritage in Motion</span>
+          <span>13 / 13</span>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <div class="print-note">Mở bằng trình duyệt, bấm Ctrl+P để xuất PDF.</div>
+
+  <nav class="nav" aria-label="Slide controls">
+    <button type="button" id="prev" aria-label="Previous slide">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg>
+    </button>
+    <div class="counter" id="counter">1 / 13</div>
+    <button type="button" id="next" aria-label="Next slide">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 18l6-6-6-6"/></svg>
+    </button>
+    <button type="button" id="print" aria-label="Print deck">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9V3h12v6"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><path d="M6 14h12v7H6z"/></svg>
+    </button>
+  </nav>
+  <div class="progress" aria-hidden="true"><span id="progress"></span></div>
+
+  <script>
+    const slides = Array.from(document.querySelectorAll(".slide"));
+    const counter = document.getElementById("counter");
+    const progress = document.getElementById("progress");
+    const prev = document.getElementById("prev");
+    const next = document.getElementById("next");
+    const printButton = document.getElementById("print");
+    let current = 0;
+
+    function showSlide(index) {
+      current = Math.max(0, Math.min(index, slides.length - 1));
+      slides.forEach((slide, slideIndex) => {
+        slide.classList.toggle("active", slideIndex === current);
+      });
+      counter.textContent = `${current + 1} / ${slides.length}`;
+      progress.style.width = `${((current + 1) / slides.length) * 100}%`;
+      document.title = `${current + 1}/${slides.length} - 4DGS Heritage Deck`;
+    }
+
+    prev.addEventListener("click", () => showSlide(current - 1));
+    next.addEventListener("click", () => showSlide(current + 1));
+    printButton.addEventListener("click", () => window.print());
+
+    window.addEventListener("keydown", (event) => {
+      if (event.key === "ArrowRight" || event.key === " " || event.key === "PageDown") {
+        event.preventDefault();
+        showSlide(current + 1);
+      }
+      if (event.key === "ArrowLeft" || event.key === "PageUp") {
+        event.preventDefault();
+        showSlide(current - 1);
+      }
+      if (event.key.toLowerCase() === "p") {
+        window.print();
+      }
+    });
+
+    showSlide(0);
+  </script>
+</body>
+</html>
