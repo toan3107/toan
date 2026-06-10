@@ -361,8 +361,8 @@
     <section class="hero">
       <div class="hero-main">
         <div class="eyebrow">Google D4RT + 4D Gaussian references</div>
-        <h1>GIF-style demos for 4D heritage</h1>
-        <p class="lead">Chỉ giữ 10 hình động đẹp, chạy loop như GIF, để bạn mở nhanh khi hội đồng hỏi “4D Gaussian có demo thật không?”.</p>
+        <h1>Scene-based 4D demos</h1>
+        <p class="lead">Chỉ giữ 10 hình động thiên về cảnh quan, không gian và camera di chuyển, để gần với bài Vistara4D cho khu du lịch, bảo tàng và di tích.</p>
       </div>
 
       <aside class="side-panel">
@@ -371,11 +371,11 @@
         <div class="mini-grid">
           <div class="mini">
             <strong>10</strong>
-            <span>hình động chọn lọc, không nhồi quá nhiều</span>
+            <span>hình động chọn lọc về cảnh vật và không gian</span>
           </div>
           <div class="mini">
             <strong>4D</strong>
-            <span>nhấn mạnh góc nhìn, thời gian, depth và motion</span>
+            <span>nhấn mạnh góc nhìn, tuyến tham quan và depth</span>
           </div>
         </div>
       </aside>
@@ -387,43 +387,43 @@
   <script>
     const items = [
       {
-        title: "Google D4RT - 4D capability",
+        title: "Google D4RT - scene capability",
         source: "Google D4RT",
         mode: "gif",
         media: "https://storage.googleapis.com/d4rt_assets/D4RT_capabilities_left.gif",
         link: "https://d4rt-paper.github.io/",
         point: "Google proof",
-        desc: "GIF gốc từ D4RT, hợp nhất để nói AI có thể nhìn video theo không gian và thời gian."
+        desc: "GIF gốc từ D4RT, dùng để mở đầu rằng AI có thể tái dựng không gian theo thời gian."
       },
       {
-        title: "Google D4RT - pixel tracking",
+        title: "Google D4RT - time tracking",
         source: "Google D4RT",
         mode: "gif",
         media: "https://storage.googleapis.com/d4rt_assets/D4RT_capabilities_right.gif",
         link: "https://d4rt-paper.github.io/",
         point: "Tracking",
-        desc: "Minh họa tracking nhiều điểm ảnh qua thời gian, rất hợp với câu chuyện lễ hội và dòng người."
+        desc: "Minh họa tracking qua thời gian, hợp để giải thích lớp chuyển động trong không gian di sản."
       },
       {
-        title: "Google DeepMind D4RT blog",
+        title: "Google DeepMind D4RT - official scene",
         source: "Google D4RT",
         mode: "video",
         media: "https://storage.googleapis.com/gdm-deepmind-com-prod-public/media/media/D4RT_blog_figure-1-dark.mp4",
         link: "https://deepmind.google/blog/d4rt-teaching-ai-to-see-the-world-in-four-dimensions/",
         point: "Official",
-        desc: "Video chính thức của Google DeepMind về ý tưởng nhìn thế giới theo 4 chiều."
+        desc: "Video chính thức của Google DeepMind, dùng làm nguồn uy tín khi nói về 4D reconstruction."
       },
       {
-        title: "4DGS - bullet time",
+        title: "4DGS - outdoor bullet time",
         source: "4D Gaussian Splatting",
         mode: "video",
         media: "https://fudan-zvg.github.io/4d-gaussian-splatting/static/videos/bullet_time.mp4",
         link: "https://fudan-zvg.github.io/4d-gaussian-splatting/",
         point: "Time control",
-        desc: "Cảnh đẹp để giải thích Time Slider: người xem không chỉ xem video 2D mà điều khiển thời gian/góc nhìn."
+        desc: "Cảnh phù hợp để giải thích Time Slider: người xem điều khiển thời gian và góc nhìn."
       },
       {
-        title: "4DGS - free view",
+        title: "4DGS - free-view scene",
         source: "4D Gaussian Splatting",
         mode: "video",
         media: "https://fudan-zvg.github.io/4d-gaussian-splatting/static/videos/free_view.mp4",
@@ -432,7 +432,7 @@
         desc: "Cho thấy có thể đổi góc nhìn quanh cảnh động, sát với trải nghiệm du lịch số."
       },
       {
-        title: "4DGS - depth layers",
+        title: "4DGS - scene depth layers",
         source: "4D Gaussian Splatting",
         mode: "video",
         media: "https://fudan-zvg.github.io/4d-gaussian-splatting/static/videos/concat_with_depth_horizontal.mp4",
@@ -441,40 +441,40 @@
         desc: "Dùng để nói về lớp chiều sâu và tách lớp không gian cho bảo tàng/di tích."
       },
       {
-        title: "Shape-of-Motion - object motion",
-        source: "Shape-of-Motion",
+        title: "4DGS - urban site capture",
+        source: "4D Gaussian Splatting",
         mode: "video",
-        media: "https://shape-of-motion.github.io/static/videos/spin_ours.mp4",
-        link: "https://shape-of-motion.github.io/",
-        point: "Object 4D",
-        desc: "Hợp với hiện vật bảo tàng: vật thể có thể được xem như mô hình động theo thời gian."
+        media: "https://fudan-zvg.github.io/4d-gaussian-splatting/static/videos/0100160_FRONT.mp4",
+        link: "https://fudan-zvg.github.io/4d-gaussian-splatting/",
+        point: "Urban scene",
+        desc: "Cảnh quy mô địa điểm, gần hơn với bài toán số hóa một tuyến tham quan hoặc không gian di tích."
       },
       {
-        title: "Shape-of-Motion - dynamic object",
-        source: "Shape-of-Motion",
+        title: "4DGS - urban depth + segmentation",
+        source: "4D Gaussian Splatting",
         mode: "video",
-        media: "https://shape-of-motion.github.io/static/videos/paper-windmill_ours.mp4",
-        link: "https://shape-of-motion.github.io/",
-        point: "Motion",
-        desc: "Demo chuyển động rõ, dễ hiểu khi so sánh 3D tĩnh với 4D có chuyển động."
+        media: "https://fudan-zvg.github.io/4d-gaussian-splatting/static/videos/0100160_FRONT_with_depth_seg_new.mp4",
+        link: "https://fudan-zvg.github.io/4d-gaussian-splatting/",
+        point: "Site layers",
+        desc: "Có depth và phân lớp, hợp để nói về hotspot, khu vực thuyết minh và lớp phục dựng."
       },
       {
-        title: "MegaSAM - casual video to 3D",
+        title: "MegaSAM - drone site capture",
         source: "MegaSAM",
         mode: "video",
-        media: "https://mega-sam.github.io/static/videos/Teaser-Website-wide.mp4",
-        link: "https://mega-sam.github.io/",
-        point: "Google DeepMind",
-        desc: "Liên quan Google DeepMind, hợp để nói về pipeline từ video thường sang camera/depth."
+        media: "https://mega-sam.github.io/static/videos/gallery/codec/drone_sgd_cvd_hr.mp4",
+        link: "https://mega-sam.github.io/gallery",
+        point: "Site capture",
+        desc: "Cảnh quay ngoài trời bằng góc nhìn di chuyển, dễ liên hệ với khảo sát khu du lịch/di tích."
       },
       {
-        title: "GIFStream - immersive 4D video",
-        source: "GIFStream",
+        title: "MegaSAM - rice field landscape",
+        source: "MegaSAM",
         mode: "video",
-        media: "https://xdimlab.github.io/GIFStream/asset/ours_cba2.mp4",
-        link: "https://xdimlab.github.io/GIFStream/",
-        point: "Streaming",
-        desc: "Demo đẹp về streaming/hiển thị Gaussian động, hợp phần mở rộng VR/AR."
+        media: "https://mega-sam.github.io/static/videos/gallery/codec/rice-field_sgd_cvd_hr.mp4",
+        link: "https://mega-sam.github.io/gallery",
+        point: "Landscape",
+        desc: "Cảnh ngoài trời, phù hợp với hướng du lịch văn hóa và trải nghiệm địa phương."
       }
     ];
 
