@@ -1,93 +1,1348 @@
 <!doctype html>
-<html lang="vi">
+<html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta http-equiv="refresh" content="0; url=./4dgs-culture/" />
-  <title>Vistara4D Demo</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#050907">
+  <meta name="description" content="World Monitor is a unified situational-awareness platform for global risk, infrastructure, supply chains, energy, cyber activity, and space operations.">
+  <meta property="og:title" content="World Monitor | Global Intelligence Operations">
+  <meta property="og:description" content="Explore 20 operational views from the World Monitor intelligence platform.">
+  <meta property="og:type" content="website">
+  <meta property="og:image" content="https://toan3107.github.io/toan/01-world-dashboard.png">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ccircle cx='32' cy='32' r='18' fill='none' stroke='%233cff82' stroke-width='2'/%3E%3Cpath d='M32 2v60M2 32h60' stroke='%233cff82' stroke-width='2'/%3E%3C/svg%3E">
+  <title>World Monitor | Global Intelligence Operations</title>
   <style>
     :root {
-      --mint: #e9f5ef;
-      --paper: #fbfffb;
-      --teal: #087c71;
-      --yellow: #ffda52;
-      --ink: #173d39;
-      --muted: #5d7672;
+      color-scheme: dark;
+      --bg: #050806;
+      --surface: #0a100d;
+      --surface-raised: #0d1511;
+      --line: rgba(126, 255, 173, 0.14);
+      --line-strong: rgba(70, 255, 136, 0.34);
+      --text: #eff8f2;
+      --muted: #8fa097;
+      --dim: #617068;
+      --accent: #3cff82;
+      --accent-soft: rgba(60, 255, 130, 0.1);
+      --amber: #f2b84b;
+      --radius: 18px;
+      --mono: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+      --sans: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
     }
 
     * {
       box-sizing: border-box;
     }
 
+    html {
+      scroll-behavior: smooth;
+    }
+
     body {
+      min-width: 320px;
       margin: 0;
-      min-height: 100vh;
-      display: grid;
-      place-items: center;
-      color: var(--ink);
-      font-family: Inter, "Segoe UI", Arial, sans-serif;
+      overflow-x: hidden;
       background:
-        radial-gradient(circle at 16% 8%, rgba(55, 213, 199, 0.22), transparent 28%),
-        radial-gradient(circle at 88% 10%, rgba(255, 218, 82, 0.24), transparent 30%),
-        linear-gradient(145deg, #f8fff9 0%, var(--mint) 58%, #d8f0e9 100%);
+        radial-gradient(circle at 12% -8%, rgba(41, 255, 117, 0.13), transparent 31rem),
+        radial-gradient(circle at 90% 3%, rgba(12, 104, 68, 0.18), transparent 28rem),
+        var(--bg);
+      color: var(--text);
+      font-family: var(--sans);
+      -webkit-font-smoothing: antialiased;
     }
 
-    main {
-      width: min(760px, calc(100vw - 32px));
-      padding: 32px;
-      border: 1px solid rgba(8, 124, 113, 0.16);
-      border-radius: 8px;
-      background: rgba(255, 255, 255, 0.78);
-      box-shadow: 0 18px 45px rgba(5, 83, 74, 0.15);
+    body::before {
+      position: fixed;
+      inset: 0;
+      z-index: -1;
+      background-image:
+        linear-gradient(rgba(75, 255, 140, 0.025) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(75, 255, 140, 0.025) 1px, transparent 1px);
+      background-size: 56px 56px;
+      mask-image: linear-gradient(to bottom, black, transparent 78%);
+      pointer-events: none;
+      content: "";
     }
 
-    .stamp {
-      width: 66px;
-      height: 66px;
-      border: 3px solid #bf624b;
-      color: #bf624b;
+    a,
+    button {
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    button,
+    a {
+      font: inherit;
+    }
+
+    .page-shell {
+      width: min(1480px, calc(100% - 48px));
+      margin: 0 auto;
+    }
+
+    .topbar {
+      position: relative;
+      z-index: 10;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      min-height: 76px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .brand {
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      color: var(--text);
+      font-family: var(--mono);
+      font-size: 0.82rem;
+      font-weight: 700;
+      letter-spacing: 0.15em;
+      text-decoration: none;
+      text-transform: uppercase;
+    }
+
+    .brand-mark {
+      position: relative;
+      width: 30px;
+      height: 30px;
+      border: 1px solid var(--line-strong);
+      border-radius: 50%;
+      box-shadow: inset 0 0 18px rgba(60, 255, 130, 0.08);
+    }
+
+    .brand-mark::before,
+    .brand-mark::after {
+      position: absolute;
+      background: var(--accent);
+      content: "";
+    }
+
+    .brand-mark::before {
+      top: 50%;
+      left: -5px;
+      width: 38px;
+      height: 1px;
+    }
+
+    .brand-mark::after {
+      top: -5px;
+      left: 50%;
+      width: 1px;
+      height: 38px;
+    }
+
+    .topbar-meta {
+      display: flex;
+      align-items: center;
+      gap: 22px;
+      color: var(--muted);
+      font-family: var(--mono);
+      font-size: 0.68rem;
+      letter-spacing: 0.11em;
+      text-transform: uppercase;
+    }
+
+    .status {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--accent);
+    }
+
+    .status-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--accent);
+      box-shadow: 0 0 0 4px rgba(60, 255, 130, 0.08), 0 0 16px var(--accent);
+      animation: pulse 2.4s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      50% {
+        opacity: 0.55;
+        transform: scale(0.82);
+      }
+    }
+
+    .hero {
       display: grid;
-      place-items: center;
-      font-weight: 900;
-      line-height: 0.9;
-      text-align: center;
-      transform: rotate(-2deg);
-      background: rgba(255, 255, 255, 0.55);
-      margin-bottom: 18px;
+      grid-template-columns: minmax(0, 1.35fr) minmax(300px, 0.65fr);
+      gap: clamp(36px, 7vw, 110px);
+      align-items: end;
+      min-height: 600px;
+      padding: 92px 0 82px;
+    }
+
+    .eyebrow {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin: 0 0 25px;
+      color: var(--accent);
+      font-family: var(--mono);
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+    }
+
+    .eyebrow::before {
+      width: 34px;
+      height: 1px;
+      background: var(--accent);
+      content: "";
     }
 
     h1 {
-      margin: 0 0 12px;
-      color: var(--teal);
-      font-size: clamp(34px, 5vw, 58px);
-      line-height: 1;
-      text-transform: uppercase;
-      letter-spacing: 0;
-    }
-
-    p {
+      max-width: 940px;
       margin: 0;
-      color: var(--muted);
-      font-size: 17px;
-      line-height: 1.55;
+      font-size: clamp(3.5rem, 7.3vw, 7.4rem);
+      font-weight: 620;
+      letter-spacing: -0.065em;
+      line-height: 0.91;
     }
 
-    a {
-      color: var(--teal);
-      font-weight: 900;
+    h1 span {
+      display: block;
+      color: var(--accent);
+    }
+
+    .hero-copy {
+      max-width: 760px;
+      margin: 30px 0 0;
+      color: #a7b8ae;
+      font-size: clamp(1rem, 1.4vw, 1.2rem);
+      line-height: 1.75;
+    }
+
+    .hero-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 34px;
+    }
+
+    .primary-action,
+    .secondary-action {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 48px;
+      padding: 0 19px;
+      border: 1px solid var(--line-strong);
+      border-radius: 7px;
+      font-family: var(--mono);
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-decoration: none;
+      text-transform: uppercase;
+      transition: 180ms ease;
+    }
+
+    .primary-action {
+      gap: 18px;
+      background: var(--accent);
+      color: #021308;
+      box-shadow: 0 12px 38px rgba(36, 255, 112, 0.13);
+    }
+
+    .secondary-action {
+      background: rgba(255, 255, 255, 0.02);
+      color: var(--text);
+    }
+
+    .primary-action:hover,
+    .secondary-action:hover {
+      transform: translateY(-2px);
+    }
+
+    .primary-action:hover {
+      box-shadow: 0 18px 46px rgba(36, 255, 112, 0.22);
+    }
+
+    .secondary-action:hover {
+      border-color: var(--accent);
+      background: var(--accent-soft);
+    }
+
+    .system-summary {
+      position: relative;
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: linear-gradient(145deg, rgba(16, 27, 21, 0.92), rgba(7, 12, 9, 0.95));
+      box-shadow: 0 30px 90px rgba(0, 0, 0, 0.26);
+    }
+
+    .system-summary::after {
+      position: absolute;
+      top: -70px;
+      right: -55px;
+      width: 180px;
+      height: 180px;
+      border: 1px solid rgba(60, 255, 130, 0.1);
+      border-radius: 50%;
+      box-shadow:
+        0 0 0 30px rgba(60, 255, 130, 0.025),
+        0 0 0 65px rgba(60, 255, 130, 0.018);
+      content: "";
+    }
+
+    .summary-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 18px 20px;
+      border-bottom: 1px solid var(--line);
+      font-family: var(--mono);
+      font-size: 0.66rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+    }
+
+    .summary-head span:last-child {
+      color: var(--accent);
+    }
+
+    .summary-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+    }
+
+    .summary-item {
+      min-height: 112px;
+      padding: 22px 20px;
+      border-right: 1px solid var(--line);
+      border-bottom: 1px solid var(--line);
+    }
+
+    .summary-item:nth-child(even) {
+      border-right: 0;
+    }
+
+    .summary-item:nth-last-child(-n + 2) {
+      border-bottom: 0;
+    }
+
+    .summary-value {
+      display: block;
+      color: var(--text);
+      font-family: var(--mono);
+      font-size: 1.6rem;
+      letter-spacing: -0.04em;
+    }
+
+    .summary-label {
+      display: block;
+      margin-top: 8px;
+      color: var(--dim);
+      font-family: var(--mono);
+      font-size: 0.62rem;
+      letter-spacing: 0.08em;
+      line-height: 1.5;
+      text-transform: uppercase;
+    }
+
+    .section {
+      padding: 34px 0 90px;
+      border-top: 1px solid var(--line);
+    }
+
+    .section-heading {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 30px;
+      align-items: end;
+      margin-bottom: 32px;
+    }
+
+    .section-kicker {
+      margin: 0 0 10px;
+      color: var(--accent);
+      font-family: var(--mono);
+      font-size: 0.66rem;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+    }
+
+    h2 {
+      margin: 0;
+      font-size: clamp(2rem, 4vw, 4rem);
+      font-weight: 580;
+      letter-spacing: -0.045em;
+      line-height: 1;
+    }
+
+    .section-intro {
+      max-width: 530px;
+      margin: 18px 0 0;
+      color: var(--muted);
+      line-height: 1.7;
+    }
+
+    .view-count {
+      color: var(--dim);
+      font-family: var(--mono);
+      font-size: 0.67rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+
+    .view-count strong {
+      color: var(--accent);
+      font-weight: 600;
+    }
+
+    .filters {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 22px;
+    }
+
+    .filter {
+      min-height: 38px;
+      padding: 0 14px;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      background: rgba(255, 255, 255, 0.018);
+      color: var(--muted);
+      cursor: pointer;
+      font-family: var(--mono);
+      font-size: 0.63rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      transition: 160ms ease;
+    }
+
+    .filter:hover,
+    .filter[aria-pressed="true"] {
+      border-color: var(--line-strong);
+      background: var(--accent-soft);
+      color: var(--accent);
+    }
+
+    .gallery {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 22px;
+    }
+
+    .system-card {
+      min-width: 0;
+      margin: 0;
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: linear-gradient(150deg, rgba(14, 23, 18, 0.96), rgba(7, 12, 9, 0.98));
+      box-shadow: 0 24px 70px rgba(0, 0, 0, 0.18);
+      transition: border-color 220ms ease, transform 220ms ease, box-shadow 220ms ease;
+    }
+
+    .system-card:hover {
+      border-color: var(--line-strong);
+      transform: translateY(-3px);
+      box-shadow: 0 30px 80px rgba(0, 0, 0, 0.3);
+    }
+
+    .system-card.featured {
+      grid-column: 1 / -1;
+    }
+
+    .system-card[hidden] {
+      display: none;
+    }
+
+    .card-visual {
+      position: relative;
+      display: block;
+      overflow: hidden;
+      aspect-ratio: 8 / 5;
+      background: #020403;
+      cursor: zoom-in;
+    }
+
+    .featured .card-visual {
+      aspect-ratio: 16 / 7.5;
+    }
+
+    .card-visual::after {
+      position: absolute;
+      inset: 0;
+      background:
+        linear-gradient(to top, rgba(2, 5, 3, 0.56), transparent 28%),
+        linear-gradient(120deg, rgba(60, 255, 130, 0.06), transparent 35%);
+      opacity: 0.65;
+      pointer-events: none;
+      content: "";
+      transition: opacity 220ms ease;
+    }
+
+    .card-visual:hover::after {
+      opacity: 0.2;
+    }
+
+    .card-visual img {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 500ms cubic-bezier(0.2, 0.7, 0.2, 1), filter 220ms ease;
+    }
+
+    .system-card:hover .card-visual img {
+      transform: scale(1.012);
+      filter: saturate(1.08) contrast(1.02);
+    }
+
+    .visual-index,
+    .visual-type {
+      position: absolute;
+      z-index: 2;
+      top: 15px;
+      border: 1px solid rgba(126, 255, 173, 0.22);
+      border-radius: 5px;
+      background: rgba(3, 8, 5, 0.82);
+      backdrop-filter: blur(12px);
+      font-family: var(--mono);
+      font-size: 0.61rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+
+    .visual-index {
+      left: 15px;
+      padding: 8px 9px;
+      color: var(--accent);
+    }
+
+    .visual-type {
+      right: 15px;
+      padding: 8px 10px;
+      color: #c0cec6;
+    }
+
+    figcaption {
+      padding: 23px 24px 24px;
+    }
+
+    .caption-topline {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 15px;
+      margin-bottom: 13px;
+      color: var(--dim);
+      font-family: var(--mono);
+      font-size: 0.6rem;
+      letter-spacing: 0.09em;
+      text-transform: uppercase;
+    }
+
+    .validated {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      color: #7f9387;
+    }
+
+    .validated::before {
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+      background: var(--accent);
+      box-shadow: 0 0 10px rgba(60, 255, 130, 0.7);
+      content: "";
+    }
+
+    h3 {
+      margin: 0;
+      font-size: clamp(1.17rem, 2vw, 1.52rem);
+      font-weight: 590;
+      letter-spacing: -0.025em;
+    }
+
+    .card-description {
+      min-height: 3.25em;
+      margin: 11px 0 0;
+      color: var(--muted);
+      font-size: 0.92rem;
+      line-height: 1.65;
+    }
+
+    .footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 24px;
+      min-height: 94px;
+      border-top: 1px solid var(--line);
+      color: var(--dim);
+      font-family: var(--mono);
+      font-size: 0.62rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .footer strong {
+      color: #a8b7ae;
+      font-weight: 500;
+    }
+
+    dialog {
+      width: min(1380px, calc(100% - 48px));
+      max-width: none;
+      max-height: calc(100vh - 48px);
+      padding: 0;
+      overflow: hidden;
+      border: 1px solid var(--line-strong);
+      border-radius: 18px;
+      background: #050806;
+      color: var(--text);
+      box-shadow: 0 40px 120px rgba(0, 0, 0, 0.78);
+    }
+
+    dialog::backdrop {
+      background: rgba(0, 3, 1, 0.88);
+      backdrop-filter: blur(10px);
+    }
+
+    .viewer-layout {
+      display: grid;
+      grid-template-rows: minmax(0, 1fr) auto;
+      max-height: calc(100vh - 50px);
+    }
+
+    .viewer-stage {
+      position: relative;
+      display: grid;
+      min-height: 0;
+      place-items: center;
+      overflow: hidden;
+      background:
+        radial-gradient(circle at center, rgba(39, 126, 70, 0.09), transparent 45%),
+        #020403;
+    }
+
+    .viewer-stage img {
+      display: block;
+      max-width: 100%;
+      max-height: calc(100vh - 184px);
+      object-fit: contain;
+    }
+
+    .viewer-close,
+    .viewer-nav {
+      position: absolute;
+      z-index: 3;
+      display: grid;
+      place-items: center;
+      border: 1px solid rgba(255, 255, 255, 0.16);
+      background: rgba(3, 8, 5, 0.82);
+      color: var(--text);
+      cursor: pointer;
+      backdrop-filter: blur(12px);
+      transition: 160ms ease;
+    }
+
+    .viewer-close:hover,
+    .viewer-nav:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    .viewer-close {
+      top: 16px;
+      right: 16px;
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      font-size: 1.15rem;
+    }
+
+    .viewer-nav {
+      top: 50%;
+      width: 44px;
+      height: 62px;
+      transform: translateY(-50%);
+      border-radius: 8px;
+      font-size: 1.4rem;
+    }
+
+    .viewer-prev {
+      left: 15px;
+    }
+
+    .viewer-next {
+      right: 15px;
+    }
+
+    .viewer-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 25px;
+      padding: 18px 22px;
+      border-top: 1px solid var(--line);
+      background: var(--surface);
+    }
+
+    .viewer-footer h3 {
+      font-size: 1rem;
+    }
+
+    .viewer-footer p {
+      margin: 5px 0 0;
+      color: var(--muted);
+      font-size: 0.78rem;
+      line-height: 1.45;
+    }
+
+    .viewer-counter {
+      flex: 0 0 auto;
+      color: var(--accent);
+      font-family: var(--mono);
+      font-size: 0.68rem;
+      letter-spacing: 0.12em;
+    }
+
+    .modal-open {
+      overflow: hidden;
+    }
+
+    @media (max-width: 920px) {
+      .hero {
+        grid-template-columns: 1fr;
+        min-height: auto;
+        padding: 74px 0 64px;
+      }
+
+      .system-summary {
+        max-width: 580px;
+      }
+
+      .section-heading {
+        grid-template-columns: 1fr;
+      }
+
+      .view-count {
+        display: none;
+      }
+
+      .gallery {
+        grid-template-columns: 1fr;
+      }
+
+      .system-card.featured {
+        grid-column: auto;
+      }
+
+      .featured .card-visual {
+        aspect-ratio: 8 / 5;
+      }
+    }
+
+    @media (max-width: 620px) {
+      .page-shell {
+        width: min(100% - 28px, 1480px);
+      }
+
+      .topbar {
+        min-height: 66px;
+      }
+
+      .brand {
+        font-size: 0.7rem;
+      }
+
+      .brand-mark {
+        width: 25px;
+        height: 25px;
+      }
+
+      .brand-mark::before {
+        left: -4px;
+        width: 31px;
+      }
+
+      .brand-mark::after {
+        top: -4px;
+        height: 31px;
+      }
+
+      .topbar-meta > span:first-child {
+        display: none;
+      }
+
+      .hero {
+        padding: 62px 0 58px;
+      }
+
+      h1 {
+        font-size: clamp(3.2rem, 16vw, 5.2rem);
+      }
+
+      .hero-copy {
+        font-size: 0.98rem;
+      }
+
+      .primary-action,
+      .secondary-action {
+        width: 100%;
+      }
+
+      .summary-item {
+        min-height: 98px;
+        padding: 18px 16px;
+      }
+
+      .summary-value {
+        font-size: 1.25rem;
+      }
+
+      .section {
+        padding-bottom: 64px;
+      }
+
+      .filters {
+        flex-wrap: nowrap;
+        margin-right: -14px;
+        padding-right: 14px;
+        overflow-x: auto;
+        scrollbar-width: none;
+      }
+
+      .filters::-webkit-scrollbar {
+        display: none;
+      }
+
+      .filter {
+        flex: 0 0 auto;
+      }
+
+      .gallery {
+        gap: 15px;
+      }
+
+      .card-visual,
+      .featured .card-visual {
+        aspect-ratio: 16 / 10;
+      }
+
+      figcaption {
+        padding: 19px 18px 20px;
+      }
+
+      .card-description {
+        min-height: 0;
+      }
+
+      .footer {
+        align-items: flex-start;
+        flex-direction: column;
+        justify-content: center;
+      }
+
+      dialog {
+        width: calc(100% - 18px);
+        max-height: calc(100vh - 18px);
+      }
+
+      .viewer-layout {
+        max-height: calc(100vh - 20px);
+      }
+
+      .viewer-stage img {
+        max-height: calc(100vh - 220px);
+      }
+
+      .viewer-footer {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 11px;
+      }
+
+      .viewer-nav {
+        width: 38px;
+        height: 52px;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *,
+      *::before,
+      *::after {
+        scroll-behavior: auto !important;
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+      }
     }
   </style>
 </head>
 <body>
-  <main>
-    <div class="stamp">VISTARA<br />4D</div>
-    <h1>Đang mở Vistara4D Demo</h1>
-    <p>Nếu trình duyệt không tự chuyển, mở trực tiếp
-      <a href="./4dgs-culture/">4dgs-culture</a>.
-    </p>
+  <header class="topbar page-shell">
+    <a class="brand" href="#top" aria-label="World Monitor home">
+      <span class="brand-mark" aria-hidden="true"></span>
+      <span>World Monitor</span>
+    </a>
+    <div class="topbar-meta">
+      <span>System Demonstration</span>
+      <span class="status"><span class="status-dot" aria-hidden="true"></span>Demo Online</span>
+    </div>
+  </header>
+
+  <main id="top">
+    <section class="hero page-shell" aria-labelledby="hero-title">
+      <div>
+        <p class="eyebrow">World Monitor / System Demonstration</p>
+        <h1 id="hero-title">Global Intelligence.<span>One Operational Picture.</span></h1>
+        <p class="hero-copy">A unified situational-awareness platform for exploring geopolitical risk, critical infrastructure, supply chains, energy, cyber activity, and space operations across the globe.</p>
+        <div class="hero-actions">
+          <a class="primary-action" href="#showcase">Explore the System <span aria-hidden="true">&darr;</span></a>
+          <a class="secondary-action" href="01-world-dashboard.png" target="_blank" rel="noopener">Open Flagship View</a>
+        </div>
+      </div>
+
+      <aside class="system-summary" aria-label="Demonstration summary">
+        <div class="summary-head">
+          <span>Platform Snapshot</span>
+          <span>Validated Build</span>
+        </div>
+        <div class="summary-grid">
+          <div class="summary-item">
+            <span class="summary-value">20</span>
+            <span class="summary-label">Operational Views</span>
+          </div>
+          <div class="summary-item">
+            <span class="summary-value">08</span>
+            <span class="summary-label">Intelligence Domains</span>
+          </div>
+          <div class="summary-item">
+            <span class="summary-value">2D / 3D</span>
+            <span class="summary-label">Visual Systems</span>
+          </div>
+          <div class="summary-item">
+            <span class="summary-value">Global</span>
+            <span class="summary-label">Operating Coverage</span>
+          </div>
+        </div>
+      </aside>
+    </section>
+
+    <section class="section page-shell" id="showcase" aria-labelledby="showcase-title">
+      <div class="section-heading">
+        <div>
+          <p class="section-kicker">Interface Showcase / 01&ndash;20</p>
+          <h2 id="showcase-title">Operational Views</h2>
+          <p class="section-intro">Twenty distinct views captured from the working system. Select any frame for a full-resolution inspection.</p>
+        </div>
+        <p class="view-count"><strong id="visible-count">20</strong> interfaces displayed</p>
+      </div>
+
+      <nav class="filters" aria-label="Filter operational views">
+        <button class="filter" type="button" data-filter="all" aria-pressed="true">All Systems / 20</button>
+        <button class="filter" type="button" data-filter="command" aria-pressed="false">Command Centers / 04</button>
+        <button class="filter" type="button" data-filter="map" aria-pressed="false">Map Intelligence / 10</button>
+        <button class="filter" type="button" data-filter="globe" aria-pressed="false">3D Globes / 05</button>
+        <button class="filter" type="button" data-filter="live" aria-pressed="false">Live Operations / 01</button>
+      </nav>
+
+      <div class="gallery">
+        <figure class="system-card featured" data-category="command" data-title="Global Operations Overview" data-description="A consolidated command view of priority events, risk signals, and worldwide activity.">
+          <a class="card-visual" href="01-world-dashboard.png" target="_blank" rel="noopener">
+            <img src="01-world-dashboard.png" alt="World Monitor global operations command dashboard" loading="eager" fetchpriority="high">
+            <span class="visual-index">View 01</span>
+            <span class="visual-type">Command Center</span>
+          </a>
+          <figcaption>
+            <div class="caption-topline"><span>Global Intelligence</span><span class="validated">Validated Interface</span></div>
+            <h3>Global Operations Overview</h3>
+            <p class="card-description">A consolidated command view of priority events, risk signals, and worldwide activity.</p>
+          </figcaption>
+        </figure>
+
+        <figure class="system-card" data-category="map" data-title="Global Threat Landscape" data-description="A full-screen geospatial view highlighting concentrations of risk and emerging hotspots worldwide.">
+          <a class="card-visual" href="02-global-threat-map.png" target="_blank" rel="noopener">
+            <img src="02-global-threat-map.png" alt="Full-screen global threat landscape map" loading="eager">
+            <span class="visual-index">View 02</span>
+            <span class="visual-type">Map Intelligence</span>
+          </a>
+          <figcaption>
+            <div class="caption-topline"><span>Risk &amp; Security</span><span class="validated">Validated Interface</span></div>
+            <h3>Global Threat Landscape</h3>
+            <p class="card-description">A full-screen geospatial view highlighting concentrations of risk and emerging hotspots worldwide.</p>
+          </figcaption>
+        </figure>
+
+        <figure class="system-card" data-category="command" data-title="Technology Intelligence Overview" data-description="Monitor digital infrastructure, subsea connectivity, and technology-sector signals in one workspace.">
+          <a class="card-visual" href="03-tech-dashboard.png" target="_blank" rel="noopener">
+            <img src="03-tech-dashboard.png" alt="Technology intelligence command dashboard" loading="lazy">
+            <span class="visual-index">View 03</span>
+            <span class="visual-type">Command Center</span>
+          </a>
+          <figcaption>
+            <div class="caption-topline"><span>Technology</span><span class="validated">Validated Interface</span></div>
+            <h3>Technology Intelligence Overview</h3>
+            <p class="card-description">Monitor digital infrastructure, subsea connectivity, and technology-sector signals in one workspace.</p>
+          </figcaption>
+        </figure>
+
+        <figure class="system-card" data-category="map" data-title="Global Technology Network" data-description="Explore critical cables, network hubs, and strategic technology infrastructure at map scale.">
+          <a class="card-visual" href="04-tech-network-map.png" target="_blank" rel="noopener">
+            <img src="04-tech-network-map.png" alt="Global technology and network infrastructure map" loading="lazy">
+            <span class="visual-index">View 04</span>
+            <span class="visual-type">Map Intelligence</span>
+          </a>
+          <figcaption>
+            <div class="caption-topline"><span>Digital Infrastructure</span><span class="validated">Validated Interface</span></div>
+            <h3>Global Technology Network</h3>
+            <p class="card-description">Explore critical cables, network hubs, and strategic technology infrastructure at map scale.</p>
+          </figcaption>
+        </figure>
+
+        <figure class="system-card" data-category="command" data-title="Middle East Crisis Desk" data-description="A mission-focused workspace that brings regional events, indicators, and context into one operational picture.">
+          <a class="card-visual" href="05-crisis-desk.png" target="_blank" rel="noopener">
+            <img src="05-crisis-desk.png" alt="Middle East regional crisis command desk" loading="lazy">
+            <span class="visual-index">View 05</span>
+            <span class="visual-type">Command Center</span>
+          </a>
+          <figcaption>
+            <div class="caption-topline"><span>Crisis Response</span><span class="validated">Validated Interface</span></div>
+            <h3>Middle East Crisis Desk</h3>
+            <p class="card-description">A mission-focused workspace that brings regional events, indicators, and context into one operational picture.</p>
+          </figcaption>
+        </figure>
+
+        <figure class="system-card" data-category="map" data-title="Regional Crisis Map" data-description="Assess active crises and cross-border pressure points across the Middle East and Africa.">
+          <a class="card-visual" href="06-crisis-map.png" target="_blank" rel="noopener">
+            <img src="06-crisis-map.png" alt="Middle East and Africa regional crisis map" loading="lazy">
+            <span class="visual-index">View 06</span>
+            <span class="visual-type">Map Intelligence</span>
+          </a>
+          <figcaption>
+            <div class="caption-topline"><span>Regional Security</span><span class="validated">Validated Interface</span></div>
+            <h3>Regional Crisis Map</h3>
+            <p class="card-description">Assess active crises and cross-border pressure points across the Middle East and Africa.</p>
+          </figcaption>
+        </figure>
+
+        <figure class="system-card" data-category="command" data-title="Supply Chain Risk Center" data-description="Track disruption indicators, exposed routes, and operational dependencies across global supply networks.">
+          <a class="card-visual" href="07-supply-chain-dashboard.png" target="_blank" rel="noopener">
+            <img src="07-supply-chain-dashboard.png" alt="Global supply chain risk command dashboard" loading="lazy">
+            <span class="visual-index">View 07</span>
+            <span class="visual-type">Command Center</span>
+          </a>
+          <figcaption>
+            <div class="caption-topline"><span>Supply Chain</span><span class="validated">Validated Interface</span></div>
+            <h3>Supply Chain Risk Center</h3>
+            <p class="card-description">Track disruption indicators, exposed routes, and operational dependencies across global supply networks.</p>
+          </figcaption>
+        </figure>
+
+        <figure class="system-card" data-category="map" data-title="Global Logistics Network" data-description="Visualize shipping corridors, subsea links, and strategic chokepoints shaping global trade.">
+          <a class="card-visual" href="08-supply-chain-map.png" target="_blank" rel="noopener">
+            <img src="08-supply-chain-map.png" alt="Global logistics and supply route intelligence map" loading="lazy">
+            <span class="visual-index">View 08</span>
+            <span class="visual-type">Map Intelligence</span>
+          </a>
+          <figcaption>
+            <div class="caption-topline"><span>Trade &amp; Logistics</span><span class="validated">Validated Interface</span></div>
+            <h3>Global Logistics Network</h3>
+            <p class="card-description">Visualize shipping corridors, subsea links, and strategic chokepoints shaping global trade.</p>
+          </figcaption>
+        </figure>
+
+        <figure class="system-card" data-category="map" data-title="Energy Security Monitor" data-description="Map pipelines, energy infrastructure, and regional exposure across critical supply corridors.">
+          <a class="card-visual" href="09-energy-security-map.png" target="_blank" rel="noopener">
+            <img src="09-energy-security-map.png" alt="Global energy security and pipeline infrastructure map" loading="lazy">
+            <span class="visual-index">View 09</span>
+            <span class="visual-type">Map Intelligence</span>
+          </a>
+          <figcaption>
+            <div class="caption-topline"><span>Energy Security</span><span class="validated">Validated Interface</span></div>
+            <h3>Energy Security Monitor</h3>
+            <p class="card-description">Map pipelines, energy infrastructure, and regional exposure across critical supply corridors.</p>
+          </figcaption>
+        </figure>
+
+        <figure class="system-card" data-category="live" data-title="Starbase Live Operations" data-description="A dedicated Rover Cam view for direct visual monitoring of activity at Starbase.">
+          <a class="card-visual" href="10-starbase-cctv.png" target="_blank" rel="noopener">
+            <img src="10-starbase-cctv.png" alt="Starbase Rover Cam live operations interface" loading="lazy">
+            <span class="visual-index">View 10</span>
+            <span class="visual-type">Live Operations</span>
+          </a>
+          <figcaption>
+            <div class="caption-topline"><span>Visual Intelligence</span><span class="validated">Validated Interface</span></div>
+            <h3>Starbase Live Operations</h3>
+            <p class="card-description">A dedicated Rover Cam view for direct visual monitoring of activity at Starbase.</p>
+          </figcaption>
+        </figure>
+
+        <figure class="system-card" data-category="globe" data-title="MENA Energy Intelligence Globe" data-description="A 3D regional view of energy assets, transit routes, and strategic concentration across MENA.">
+          <a class="card-visual" href="11-globe-energy-mena.png" target="_blank" rel="noopener">
+            <img src="11-globe-energy-mena.png" alt="MENA energy intelligence 3D globe" loading="lazy">
+            <span class="visual-index">View 11</span>
+            <span class="visual-type">3D Globe</span>
+          </a>
+          <figcaption>
+            <div class="caption-topline"><span>Energy Intelligence</span><span class="validated">Validated Interface</span></div>
+            <h3>MENA Energy Intelligence Globe</h3>
+            <p class="card-description">A 3D regional view of energy assets, transit routes, and strategic concentration across MENA.</p>
+          </figcaption>
+        </figure>
+
+        <figure class="system-card" data-category="globe" data-title="Asia Digital Infrastructure Globe" data-description="Examine cable networks, data centers, and connectivity hubs across Asia in an immersive 3D view.">
+          <a class="card-visual" href="12-globe-tech-asia.png" target="_blank" rel="noopener">
+            <img src="12-globe-tech-asia.png" alt="Asia digital infrastructure 3D globe" loading="lazy">
+            <span class="visual-index">View 12</span>
+            <span class="visual-type">3D Globe</span>
+          </a>
+          <figcaption>
+            <div class="caption-topline"><span>Digital Infrastructure</span><span class="validated">Validated Interface</span></div>
+            <h3>Asia Digital Infrastructure Globe</h3>
+            <p class="card-description">Examine cable networks, data centers, and connectivity hubs across Asia in an immersive 3D view.</p>
+          </figcaption>
+        </figure>
+
+        <figure class="system-card" data-category="globe" data-title="European Conflict &amp; Nuclear Posture" data-description="A 3D strategic view of conflict activity, nuclear assets, and regional security pressure across Europe.">
+          <a class="card-visual" href="13-globe-conflict-europe.png" target="_blank" rel="noopener">
+            <img src="13-globe-conflict-europe.png" alt="European conflict and nuclear posture 3D globe" loading="lazy">
+            <span class="visual-index">View 13</span>
+            <span class="visual-type">3D Globe</span>
+          </a>
+          <figcaption>
+            <div class="caption-topline"><span>Strategic Security</span><span class="validated">Validated Interface</span></div>
+            <h3>European Conflict &amp; Nuclear Posture</h3>
+            <p class="card-description">A 3D strategic view of conflict activity, nuclear assets, and regional security pressure across Europe.</p>
+          </figcaption>
+        </figure>
+
+        <figure class="system-card" data-category="globe" data-title="Americas Critical Infrastructure Globe" data-description="Explore strategic infrastructure and geographic dependencies across North and South America.">
+          <a class="card-visual" href="14-globe-infrastructure-americas.png" target="_blank" rel="noopener">
+            <img src="14-globe-infrastructure-americas.png" alt="Americas critical infrastructure 3D globe" loading="lazy">
+            <span class="visual-index">View 14</span>
+            <span class="visual-type">3D Globe</span>
+          </a>
+          <figcaption>
+            <div class="caption-topline"><span>Critical Infrastructure</span><span class="validated">Validated Interface</span></div>
+            <h3>Americas Critical Infrastructure Globe</h3>
+            <p class="card-description">Explore strategic infrastructure and geographic dependencies across North and South America.</p>
+          </figcaption>
+        </figure>
+
+        <figure class="system-card" data-category="map" data-title="Panama Canal Chokepoint Brief" data-description="Focused intelligence on one of the world's most consequential maritime transit nodes.">
+          <a class="card-visual" href="15-panama-chokepoint.png" target="_blank" rel="noopener">
+            <img src="15-panama-chokepoint.png" alt="Panama Canal strategic chokepoint intelligence brief" loading="lazy">
+            <span class="visual-index">View 15</span>
+            <span class="visual-type">Map Intelligence</span>
+          </a>
+          <figcaption>
+            <div class="caption-topline"><span>Maritime Security</span><span class="validated">Validated Interface</span></div>
+            <h3>Panama Canal Chokepoint Brief</h3>
+            <p class="card-description">Focused intelligence on one of the world&rsquo;s most consequential maritime transit nodes.</p>
+          </figcaption>
+        </figure>
+
+        <figure class="system-card" data-category="map" data-title="Integrated World Intelligence Map" data-description="A global intelligence layer for rapidly correlating events, locations, and operational context.">
+          <a class="card-visual" href="16-world-intelligence-embed.png" target="_blank" rel="noopener">
+            <img src="16-world-intelligence-embed.png" alt="Integrated world intelligence map" loading="lazy">
+            <span class="visual-index">View 16</span>
+            <span class="visual-type">Map Intelligence</span>
+          </a>
+          <figcaption>
+            <div class="caption-topline"><span>Integrated Intelligence</span><span class="validated">Validated Interface</span></div>
+            <h3>Integrated World Intelligence Map</h3>
+            <p class="card-description">A global intelligence layer for rapidly correlating events, locations, and operational context.</p>
+          </figcaption>
+        </figure>
+
+        <figure class="system-card" data-category="map" data-title="Asia Nuclear &amp; Defense Infrastructure" data-description="Map nuclear facilities and military sites to assess strategic density and regional exposure.">
+          <a class="card-visual" href="17-nuclear-asia-map.png" target="_blank" rel="noopener">
+            <img src="17-nuclear-asia-map.png" alt="Asia nuclear and defense infrastructure map" loading="lazy">
+            <span class="visual-index">View 17</span>
+            <span class="visual-type">Map Intelligence</span>
+          </a>
+          <figcaption>
+            <div class="caption-topline"><span>Defense Intelligence</span><span class="validated">Validated Interface</span></div>
+            <h3>Asia Nuclear &amp; Defense Infrastructure</h3>
+            <p class="card-description">Map nuclear facilities and military sites to assess strategic density and regional exposure.</p>
+          </figcaption>
+        </figure>
+
+        <figure class="system-card" data-category="map" data-title="Global Spaceport Network" data-description="Track launch facilities and space-related hotspots across the worldwide operating environment.">
+          <a class="card-visual" href="18-spaceports-world-map.png" target="_blank" rel="noopener">
+            <img src="18-spaceports-world-map.png" alt="Global spaceport and launch facility network map" loading="lazy">
+            <span class="visual-index">View 18</span>
+            <span class="visual-type">Map Intelligence</span>
+          </a>
+          <figcaption>
+            <div class="caption-topline"><span>Space Infrastructure</span><span class="validated">Validated Interface</span></div>
+            <h3>Global Spaceport Network</h3>
+            <p class="card-description">Track launch facilities and space-related hotspots across the worldwide operating environment.</p>
+          </figcaption>
+        </figure>
+
+        <figure class="system-card" data-category="map" data-title="Europe Cyber &amp; Cloud Infrastructure" data-description="Visualize cloud regions, AI infrastructure, and cyber-relevant assets across Europe.">
+          <a class="card-visual" href="19-cyber-cloud-europe-map.png" target="_blank" rel="noopener">
+            <img src="19-cyber-cloud-europe-map.png" alt="Europe cyber cloud and AI infrastructure map" loading="lazy">
+            <span class="visual-index">View 19</span>
+            <span class="visual-type">Map Intelligence</span>
+          </a>
+          <figcaption>
+            <div class="caption-topline"><span>Cyber Intelligence</span><span class="validated">Validated Interface</span></div>
+            <h3>Europe Cyber &amp; Cloud Infrastructure</h3>
+            <p class="card-description">Visualize cloud regions, AI infrastructure, and cyber-relevant assets across Europe.</p>
+          </figcaption>
+        </figure>
+
+        <figure class="system-card" data-category="globe" data-title="Global Space Operations Globe" data-description="A 3D world view connecting space infrastructure with strategic activity on the ground.">
+          <a class="card-visual" href="20-globe-space-world.png" target="_blank" rel="noopener">
+            <img src="20-globe-space-world.png" alt="Global space operations 3D globe" loading="lazy">
+            <span class="visual-index">View 20</span>
+            <span class="visual-type">3D Globe</span>
+          </a>
+          <figcaption>
+            <div class="caption-topline"><span>Space Operations</span><span class="validated">Validated Interface</span></div>
+            <h3>Global Space Operations Globe</h3>
+            <p class="card-description">A 3D world view connecting space infrastructure with strategic activity on the ground.</p>
+          </figcaption>
+        </figure>
+      </div>
+    </section>
   </main>
+
+  <footer class="footer page-shell">
+    <span><strong>World Monitor</strong> / Intelligence Operations Platform</span>
+    <span>System Demonstration / 2026</span>
+  </footer>
+
+  <dialog id="viewer" aria-labelledby="viewer-title">
+    <div class="viewer-layout">
+      <div class="viewer-stage">
+        <button class="viewer-close" type="button" aria-label="Close full-screen viewer">&times;</button>
+        <button class="viewer-nav viewer-prev" type="button" aria-label="View previous interface">&lsaquo;</button>
+        <img id="viewer-image" src="01-world-dashboard.png" alt="">
+        <button class="viewer-nav viewer-next" type="button" aria-label="View next interface">&rsaquo;</button>
+      </div>
+      <div class="viewer-footer">
+        <div>
+          <h3 id="viewer-title">Global Operations Overview</h3>
+          <p id="viewer-description">A consolidated command view of priority events, risk signals, and worldwide activity.</p>
+        </div>
+        <span class="viewer-counter" id="viewer-counter">01 / 20</span>
+      </div>
+    </div>
+  </dialog>
+
   <script>
-    window.location.replace("./4dgs-culture/");
+    (function () {
+      var cards = Array.from(document.querySelectorAll(".system-card"));
+      var filters = Array.from(document.querySelectorAll(".filter"));
+      var count = document.getElementById("visible-count");
+      var viewer = document.getElementById("viewer");
+      var viewerImage = document.getElementById("viewer-image");
+      var viewerTitle = document.getElementById("viewer-title");
+      var viewerDescription = document.getElementById("viewer-description");
+      var viewerCounter = document.getElementById("viewer-counter");
+      var currentCard = cards[0];
+
+      function visibleCards() {
+        return cards.filter(function (card) {
+          return !card.hidden;
+        });
+      }
+
+      function openCard(card) {
+        var available = visibleCards();
+        var position = available.indexOf(card);
+        var image = card.querySelector("img");
+
+        currentCard = card;
+        viewerImage.src = image.src;
+        viewerImage.alt = image.alt;
+        viewerTitle.innerHTML = card.dataset.title;
+        viewerDescription.textContent = card.dataset.description;
+        viewerCounter.textContent = String(position + 1).padStart(2, "0") + " / " + String(available.length).padStart(2, "0");
+
+        if (!viewer.open) {
+          viewer.showModal();
+          document.body.classList.add("modal-open");
+        }
+      }
+
+      function moveViewer(direction) {
+        var available = visibleCards();
+        var currentIndex = available.indexOf(currentCard);
+        var nextIndex = (currentIndex + direction + available.length) % available.length;
+        openCard(available[nextIndex]);
+      }
+
+      filters.forEach(function (button) {
+        button.addEventListener("click", function () {
+          var selected = button.dataset.filter;
+          var visible = 0;
+
+          filters.forEach(function (item) {
+            item.setAttribute("aria-pressed", String(item === button));
+          });
+
+          cards.forEach(function (card) {
+            var show = selected === "all" || card.dataset.category === selected;
+            card.hidden = !show;
+            if (show) {
+              visible += 1;
+            }
+          });
+
+          count.textContent = String(visible);
+        });
+      });
+
+      cards.forEach(function (card) {
+        card.querySelector(".card-visual").addEventListener("click", function (event) {
+          event.preventDefault();
+          openCard(card);
+        });
+      });
+
+      document.querySelector(".viewer-close").addEventListener("click", function () {
+        viewer.close();
+      });
+
+      document.querySelector(".viewer-prev").addEventListener("click", function () {
+        moveViewer(-1);
+      });
+
+      document.querySelector(".viewer-next").addEventListener("click", function () {
+        moveViewer(1);
+      });
+
+      viewer.addEventListener("click", function (event) {
+        if (event.target === viewer) {
+          viewer.close();
+        }
+      });
+
+      viewer.addEventListener("close", function () {
+        document.body.classList.remove("modal-open");
+      });
+
+      document.addEventListener("keydown", function (event) {
+        if (!viewer.open) {
+          return;
+        }
+        if (event.key === "ArrowLeft") {
+          moveViewer(-1);
+        }
+        if (event.key === "ArrowRight") {
+          moveViewer(1);
+        }
+      });
+    }());
   </script>
 </body>
 </html>

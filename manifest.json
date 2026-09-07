@@ -1,0 +1,149 @@
+{
+  "title": "World Monitor System Demonstration",
+  "createdAt": "2026-09-07T19:03:06.603Z",
+  "source": "http://127.0.0.1:3000",
+  "language": "en",
+  "notes": "Twenty distinct views captured from the working local system. Settings, navigation menus, region pickers, and maximized analysis panels are intentionally excluded.",
+  "screenshots": [
+    {
+      "file": "01-world-dashboard.png",
+      "title": "Global Operations Overview",
+      "description": "A consolidated command view of priority events, risk signals, and worldwide activity.",
+      "sourceFile": "01-variant-full-dashboard.png",
+      "sha256": "70ec01c4b1be0c08bd48eb31f6e030e93152c1cf899d3c4ceea3a826eb3c7149"
+    },
+    {
+      "file": "02-global-threat-map.png",
+      "title": "Global Threat Landscape",
+      "description": "A full-screen geospatial view highlighting concentrations of risk and emerging hotspots worldwide.",
+      "sourceFile": "02-variant-full-map-fullscreen.png",
+      "sha256": "551b528c4e4388b8b6378ff7d141693ea1f7722128a115ebb59a73595a909108"
+    },
+    {
+      "file": "03-tech-dashboard.png",
+      "title": "Technology Intelligence Overview",
+      "description": "Monitor digital infrastructure, subsea connectivity, and technology-sector signals in one workspace.",
+      "sourceFile": "03-variant-tech-dashboard.png",
+      "sha256": "1be531d7ed28e407862c3eb356f65bf7ef5aa42728b39bef071ff799d757a020"
+    },
+    {
+      "file": "04-tech-network-map.png",
+      "title": "Global Technology Network",
+      "description": "Explore critical cables, network hubs, and strategic technology infrastructure at map scale.",
+      "sourceFile": "04-variant-tech-map-fullscreen.png",
+      "sha256": "738f9ca411ea598b4c0c2fec976b962064d6ed17771c877031dfc22f33cb6644"
+    },
+    {
+      "file": "05-crisis-desk.png",
+      "title": "Middle East Crisis Desk",
+      "description": "A mission-focused workspace that brings regional events, indicators, and context into one operational picture.",
+      "sourceFile": "13-mission-crisis-desk-dashboard.png",
+      "sha256": "cf964a62503729e243b2c07078db3e340880a100aa91745a868c24e807812503"
+    },
+    {
+      "file": "06-crisis-map.png",
+      "title": "Regional Crisis Map",
+      "description": "Assess active crises and cross-border pressure points across the Middle East and Africa.",
+      "sourceFile": "14-mission-crisis-desk-map.png",
+      "sha256": "93a628a3bce1238d3689cccc8eea8a273284659896b4b23955bd1d2b5a5788e2"
+    },
+    {
+      "file": "07-supply-chain-dashboard.png",
+      "title": "Supply Chain Risk Center",
+      "description": "Track disruption indicators, exposed routes, and operational dependencies across global supply networks.",
+      "sourceFile": "15-mission-supply-chain-risk-dashboard.png",
+      "sha256": "3be95d4083b22edade192e679fff8f246807234361041286dbe3d02452fbda62"
+    },
+    {
+      "file": "08-supply-chain-map.png",
+      "title": "Global Logistics Network",
+      "description": "Visualize shipping corridors, subsea links, and strategic chokepoints shaping global trade.",
+      "sourceFile": "16-mission-supply-chain-risk-map.png",
+      "sha256": "5458aca80620613c79a0e1383cc1e1b1170ce8e9a12c6425e18a08cc21ccea22"
+    },
+    {
+      "file": "09-energy-security-map.png",
+      "title": "Energy Security Monitor",
+      "description": "Map pipelines, energy infrastructure, and regional exposure across critical supply corridors.",
+      "sourceFile": "18-mission-energy-security-map.png",
+      "sha256": "e8a9e9285c4aa5836b2e414e142e6c98b8618393c5996e25165526c6447d1c5b"
+    },
+    {
+      "file": "10-starbase-cctv.png",
+      "title": "Starbase Live Operations",
+      "description": "A dedicated Rover Cam view for direct visual monitoring of activity at Starbase.",
+      "sourceFile": "28-starbase-cctv-viewer.png",
+      "sha256": "85455021b713325e7fc110a9714a8afa7214190f2065b77164c7261324f8f2c3"
+    },
+    {
+      "file": "11-globe-energy-mena.png",
+      "title": "MENA Energy Intelligence Globe",
+      "description": "A 3D regional view of energy assets, transit routes, and strategic concentration across MENA.",
+      "sourceFile": "c01-globe-energy-mena-fullscreen.png",
+      "sha256": "512c3cb74d875ee9f756a402449338fefe8846689d7a510f6fd9ac14c874da6f"
+    },
+    {
+      "file": "12-globe-tech-asia.png",
+      "title": "Asia Digital Infrastructure Globe",
+      "description": "Examine cable networks, data centers, and connectivity hubs across Asia in an immersive 3D view.",
+      "sourceFile": "c02-globe-tech-asia-fullscreen.png",
+      "sha256": "2bb686a4d763e22589ec0ec8c10b76a68071720674428848388d5d8b90fa7c51"
+    },
+    {
+      "file": "13-globe-conflict-europe.png",
+      "title": "European Conflict & Nuclear Posture",
+      "description": "A 3D strategic view of conflict activity, nuclear assets, and regional security pressure across Europe.",
+      "sourceFile": "c03-globe-conflict-europe-fullscreen.png",
+      "sha256": "40c9db8972191aad34aa571741f04c931a1926f6d4b942d4992b8da963dd9aba"
+    },
+    {
+      "file": "14-globe-infrastructure-americas.png",
+      "title": "Americas Critical Infrastructure Globe",
+      "description": "Explore strategic infrastructure and geographic dependencies across North and South America.",
+      "sourceFile": "c04-globe-infrastructure-americas-fullscreen.png",
+      "sha256": "d9698ce34e321ebe27e80e5ab6945d48e5339083fb592f9870c0a42464bf6904"
+    },
+    {
+      "file": "15-panama-chokepoint.png",
+      "title": "Panama Canal Chokepoint Brief",
+      "description": "Focused intelligence on one of the world's most consequential maritime transit nodes.",
+      "sourceFile": "c07-chokepoint-panama.png",
+      "sha256": "762c0a819972537ec2c62501f512688fed1c7764547d67e5e3b27cbaaf27274c"
+    },
+    {
+      "file": "16-world-intelligence-embed.png",
+      "title": "Integrated World Intelligence Map",
+      "description": "A global intelligence layer for rapidly correlating events, locations, and operational context.",
+      "sourceFile": "c13-world-intelligence-embed.png",
+      "sha256": "f09ce63a396cf72e5d3f7b85f023877d44d16a392b14600889adee3b41d21f30"
+    },
+    {
+      "file": "17-nuclear-asia-map.png",
+      "title": "Asia Nuclear & Defense Infrastructure",
+      "description": "Map nuclear facilities and military sites to assess strategic density and regional exposure.",
+      "sourceFile": "c15-nuclear-asia-map.png",
+      "sha256": "c5455038386b84244e2979381c9586e651c8fc6bee9ed9ced510599a6e369a99"
+    },
+    {
+      "file": "18-spaceports-world-map.png",
+      "title": "Global Spaceport Network",
+      "description": "Track launch facilities and space-related hotspots across the worldwide operating environment.",
+      "sourceFile": "c16-spaceports-world-map.png",
+      "sha256": "18cdbe0ce822ff38dae2b09a8c323161cd29bcf95bd93fdb123378bd0e164d50"
+    },
+    {
+      "file": "19-cyber-cloud-europe-map.png",
+      "title": "Europe Cyber & Cloud Infrastructure",
+      "description": "Visualize cloud regions, AI infrastructure, and cyber-relevant assets across Europe.",
+      "sourceFile": "c17-cyber-cloud-europe-map.png",
+      "sha256": "28e2428de03de27292fa09f4cb26af4bafc3518d65ea8b5fe1ee933e5f872e51"
+    },
+    {
+      "file": "20-globe-space-world.png",
+      "title": "Global Space Operations Globe",
+      "description": "A 3D world view connecting space infrastructure with strategic activity on the ground.",
+      "sourceFile": "c20-globe-space-world-fullscreen.png",
+      "sha256": "45935d0efa4d0731d3fc4654a2ede1767594016479184ca50b328657c03d47a3"
+    }
+  ]
+}
