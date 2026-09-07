@@ -1,5 +1,5 @@
 {
-  "title": "World Monitor System Demonstration",
+  "title": "World Monitor | Global Intelligence Operations",
   "createdAt": "2026-09-07T19:03:06.603Z",
   "source": "http://127.0.0.1:3000",
   "language": "en",
@@ -29,7 +29,7 @@
     {
       "file": "04-tech-network-map.png",
       "title": "Global Technology Network",
-      "description": "Explore critical cables, network hubs, and strategic technology infrastructure at map scale.",
+      "description": "Explore critical cables, network hubs, and strategic technology infrastructure on a global map.",
       "sourceFile": "04-variant-tech-map-fullscreen.png",
       "sha256": "738f9ca411ea598b4c0c2fec976b962064d6ed17771c877031dfc22f33cb6644"
     },
@@ -78,7 +78,7 @@
     {
       "file": "11-globe-energy-mena.png",
       "title": "MENA Energy Intelligence Globe",
-      "description": "A 3D regional view of energy assets, transit routes, and strategic concentration across MENA.",
+      "description": "A 3D regional view of energy assets, transit routes, and concentrations of strategic infrastructure across MENA.",
       "sourceFile": "c01-globe-energy-mena-fullscreen.png",
       "sha256": "512c3cb74d875ee9f756a402449338fefe8846689d7a510f6fd9ac14c874da6f"
     },
@@ -106,7 +106,7 @@
     {
       "file": "15-panama-chokepoint.png",
       "title": "Panama Canal Chokepoint Brief",
-      "description": "Focused intelligence on one of the world's most consequential maritime transit nodes.",
+      "description": "Focused intelligence on one of the world\u2019s most consequential maritime transit nodes.",
       "sourceFile": "c07-chokepoint-panama.png",
       "sha256": "762c0a819972537ec2c62501f512688fed1c7764547d67e5e3b27cbaaf27274c"
     },
@@ -127,13 +127,13 @@
     {
       "file": "18-spaceports-world-map.png",
       "title": "Global Spaceport Network",
-      "description": "Track launch facilities and space-related hotspots across the worldwide operating environment.",
+      "description": "Track launch facilities and space-related hotspots across the global operating environment.",
       "sourceFile": "c16-spaceports-world-map.png",
       "sha256": "18cdbe0ce822ff38dae2b09a8c323161cd29bcf95bd93fdb123378bd0e164d50"
     },
     {
       "file": "19-cyber-cloud-europe-map.png",
-      "title": "Europe Cyber & Cloud Infrastructure",
+      "title": "European Cyber & Cloud Infrastructure",
       "description": "Visualize cloud regions, AI infrastructure, and cyber-relevant assets across Europe.",
       "sourceFile": "c17-cyber-cloud-europe-map.png",
       "sha256": "28e2428de03de27292fa09f4cb26af4bafc3518d65ea8b5fe1ee933e5f872e51"
@@ -141,7 +141,7 @@
     {
       "file": "20-globe-space-world.png",
       "title": "Global Space Operations Globe",
-      "description": "A 3D world view connecting space infrastructure with strategic activity on the ground.",
+      "description": "A 3D view of the world connecting space infrastructure with strategic activity on the ground.",
       "sourceFile": "c20-globe-space-world-fullscreen.png",
       "sha256": "45935d0efa4d0731d3fc4654a2ede1767594016479184ca50b328657c03d47a3"
     }
